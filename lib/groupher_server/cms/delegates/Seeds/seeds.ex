@@ -27,7 +27,7 @@ defmodule GroupherServer.CMS.Delegate.Seeds do
 
   @article_threads get_config(:article, :threads)
   # categories
-  @community_types [:pl, :framework, :editor, :database, :devops, :city]
+  @community_types [:pl, :framework, :database, :devops, :city]
 
   @comment_emotions get_config(:article, :comment_emotions)
   # seed community
