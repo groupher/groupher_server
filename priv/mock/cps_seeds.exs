@@ -1,7 +1,7 @@
 alias GroupherServer.CMS
 
 # NOTE: seed order matters
-CMS.seed_communities(:home)
+# CMS.seed_communities(:home)
 CMS.seed_communities(:city)
 CMS.seed_communities(:editor)
 CMS.seed_communities(:ui)
