@@ -32,15 +32,9 @@ defmodule GroupherServer.Test.CMS.Hooks.CiteDrink do
          ~m(user community drink2 drink3 drink4 drink5 drink_attrs)a do
       body =
         mock_rich_text(
-          ~s(the <a href=#{@site_host}/drink/#{drink2.id} /> and <a href=#{@site_host}/drink/#{
-            drink2.id
-          }>same la</a> is awesome, the <a href=#{@site_host}/drink/#{drink3.id}></a> is awesome too.),
+          ~s(the <a href=#{@site_host}/drink/#{drink2.id} /> and <a href=#{@site_host}/drink/#{drink2.id}>same la</a> is awesome, the <a href=#{@site_host}/drink/#{drink3.id}></a> is awesome too.),
           # second paragraph
-          ~s(the paragraph 2 <a href=#{@site_host}/drink/#{drink2.id} class=#{drink2.title}> again</a>, the paragraph 2 <a href=#{
-            @site_host
-          }/drink/#{drink4.id}> again</a>, the paragraph 2 <a href=#{@site_host}/drink/#{
-            drink5.id
-          }> again</a>)
+          ~s(the paragraph 2 <a href=#{@site_host}/drink/#{drink2.id} class=#{drink2.title}> again</a>, the paragraph 2 <a href=#{@site_host}/drink/#{drink4.id}> again</a>, the paragraph 2 <a href=#{@site_host}/drink/#{drink5.id}> again</a>)
         )
 
       drink_attrs = drink_attrs |> Map.merge(%{body: body})
@@ -140,15 +134,9 @@ defmodule GroupherServer.Test.CMS.Hooks.CiteDrink do
     test "can cited drink inside a comment", ~m(user drink drink2 drink3 drink4 drink5)a do
       comment_body =
         mock_rich_text(
-          ~s(the <a href=#{@site_host}/drink/#{drink2.id} /> and <a href=#{@site_host}/drink/#{
-            drink2.id
-          }>same la</a> is awesome, the <a href=#{@site_host}/drink/#{drink3.id}></a> is awesome too.),
+          ~s(the <a href=#{@site_host}/drink/#{drink2.id} /> and <a href=#{@site_host}/drink/#{drink2.id}>same la</a> is awesome, the <a href=#{@site_host}/drink/#{drink3.id}></a> is awesome too.),
           # second paragraph
-          ~s(the paragraph 2 <a href=#{@site_host}/drink/#{drink2.id} class=#{drink2.title}> again</a>, the paragraph 2 <a href=#{
-            @site_host
-          }/drink/#{drink4.id}> again</a>, the paragraph 2 <a href=#{@site_host}/drink/#{
-            drink5.id
-          }> again</a>)
+          ~s(the paragraph 2 <a href=#{@site_host}/drink/#{drink2.id} class=#{drink2.title}> again</a>, the paragraph 2 <a href=#{@site_host}/drink/#{drink4.id}> again</a>, the paragraph 2 <a href=#{@site_host}/drink/#{drink5.id}> again</a>)
         )
 
       {:ok, comment} = CMS.create_comment(:drink, drink.id, comment_body, user)

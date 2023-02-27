@@ -205,9 +205,7 @@ defmodule GroupherServer.Email.Templates.NotifyAdminPayment do
                           <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%">
                             <tr>
                               <td align="center" style="font-size:0px;padding:10px 25px;word-break:break-word;">
-                                <div style="font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:18px;font-weight:bold;line-height:24px;text-align:center;color:#6f8696;"> # 好心人打赏 #{
-      record.amount
-    } 元 # </div>
+                                <div style="font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:18px;font-weight:bold;line-height:24px;text-align:center;color:#6f8696;"> # 好心人打赏 #{record.amount} 元 # </div>
                               </td>
                             </tr>
                             <tr>

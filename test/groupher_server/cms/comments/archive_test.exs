@@ -16,7 +16,11 @@ defmodule GroupherServer.Test.CMS.Comments.Archive do
     {:ok, user} = db_insert(:user)
     {:ok, post} = db_insert(:post)
 
-    {:ok, comment_long_ago} = db_insert(:comment, %{title: "last week", inserted_at: DateTime.truncate(@last_week, :second)})
+    {:ok, comment_long_ago} =
+      db_insert(:comment, %{
+        title: "last week",
+        inserted_at: DateTime.truncate(@last_week, :second)
+      })
 
     {:ok, _} = CMS.create_comment(:post, post.id, mock_comment(), user)
     {:ok, _} = CMS.create_comment(:post, post.id, mock_comment(), user)

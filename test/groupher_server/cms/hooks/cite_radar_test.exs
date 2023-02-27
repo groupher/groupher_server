@@ -32,15 +32,9 @@ defmodule GroupherServer.Test.CMS.Hooks.CiteRadar do
          ~m(user community radar2 radar3 radar4 radar5 radar_attrs)a do
       body =
         mock_rich_text(
-          ~s(the <a href=#{@site_host}/radar/#{radar2.id} /> and <a href=#{@site_host}/radar/#{
-            radar2.id
-          }>same la</a> is awesome, the <a href=#{@site_host}/radar/#{radar3.id}></a> is awesome too.),
+          ~s(the <a href=#{@site_host}/radar/#{radar2.id} /> and <a href=#{@site_host}/radar/#{radar2.id}>same la</a> is awesome, the <a href=#{@site_host}/radar/#{radar3.id}></a> is awesome too.),
           # second paragraph
-          ~s(the paragraph 2 <a href=#{@site_host}/radar/#{radar2.id} class=#{radar2.title}> again</a>, the paragraph 2 <a href=#{
-            @site_host
-          }/radar/#{radar4.id}> again</a>, the paragraph 2 <a href=#{@site_host}/radar/#{
-            radar5.id
-          }> again</a>)
+          ~s(the paragraph 2 <a href=#{@site_host}/radar/#{radar2.id} class=#{radar2.title}> again</a>, the paragraph 2 <a href=#{@site_host}/radar/#{radar4.id}> again</a>, the paragraph 2 <a href=#{@site_host}/radar/#{radar5.id}> again</a>)
         )
 
       radar_attrs = radar_attrs |> Map.merge(%{body: body})
@@ -140,15 +134,9 @@ defmodule GroupherServer.Test.CMS.Hooks.CiteRadar do
     test "can cited radar inside a comment", ~m(user radar radar2 radar3 radar4 radar5)a do
       comment_body =
         mock_rich_text(
-          ~s(the <a href=#{@site_host}/radar/#{radar2.id} /> and <a href=#{@site_host}/radar/#{
-            radar2.id
-          }>same la</a> is awesome, the <a href=#{@site_host}/radar/#{radar3.id}></a> is awesome too.),
+          ~s(the <a href=#{@site_host}/radar/#{radar2.id} /> and <a href=#{@site_host}/radar/#{radar2.id}>same la</a> is awesome, the <a href=#{@site_host}/radar/#{radar3.id}></a> is awesome too.),
           # second paragraph
-          ~s(the paragraph 2 <a href=#{@site_host}/radar/#{radar2.id} class=#{radar2.title}> again</a>, the paragraph 2 <a href=#{
-            @site_host
-          }/radar/#{radar4.id}> again</a>, the paragraph 2 <a href=#{@site_host}/radar/#{
-            radar5.id
-          }> again</a>)
+          ~s(the paragraph 2 <a href=#{@site_host}/radar/#{radar2.id} class=#{radar2.title}> again</a>, the paragraph 2 <a href=#{@site_host}/radar/#{radar4.id}> again</a>, the paragraph 2 <a href=#{@site_host}/radar/#{radar5.id}> again</a>)
         )
 
       {:ok, comment} = CMS.create_comment(:radar, radar.id, comment_body, user)

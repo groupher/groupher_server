@@ -32,15 +32,9 @@ defmodule GroupherServer.Test.CMS.Hooks.CiteGuide do
          ~m(user community guide2 guide3 guide4 guide5 guide_attrs)a do
       body =
         mock_rich_text(
-          ~s(the <a href=#{@site_host}/guide/#{guide2.id} /> and <a href=#{@site_host}/guide/#{
-            guide2.id
-          }>same la</a> is awesome, the <a href=#{@site_host}/guide/#{guide3.id}></a> is awesome too.),
+          ~s(the <a href=#{@site_host}/guide/#{guide2.id} /> and <a href=#{@site_host}/guide/#{guide2.id}>same la</a> is awesome, the <a href=#{@site_host}/guide/#{guide3.id}></a> is awesome too.),
           # second paragraph
-          ~s(the paragraph 2 <a href=#{@site_host}/guide/#{guide2.id} class=#{guide2.title}> again</a>, the paragraph 2 <a href=#{
-            @site_host
-          }/guide/#{guide4.id}> again</a>, the paragraph 2 <a href=#{@site_host}/guide/#{
-            guide5.id
-          }> again</a>)
+          ~s(the paragraph 2 <a href=#{@site_host}/guide/#{guide2.id} class=#{guide2.title}> again</a>, the paragraph 2 <a href=#{@site_host}/guide/#{guide4.id}> again</a>, the paragraph 2 <a href=#{@site_host}/guide/#{guide5.id}> again</a>)
         )
 
       guide_attrs = guide_attrs |> Map.merge(%{body: body})
@@ -140,15 +134,9 @@ defmodule GroupherServer.Test.CMS.Hooks.CiteGuide do
     test "can cited guide inside a comment", ~m(user guide guide2 guide3 guide4 guide5)a do
       comment_body =
         mock_rich_text(
-          ~s(the <a href=#{@site_host}/guide/#{guide2.id} /> and <a href=#{@site_host}/guide/#{
-            guide2.id
-          }>same la</a> is awesome, the <a href=#{@site_host}/guide/#{guide3.id}></a> is awesome too.),
+          ~s(the <a href=#{@site_host}/guide/#{guide2.id} /> and <a href=#{@site_host}/guide/#{guide2.id}>same la</a> is awesome, the <a href=#{@site_host}/guide/#{guide3.id}></a> is awesome too.),
           # second paragraph
-          ~s(the paragraph 2 <a href=#{@site_host}/guide/#{guide2.id} class=#{guide2.title}> again</a>, the paragraph 2 <a href=#{
-            @site_host
-          }/guide/#{guide4.id}> again</a>, the paragraph 2 <a href=#{@site_host}/guide/#{
-            guide5.id
-          }> again</a>)
+          ~s(the paragraph 2 <a href=#{@site_host}/guide/#{guide2.id} class=#{guide2.title}> again</a>, the paragraph 2 <a href=#{@site_host}/guide/#{guide4.id}> again</a>, the paragraph 2 <a href=#{@site_host}/guide/#{guide5.id}> again</a>)
         )
 
       {:ok, comment} = CMS.create_comment(:guide, guide.id, comment_body, user)
