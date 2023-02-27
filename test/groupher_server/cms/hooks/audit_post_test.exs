@@ -4,8 +4,8 @@ defmodule GroupherServer.Test.CMS.Hooks.AuditPost do
   use GroupherServer.TestTools
 
   alias GroupherServer.{CMS}
-  alias CMS.Delegate.Hooks
-  alias Helper.ORM
+  # alias CMS.Delegate.Hooks
+  # alias Helper.ORM
   alias CMS.Constant
 
   @audit_legal Constant.pending(:legal)

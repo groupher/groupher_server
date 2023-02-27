@@ -32,15 +32,9 @@ defmodule GroupherServer.Test.CMS.Hooks.CiteMeetup do
          ~m(user community meetup2 meetup3 meetup4 meetup5 meetup_attrs)a do
       body =
         mock_rich_text(
-          ~s(the <a href=#{@site_host}/meetup/#{meetup2.id} /> and <a href=#{@site_host}/meetup/#{
-            meetup2.id
-          }>same la</a> is awesome, the <a href=#{@site_host}/meetup/#{meetup3.id}></a> is awesome too.),
+          ~s(the <a href=#{@site_host}/meetup/#{meetup2.id} /> and <a href=#{@site_host}/meetup/#{meetup2.id}>same la</a> is awesome, the <a href=#{@site_host}/meetup/#{meetup3.id}></a> is awesome too.),
           # second paragraph
-          ~s(the paragraph 2 <a href=#{@site_host}/meetup/#{meetup2.id} class=#{meetup2.title}> again</a>, the paragraph 2 <a href=#{
-            @site_host
-          }/meetup/#{meetup4.id}> again</a>, the paragraph 2 <a href=#{@site_host}/meetup/#{
-            meetup5.id
-          }> again</a>)
+          ~s(the paragraph 2 <a href=#{@site_host}/meetup/#{meetup2.id} class=#{meetup2.title}> again</a>, the paragraph 2 <a href=#{@site_host}/meetup/#{meetup4.id}> again</a>, the paragraph 2 <a href=#{@site_host}/meetup/#{meetup5.id}> again</a>)
         )
 
       meetup_attrs = meetup_attrs |> Map.merge(%{body: body})
@@ -140,15 +134,9 @@ defmodule GroupherServer.Test.CMS.Hooks.CiteMeetup do
     test "can cited meetup inside a comment", ~m(user meetup meetup2 meetup3 meetup4 meetup5)a do
       comment_body =
         mock_rich_text(
-          ~s(the <a href=#{@site_host}/meetup/#{meetup2.id} /> and <a href=#{@site_host}/meetup/#{
-            meetup2.id
-          }>same la</a> is awesome, the <a href=#{@site_host}/meetup/#{meetup3.id}></a> is awesome too.),
+          ~s(the <a href=#{@site_host}/meetup/#{meetup2.id} /> and <a href=#{@site_host}/meetup/#{meetup2.id}>same la</a> is awesome, the <a href=#{@site_host}/meetup/#{meetup3.id}></a> is awesome too.),
           # second paragraph
-          ~s(the paragraph 2 <a href=#{@site_host}/meetup/#{meetup2.id} class=#{meetup2.title}> again</a>, the paragraph 2 <a href=#{
-            @site_host
-          }/meetup/#{meetup4.id}> again</a>, the paragraph 2 <a href=#{@site_host}/meetup/#{
-            meetup5.id
-          }> again</a>)
+          ~s(the paragraph 2 <a href=#{@site_host}/meetup/#{meetup2.id} class=#{meetup2.title}> again</a>, the paragraph 2 <a href=#{@site_host}/meetup/#{meetup4.id}> again</a>, the paragraph 2 <a href=#{@site_host}/meetup/#{meetup5.id}> again</a>)
         )
 
       {:ok, comment} = CMS.create_comment(:meetup, meetup.id, comment_body, user)

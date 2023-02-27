@@ -183,9 +183,9 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
       }
     }
     """
-    test "user can get viewer has subscribed state", ~m(guest_conn user)a do
+    test "user can get viewer has subscribed state", ~m(user)a do
       {:ok, communities} = db_insert_multi(:community, 5)
-      {:ok, record} = CMS.subscribe_community(communities |> List.first(), user)
+      {:ok, _record} = CMS.subscribe_community(communities |> List.first(), user)
 
       variables = %{filter: %{page: 1, size: 20}}
       user_conn = simu_conn(:user, user)

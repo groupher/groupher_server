@@ -214,23 +214,17 @@ defmodule GroupherServer.Email.Templates.NotifyAdminOnContentCreated do
                           <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%">
                             <tr>
                               <td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;">
-                                <div style="font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:16px;font-weight:400;line-height:24px;text-align:left;color:#6f8696;"> #{
-      author_name
-    } 发布了内容: </div>
+                                <div style="font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:16px;font-weight:400;line-height:24px;text-align:left;color:#6f8696;"> #{author_name} 发布了内容: </div>
                               </td>
                             </tr>
                             <tr>
                               <td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;">
-                                <div style="font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:18px;font-weight:bold;line-height:24px;text-align:left;color:#6f8696;"> #{
-      title
-    } </div>
+                                <div style="font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:18px;font-weight:bold;line-height:24px;text-align:left;color:#6f8696;"> #{title} </div>
                               </td>
                             </tr>
                             <tr>
                               <td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;">
-                                <div style="font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:16px;font-weight:400;line-height:24px;text-align:left;color:#637381;"> #{
-      digest
-    } </div>
+                                <div style="font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:16px;font-weight:400;line-height:24px;text-align:left;color:#637381;"> #{digest} </div>
                               </td>
                             </tr>
                             <tr>
@@ -251,9 +245,7 @@ defmodule GroupherServer.Email.Templates.NotifyAdminOnContentCreated do
                             </tr>
                             <tr>
                               <td align="center" style="font-size:0px;padding:10px 25px;padding-top:10px;word-break:break-word;">
-                                <div style="font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:16px;font-weight:400;line-height:24px;text-align:center;color:#637381;"> <a class="text-link" href="https://coderplanets.com/#{
-      community_raw
-    }/#{type}/#{id}" style="color: #5e6ebf;">文章地址 -></a> </div>
+                                <div style="font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:16px;font-weight:400;line-height:24px;text-align:center;color:#637381;"> <a class="text-link" href="https://coderplanets.com/#{community_raw}/#{type}/#{id}" style="color: #5e6ebf;">文章地址 -></a> </div>
                               </td>
                             </tr>
                           </table>

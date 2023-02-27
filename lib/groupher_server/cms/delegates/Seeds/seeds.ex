@@ -27,7 +27,7 @@ defmodule GroupherServer.CMS.Delegate.Seeds do
 
   @article_threads get_config(:article, :threads)
   # categories
-  @community_types [:pl, :framework, :editor, :database, :devops, :city]
+  @community_types [:pl, :framework]
 
   @comment_emotions get_config(:article, :comment_emotions)
   # seed community
@@ -43,7 +43,6 @@ defmodule GroupherServer.CMS.Delegate.Seeds do
   seed community for home
   """
   def seed_community(:home), do: Domain.seed_community(:home)
-  def seed_community(:blackhole), do: Domain.seed_community(:blackhole)
   def seed_community(:feedback), do: Domain.seed_community(:feedback)
 
   # type: city, pl, framework, ...

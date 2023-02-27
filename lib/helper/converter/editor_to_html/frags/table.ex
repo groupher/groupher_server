@@ -35,9 +35,7 @@ defmodule Helper.Converter.EditorToHTML.Frags.Table do
       true ->
         style = ~s(width: #{Map.get(item, "width")})
 
-        ~s(<td class="#{scripe_class}" style="#{style}"><div class="#{@class["cell"]} #{
-          align_class
-        }">#{text}</div></td>)
+        ~s(<td class="#{scripe_class}" style="#{style}"><div class="#{@class["cell"]} #{align_class}">#{text}</div></td>)
 
       false ->
         ~s(<td class="#{scripe_class}"><div class="#{@class["cell"]} #{align_class}">#{text}</div></td>)

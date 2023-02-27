@@ -25,9 +25,7 @@ defmodule GroupherServer.Test.CMS.Hooks.MentionInPost do
     test "mention multi user in post should work", ~m(user user2 user3 community  post_attrs)a do
       body =
         mock_rich_text(
-          ~s(hi <div class=#{@article_mention_class}>#{user2.login}</div>, and <div class=#{
-            @article_mention_class
-          }>#{user3.login}</div>),
+          ~s(hi <div class=#{@article_mention_class}>#{user2.login}</div>, and <div class=#{@article_mention_class}>#{user3.login}</div>),
           ~s(hi <div class=#{@article_mention_class}>#{user2.login}</div>)
         )
 

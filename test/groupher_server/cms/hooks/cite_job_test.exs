@@ -31,13 +31,9 @@ defmodule GroupherServer.Test.CMS.Hooks.CiteJob do
     test "cited multi job should work", ~m(user community job2 job3 job4 job5 job_attrs)a do
       body =
         mock_rich_text(
-          ~s(the <a href=#{@site_host}/job/#{job2.id} /> and <a href=#{@site_host}/job/#{job2.id}>same la</a> is awesome, the <a href=#{
-            @site_host
-          }/job/#{job3.id}></a> is awesome too.),
+          ~s(the <a href=#{@site_host}/job/#{job2.id} /> and <a href=#{@site_host}/job/#{job2.id}>same la</a> is awesome, the <a href=#{@site_host}/job/#{job3.id}></a> is awesome too.),
           # second paragraph
-          ~s(the paragraph 2 <a href=#{@site_host}/job/#{job2.id} class=#{job2.title}> again</a>, the paragraph 2 <a href=#{
-            @site_host
-          }/job/#{job4.id}> again</a>, the paragraph 2 <a href=#{@site_host}/job/#{job5.id}> again</a>)
+          ~s(the paragraph 2 <a href=#{@site_host}/job/#{job2.id} class=#{job2.title}> again</a>, the paragraph 2 <a href=#{@site_host}/job/#{job4.id}> again</a>, the paragraph 2 <a href=#{@site_host}/job/#{job5.id}> again</a>)
         )
 
       job_attrs = job_attrs |> Map.merge(%{body: body})
@@ -135,13 +131,9 @@ defmodule GroupherServer.Test.CMS.Hooks.CiteJob do
     test "can cited job inside a comment", ~m(user job job2 job3 job4 job5)a do
       comment_body =
         mock_rich_text(
-          ~s(the <a href=#{@site_host}/job/#{job2.id} /> and <a href=#{@site_host}/job/#{job2.id}>same la</a> is awesome, the <a href=#{
-            @site_host
-          }/job/#{job3.id}></a> is awesome too.),
+          ~s(the <a href=#{@site_host}/job/#{job2.id} /> and <a href=#{@site_host}/job/#{job2.id}>same la</a> is awesome, the <a href=#{@site_host}/job/#{job3.id}></a> is awesome too.),
           # second paragraph
-          ~s(the paragraph 2 <a href=#{@site_host}/job/#{job2.id} class=#{job2.title}> again</a>, the paragraph 2 <a href=#{
-            @site_host
-          }/job/#{job4.id}> again</a>, the paragraph 2 <a href=#{@site_host}/job/#{job5.id}> again</a>)
+          ~s(the paragraph 2 <a href=#{@site_host}/job/#{job2.id} class=#{job2.title}> again</a>, the paragraph 2 <a href=#{@site_host}/job/#{job4.id}> again</a>, the paragraph 2 <a href=#{@site_host}/job/#{job5.id}> again</a>)
         )
 
       {:ok, comment} = CMS.create_comment(:job, job.id, comment_body, user)

@@ -111,7 +111,6 @@ defmodule GroupherServer.Test.Mutation.Articles.Blog do
       blog_attr = mock_attrs(:blog, %{body: mock_xss_string()})
       variables = blog_attr |> Map.merge(%{communityId: community.id}) |> camelize_map_key
       result = user_conn |> mutation_result(@create_blog_query, variables, "createBlog")
-
       {:ok, blog} = ORM.find(Blog, result["id"], preload: :document)
       body_html = blog |> get_in([:document, :body_html])
 

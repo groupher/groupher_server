@@ -54,15 +54,15 @@ defmodule GroupherServer.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.5.7"},
+      {:phoenix, "~> 1.6.16"},
       {:phoenix_pubsub, "~> 2.0"},
       {:phoenix_html, "~> 2.14.3"},
-      {:ecto_sql, "~> 3.6.1"},
-      {:phoenix_ecto, "~> 4.2.1"},
-      {:postgrex, "~> 0.15.8"},
+      {:ecto_sql, "~> 3.9.2"},
+      {:phoenix_ecto, "~> 4.4.0"},
+      {:postgrex, "~> 0.16.5"},
       {:gettext, "~> 0.18.0"},
-      {:plug_cowboy, "~> 2.5.0"},
-      {:plug, "~> 1.11.0"},
+      {:plug_cowboy, "~> 2.6.0"},
+      {:plug, "~> 1.14.0"},
       # GraphQl tool
       {:absinthe, "~> 1.6.2"},
       # Plug support for Absinthe

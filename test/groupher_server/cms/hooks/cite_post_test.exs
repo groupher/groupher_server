@@ -31,13 +31,9 @@ defmodule GroupherServer.Test.CMS.Hooks.CitePost do
     test "cited multi post should work", ~m(user community post2 post3 post4 post5 post_attrs)a do
       body =
         mock_rich_text(
-          ~s(the <a href=#{@site_host}/post/#{post2.id} /> and <a href=#{@site_host}/post/#{
-            post2.id
-          }>same la</a> is awesome, the <a href=#{@site_host}/post/#{post3.id}></a> is awesome too.),
+          ~s(the <a href=#{@site_host}/post/#{post2.id} /> and <a href=#{@site_host}/post/#{post2.id}>same la</a> is awesome, the <a href=#{@site_host}/post/#{post3.id}></a> is awesome too.),
           # second paragraph
-          ~s(the paragraph 2 <a href=#{@site_host}/post/#{post2.id} class=#{post2.title}> again</a>, the paragraph 2 <a href=#{
-            @site_host
-          }/post/#{post4.id}> again</a>, the paragraph 2 <a href=#{@site_host}/post/#{post5.id}> again</a>)
+          ~s(the paragraph 2 <a href=#{@site_host}/post/#{post2.id} class=#{post2.title}> again</a>, the paragraph 2 <a href=#{@site_host}/post/#{post4.id}> again</a>, the paragraph 2 <a href=#{@site_host}/post/#{post5.id}> again</a>)
         )
 
       post_attrs = post_attrs |> Map.merge(%{body: body})
@@ -135,13 +131,9 @@ defmodule GroupherServer.Test.CMS.Hooks.CitePost do
     test "can cited post inside a comment", ~m(user post post2 post3 post4 post5)a do
       comment_body =
         mock_rich_text(
-          ~s(the <a href=#{@site_host}/post/#{post2.id} /> and <a href=#{@site_host}/post/#{
-            post2.id
-          }>same la</a> is awesome, the <a href=#{@site_host}/post/#{post3.id}></a> is awesome too.),
+          ~s(the <a href=#{@site_host}/post/#{post2.id} /> and <a href=#{@site_host}/post/#{post2.id}>same la</a> is awesome, the <a href=#{@site_host}/post/#{post3.id}></a> is awesome too.),
           # second paragraph
-          ~s(the paragraph 2 <a href=#{@site_host}/post/#{post2.id} class=#{post2.title}> again</a>, the paragraph 2 <a href=#{
-            @site_host
-          }/post/#{post4.id}> again</a>, the paragraph 2 <a href=#{@site_host}/post/#{post5.id}> again</a>)
+          ~s(the paragraph 2 <a href=#{@site_host}/post/#{post2.id} class=#{post2.title}> again</a>, the paragraph 2 <a href=#{@site_host}/post/#{post4.id}> again</a>, the paragraph 2 <a href=#{@site_host}/post/#{post5.id}> again</a>)
         )
 
       {:ok, comment} = CMS.create_comment(:post, post.id, comment_body, user)

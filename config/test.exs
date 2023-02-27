@@ -24,6 +24,7 @@ config :groupher_server, GroupherServer.Repo,
   password: "postgres",
   database: "groupher_server_test",
   hostname: "localhost",
+  pool_size: 50,
   pool: Ecto.Adapters.SQL.Sandbox
 
 config :groupher_server, :github_oauth,

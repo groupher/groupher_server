@@ -25,9 +25,7 @@ defmodule Helper.Converter.EditorToHTML.Frags.Image do
 
     ~s(<div class="#{@class["single_image_wrapper"]}">
         <a href=#{src} class="glightbox" data-glightbox="type:image;description: #{caption}">
-          <img class="#{@class["single_image"]}" style="width:#{width}; height:#{height}" src="#{
-      src
-    }" alt="image" />
+          <img class="#{@class["single_image"]}" style="width:#{width}; height:#{height}" src="#{src}" alt="image" />
         </a>
        </div>)
   end
