@@ -58,7 +58,6 @@ defmodule GroupherServer.Test.CMS.Articles.Post do
       assert post.active_at == post.inserted_at
     end
 
-    @tag :wip
     test "read post should update views and meta viewed_user_list",
          ~m(post_attrs community user user2)a do
       {:ok, post} = CMS.create_article(community, :post, post_attrs, user)

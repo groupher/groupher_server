@@ -5,7 +5,7 @@ defmodule GroupherServer.Test.CMS.Hooks.AuditPostComment do
 
   alias GroupherServer.{CMS}
   alias CMS.Delegate.Hooks
-  alias Helper.{ORM, Scheduler}
+  # alias Helper.{ORM, Scheduler}
   alias CMS.Constant
 
   @audit_legal Constant.pending(:legal)

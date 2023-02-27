@@ -5,7 +5,7 @@ defmodule Helper.RSS do
   use Tesla, only: [:get]
   import Helper.Utils, only: [done: 1]
 
-  @timeout_limit 4000
+  @timeout_limit 5000
 
   plug(Tesla.Middleware.Retry, delay: 200, max_retries: 2)
   plug(Tesla.Middleware.Timeout, timeout: @timeout_limit)

@@ -22,7 +22,8 @@ config :groupher_server, GroupherServer.Repo,
   password: "postgres",
   database: "groupher_server_mock",
   hostname: "localhost",
-  pool_size: 90
+  pool_size: 50,
+  queue_target: 5000
 
 #  config email services
 config :groupher_server, GroupherServer.Mailer, adapter: Bamboo.LocalAdapter
