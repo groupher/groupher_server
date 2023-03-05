@@ -18,12 +18,6 @@ defmodule GroupherServer.Test.Query.CMS.Search do
     {:ok, _community} = db_insert(:post, %{title: "javascript"})
     {:ok, _community} = db_insert(:post, %{title: "java"})
 
-    {:ok, _community} = db_insert(:job, %{title: "react"})
-    {:ok, _community} = db_insert(:job, %{title: "php"})
-    {:ok, _community} = db_insert(:job, %{title: "每日妹子"})
-    {:ok, _community} = db_insert(:job, %{title: "javascript"})
-    {:ok, _community} = db_insert(:job, %{title: "java"})
-
     {:ok, _community} = db_insert(:repo, %{title: "react"})
     {:ok, _community} = db_insert(:repo, %{title: "php"})
     {:ok, _community} = db_insert(:repo, %{title: "每日妹子"})
@@ -63,42 +57,6 @@ defmodule GroupherServer.Test.Query.CMS.Search do
     test "search non-exsit post should get empty pagi data", ~m(guest_conn)a do
       variables = %{title: "non-exsit"}
       results = guest_conn |> query_result(@query, variables, "searchPosts")
-
-      assert results["totalCount"] == 0
-      assert results["entries"] == []
-    end
-  end
-
-  describe "[cms search job query]" do
-    @query """
-    query($title: String!) {
-      searchJobs(title: $title) {
-        entries {
-          id
-          title
-        }
-        totalCount
-      }
-    }
-    """
-    test "search job by full title should valid paged communities", ~m(guest_conn)a do
-      variables = %{title: "react"}
-      results = guest_conn |> query_result(@query, variables, "searchJobs")
-
-      assert results["totalCount"] == 1
-      assert results["entries"] |> Enum.any?(&(&1["title"] == "react"))
-
-      variables = %{title: "java"}
-      results = guest_conn |> query_result(@query, variables, "searchJobs")
-
-      assert results["totalCount"] == 2
-      assert results["entries"] |> Enum.any?(&(&1["title"] == "java"))
-      assert results["entries"] |> Enum.any?(&(&1["title"] == "javascript"))
-    end
-
-    test "search non-exsit job should get empty pagi data", ~m(guest_conn)a do
-      variables = %{title: "non-exsit"}
-      results = guest_conn |> query_result(@query, variables, "searchJobs")
 
       assert results["totalCount"] == 0
       assert results["entries"] == []

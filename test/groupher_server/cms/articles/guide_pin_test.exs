@@ -46,7 +46,7 @@ defmodule GroupherServer.Test.CMS.Artilces.GuidePin do
     test "can undo pin to a guide", ~m(community guide)a do
       {:ok, _} = CMS.pin_article(:guide, guide.id, community.id)
 
-      assert {:ok, unpinned} = CMS.undo_pin_article(:guide, guide.id, community.id)
+      assert {:ok, _unpinned} = CMS.undo_pin_article(:guide, guide.id, community.id)
 
       assert {:error, _} = ORM.find_by(PinnedArticle, %{guide_id: guide.id})
     end

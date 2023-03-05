@@ -56,40 +56,6 @@ defmodule GroupherServer.Test.Mutation.Statistics do
       assert contributes.count == 1
     end
 
-    @create_job_query """
-    mutation (
-      $title: String!,
-      $body: String!,
-      $communityId: ID!,
-      $company: String!,
-      $articleTags: [Ids]
-    ) {
-      createJob(
-        title: $title,
-        body: $body,
-        communityId: $communityId,
-        company: $company,
-        articleTags: $articleTags
-      ) {
-        id
-        title
-        communities {
-          id
-          title
-        }
-      }
-    }
-    """
-    test "user should have contribute list after create a job", ~m(user_conn user community)a do
-      job_attr = mock_attrs(:job)
-      variables = job_attr |> Map.merge(%{communityId: community.id}) |> camelize_map_key
-
-      user_conn |> mutation_result(@create_job_query, variables, "createJob")
-
-      {:ok, contributes} = ORM.find_by(UserContribute, user_id: user.id)
-      assert contributes.count == 1
-    end
-
     @create_blog_query """
     mutation (
       $title: String!,

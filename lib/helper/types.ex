@@ -33,7 +33,7 @@ defmodule Helper.Types do
           company: nil | String.t()
         }
 
-  @type article_thread :: :post | :job | :repo | :blog
+  @type article_thread :: :post | :repo | :blog
 
   @type paged_filter :: %{
           page: Integer.t(),

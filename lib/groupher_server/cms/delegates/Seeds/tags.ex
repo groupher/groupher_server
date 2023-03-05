@@ -189,132 +189,6 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Tags do
     |> Enum.map(fn attr -> Map.merge(%{thread: :radar, color: random_color()}, attr) end)
   end
 
-  def get(_, :job, :home) do
-    [
-      %{
-        raw: "beijing",
-        title: "北京",
-        group: "城市"
-      },
-      %{
-        raw: "shanghai",
-        title: "上海",
-        group: "城市"
-      },
-      %{
-        raw: "hangzhou",
-        title: "杭州",
-        group: "城市"
-      },
-      %{
-        raw: "shenzhen",
-        title: "深圳",
-        group: "城市"
-      },
-      %{
-        raw: "guangzhou",
-        title: "广州",
-        group: "城市"
-      },
-      %{
-        raw: "wuhan",
-        title: "武汉",
-        group: "城市"
-      },
-      %{
-        raw: "chengdu",
-        title: "成都",
-        group: "城市"
-      },
-      %{
-        raw: "xian",
-        title: "西安",
-        group: "城市"
-      },
-      %{
-        raw: "xiamen",
-        title: "厦门",
-        group: "城市"
-      },
-      %{
-        raw: "oversea",
-        title: "海外",
-        group: "城市"
-      },
-      %{
-        raw: "remote",
-        title: "远程",
-        group: "城市"
-      },
-      %{
-        raw: "others",
-        title: "其他",
-        group: "城市"
-      },
-      %{
-        raw: "frontend",
-        title: "前端",
-        group: "职位"
-      },
-      %{
-        raw: "backend",
-        title: "后端开发",
-        group: "职位"
-      },
-      %{
-        raw: "mobile",
-        title: "移动端",
-        group: "职位"
-      },
-      %{
-        raw: "ai",
-        title: "人工智能",
-        group: "职位"
-      },
-      %{
-        raw: "devops",
-        title: "DevOps",
-        group: "职位"
-      },
-      %{
-        raw: "securty",
-        title: "安全",
-        group: "职位"
-      },
-      %{
-        raw: "others",
-        title: "其他",
-        group: "职位"
-      },
-      %{
-        raw: "0-10k",
-        title: "0-10k",
-        group: "薪资范围"
-      },
-      %{
-        raw: "10k-20k",
-        title: "10k-20k",
-        group: "薪资范围"
-      },
-      %{
-        raw: "20k-40k",
-        title: "20k-40k",
-        group: "薪资范围"
-      },
-      %{
-        raw: "40k-more",
-        title: "40k 以上",
-        group: "薪资范围"
-      },
-      %{
-        raw: "negotiable",
-        title: "面谈",
-        group: "薪资范围"
-      }
-    ]
-    |> Enum.map(fn attr -> Map.merge(%{thread: :job, color: random_color()}, attr) end)
-  end
-
   ## 首页 end
 
   ## Blackhole
@@ -497,10 +371,6 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Tags do
     |> Enum.map(fn attr -> Map.merge(%{thread: :radar, color: random_color()}, attr) end)
   end
 
-  def get(_, :job, :city) do
-    get(:ignore, :job, :home) |> Enum.reject(&(&1.group in ["城市"]))
-  end
-
   ## 城市 end
 
   ## 语言与框架
@@ -646,14 +516,6 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Tags do
       }
     ]
     |> Enum.map(fn attr -> Map.merge(%{thread: :tut, color: random_color()}, attr) end)
-  end
-
-  def get(_, :job, :pl) do
-    get(:ignore, :job, :home) |> Enum.reject(&(&1.group in ["职位"]))
-  end
-
-  def get(_, :job, :framework) do
-    get(:ignore, :job, :home) |> Enum.reject(&(&1.group in ["职位"]))
   end
 
   def get(_, :awesome, :pl), do: []

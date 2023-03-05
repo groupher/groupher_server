@@ -9,9 +9,8 @@ defmodule GroupherServer.Test.CMS.AbuseReports.CommentReport do
     {:ok, user} = db_insert(:user)
     {:ok, user2} = db_insert(:user)
     {:ok, post} = db_insert(:post)
-    {:ok, job} = db_insert(:job)
 
-    {:ok, ~m(user user2 post job)a}
+    {:ok, ~m(user user2 post)a}
   end
 
   describe "[article comment report/unreport]" do

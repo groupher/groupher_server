@@ -46,7 +46,7 @@ defmodule GroupherServer.Test.CMS.Artilces.RadarPin do
     test "can undo pin to a radar", ~m(community radar)a do
       {:ok, _} = CMS.pin_article(:radar, radar.id, community.id)
 
-      assert {:ok, unpinned} = CMS.undo_pin_article(:radar, radar.id, community.id)
+      assert {:ok, _unpinned} = CMS.undo_pin_article(:radar, radar.id, community.id)
 
       assert {:error, _} = ORM.find_by(PinnedArticle, %{radar_id: radar.id})
     end

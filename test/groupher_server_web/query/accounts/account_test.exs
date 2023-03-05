@@ -26,7 +26,6 @@ defmodule GroupherServer.Test.Query.Account.Basic do
         bio
         meta {
           publishedPostsCount
-          publishedJobsCount
           publishedBlogsCount
           publishedWorksCount
           publishedRadarsCount

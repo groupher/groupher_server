@@ -179,35 +179,12 @@ defmodule GroupherServer.Support.Factory do
     }
   end
 
-  defp mock_meta(:job) do
-    text = Faker.Lorem.sentence(10)
-
-    %{
-      meta: @default_article_meta |> Map.merge(%{thread: "JOB"}),
-      title: "job-#{String.slice(text, 1, 49)}",
-      company: Faker.Company.name(),
-      body: mock_rich_text(text),
-      desc: "活少, 美女多",
-      digest: String.slice(text, 1, 150),
-      length: String.length(text),
-      author: mock(:author),
-      views: Enum.random(0..2000),
-      original_community: mock(:community),
-      communities: [
-        mock(:community)
-      ],
-      emotions: @default_emotions,
-      active_at: Timex.shift(Timex.now(), seconds: +1),
-      pending: 0
-    }
-  end
-
   defp mock_meta(:blog) do
     text = Faker.Lorem.sentence(10)
 
     %{
       meta: @default_article_meta |> Map.merge(%{thread: "BLOG"}),
-      title: "是时候介绍这几个全新的CSS颜色函数了",
+      title: "任意两个点的曲线连接JS算法",
       rss: mock_rss_addr(),
       body: mock_rich_text(text),
       # digest: String.slice(text, 1, 150),

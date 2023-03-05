@@ -9,12 +9,11 @@ defmodule GroupherServer.Test.Query.Accounts.UpvotedArticles do
   setup do
     {:ok, user} = db_insert(:user)
     {:ok, posts} = db_insert_multi(:post, @total_count)
-    {:ok, jobs} = db_insert_multi(:job, @total_count)
 
     guest_conn = simu_conn(:guest)
     user_conn = simu_conn(:user, user)
 
-    {:ok, ~m(guest_conn user_conn user posts jobs)a}
+    {:ok, ~m(guest_conn user_conn user posts)a}
   end
 
   describe "[accounts upvoted posts]" do
@@ -52,15 +51,11 @@ defmodule GroupherServer.Test.Query.Accounts.UpvotedArticles do
     end
 
     test "if no thread filter will get alll paged upvoteded articles",
-         ~m(guest_conn posts jobs)a do
+         ~m(guest_conn posts)a do
       {:ok, user} = db_insert(:user)
 
       Enum.each(posts, fn post ->
         {:ok, _} = CMS.upvote_article(:post, post.id, user)
-      end)
-
-      Enum.each(jobs, fn job ->
-        {:ok, _} = CMS.upvote_article(:job, job.id, user)
       end)
 
       variables = %{
@@ -70,7 +65,7 @@ defmodule GroupherServer.Test.Query.Accounts.UpvotedArticles do
 
       results = guest_conn |> query_result(@query, variables, "pagedUpvotedArticles")
 
-      assert results["totalCount"] == @total_count + @total_count
+      assert results["totalCount"] == @total_count
     end
   end
 end

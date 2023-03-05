@@ -110,10 +110,6 @@ defmodule GroupherServer.CMS.Delegate.Seeds do
     end)
   end
 
-  defp get_tag_ids(tags, :job) do
-    tags.entries |> Enum.map(& &1.id) |> Enum.shuffle() |> Enum.take(3)
-  end
-
   defp get_tag_ids(tags, _) do
     tags.entries |> Enum.map(& &1.id) |> Enum.shuffle() |> Enum.take(1)
   end

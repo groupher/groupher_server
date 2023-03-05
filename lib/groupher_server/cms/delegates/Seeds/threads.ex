@@ -17,11 +17,6 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Threads do
         index: 3
       },
       %{
-        title: "工作",
-        raw: "job",
-        index: 4
-      },
-      %{
         title: "CPer",
         raw: "cper",
         index: 5
@@ -45,11 +40,6 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Threads do
         title: "账户",
         raw: "account",
         index: 2
-      },
-      %{
-        title: "工作",
-        raw: "job",
-        index: 3
       },
       %{
         title: "雷达",
@@ -170,11 +160,6 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Threads do
         index: 6
       },
       %{
-        title: "工作",
-        raw: "job",
-        index: 7
-      },
-      %{
         title: "分布",
         raw: "map",
         index: 8
@@ -198,11 +183,6 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Threads do
         title: "团队",
         raw: "team",
         index: 2
-      },
-      %{
-        title: "工作",
-        raw: "job",
-        index: 3
       }
     ]
   end
