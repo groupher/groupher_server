@@ -50,7 +50,6 @@ defmodule GroupherServerWeb.Test.Controller.OG do
     assert Map.has_key?(image, "url")
   end
 
-  @tag :wip
   test "return empty valid structure when url not follow open-graph" do
     conn = build_conn()
 

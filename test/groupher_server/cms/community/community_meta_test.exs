@@ -76,7 +76,6 @@ defmodule GroupherServer.Test.Community.CommunityMeta do
       assert community2.meta.repos_count == 1
     end
 
-    @tag :wip
     test "create a multi article should inc repos_count in meta",
          ~m(user community community2)a do
       post_attrs = mock_attrs(:post)
