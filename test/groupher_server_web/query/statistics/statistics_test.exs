@@ -65,7 +65,6 @@ defmodule GroupherServer.Test.Query.Statistics do
       countStatus {
         communitiesCount
         postsCount
-        jobsCount
         meetupsCount
         categoriesCount
         articleTagsCount

@@ -44,38 +44,35 @@ defmodule GroupherServer.Test.Query.CMS.ArticleTags do
          ~m(guest_conn community article_tag_attrs article_tag_attrs2 user)a do
       variables = %{}
       {:ok, _article_tag} = CMS.create_article_tag(community, :post, article_tag_attrs, user)
-      {:ok, _article_tag} = CMS.create_article_tag(community, :job, article_tag_attrs2, user)
       {:ok, _article_tag} = CMS.create_article_tag(community, :repo, article_tag_attrs2, user)
 
       results = guest_conn |> query_result(@query, variables, "pagedArticleTags")
 
       assert results |> is_valid_pagination?
-      assert results["totalCount"] == 3
+      assert results["totalCount"] == 2
     end
 
     test "guest user can get all paged tags belongs to a community",
          ~m(guest_conn community article_tag_attrs article_tag_attrs2 user)a do
       {:ok, _article_tag} = CMS.create_article_tag(community, :post, article_tag_attrs, user)
-      {:ok, _article_tag} = CMS.create_article_tag(community, :job, article_tag_attrs2, user)
       {:ok, _article_tag} = CMS.create_article_tag(community, :repo, article_tag_attrs2, user)
 
       variables = %{filter: %{communityId: community.id}}
       results = guest_conn |> query_result(@query, variables, "pagedArticleTags")
 
       assert results |> is_valid_pagination?
-      assert results["totalCount"] == 3
+      assert results["totalCount"] == 2
 
       variables = %{filter: %{communityRaw: community.raw}}
       results = guest_conn |> query_result(@query, variables, "pagedArticleTags")
 
       assert results |> is_valid_pagination?
-      assert results["totalCount"] == 3
+      assert results["totalCount"] == 2
     end
 
     test "guest user can get tags by communityId and thread",
          ~m(guest_conn community community2 article_tag_attrs article_tag_attrs2 user)a do
       {:ok, article_tag} = CMS.create_article_tag(community, :post, article_tag_attrs, user)
-      {:ok, _article_tag2} = CMS.create_article_tag(community2, :job, article_tag_attrs2, user)
       {:ok, _article_tag2} = CMS.create_article_tag(community2, :repo, article_tag_attrs2, user)
 
       variables = %{filter: %{communityId: community.id, thread: "POST"}}

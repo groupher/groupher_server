@@ -521,7 +521,7 @@ defmodule GroupherServer.CMS.Delegate.CommentCURD do
   """
   def do_create_comment(body, foreign_key, article, %User{id: user_id}) do
     with {:ok, %{body: body, body_html: body_html}} <- Converter.Article.parse_body(body) do
-      # e.g: :post_id -> "POST", :job_id -> "JOB"
+      # e.g: :post_id -> "POST", :xxx_id -> "XXX"
       thread = foreign_key |> to_string |> String.slice(0..-4) |> String.upcase()
 
       attrs = %{

@@ -14,11 +14,10 @@ defmodule GroupherServer.Test.Seeds.CommunitySeed do
 
       assert community.title == "CoderPlanets"
       assert community.raw == "home"
-      assert found.threads |> length == 5
+      assert found.threads |> length == 4
 
       threads = found.threads |> Enum.map(& &1.thread.title)
-      assert threads == ["帖子", "雷达", "博客", "工作", "CPer"]
-      # IO.inspect(found, label: "found --> ")
+      assert threads == ["帖子", "雷达", "博客", "CPer"]
     end
 
     # test "blackhole community" do
@@ -87,7 +86,7 @@ defmodule GroupherServer.Test.Seeds.CommunitySeed do
       # assert communities.total_count == 9
       radom_community = communities.entries |> Enum.random()
       {:ok, found} = ORM.find(Community, radom_community.id, preload: [threads: :thread])
-      assert length(found.threads) == 6
+      assert length(found.threads) == 5
 
       # filter = %{community_id: radom_community.id, thread: "POST"}
       # {:ok, tags} = CMS.paged_article_tags(filter)
@@ -112,7 +111,7 @@ defmodule GroupherServer.Test.Seeds.CommunitySeed do
       assert community.raw == "react"
 
       threads = found.threads |> Enum.map(& &1.thread.title)
-      assert threads == ["帖子", "雷达", "博客", "作品", "工作", "分布"]
+      assert threads == ["帖子", "雷达", "博客", "作品", "分布"]
     end
   end
 end

@@ -27,7 +27,7 @@ defmodule GroupherServer.Accounts.Model.CollectFolder do
     field(:last_updated, :utc_datetime)
 
     # 可以参照 fragment 查询语法啊
-    # 2. article truple [{:post, 1}, [:job, 2]] ... 便于在计算 "成就" 的时候对比
+    # 2. article truple [{:post, 1}, [:xxx, 2]] ... 便于在计算 "成就" 的时候对比
     embeds_one(:meta, Embeds.CollectFolderMeta, on_replace: :delete)
     embeds_many(:collects, ArticleCollect, on_replace: :delete)
 

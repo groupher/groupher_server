@@ -17,9 +17,7 @@ defmodule GroupherServer.Test.Accounts.CollectFolder do
     {:ok, post} = db_insert(:post)
     {:ok, post2} = db_insert(:post)
 
-    {:ok, job} = db_insert(:job)
-
-    {:ok, ~m(user user2 post post2 job)a}
+    {:ok, ~m(user user2 post post2)a}
   end
 
   describe "[collect folder curd]" do
@@ -216,68 +214,51 @@ defmodule GroupherServer.Test.Accounts.CollectFolder do
       assert result.total_count == 0
     end
 
-    test "add post to exsit colect-folder should update meta", ~m(user post post2 job)a do
+    test "add post to exsit colect-folder should update meta", ~m(user post post2)a do
       {:ok, folder} = Accounts.create_collect_folder(%{title: "test folder"}, user)
 
       {:ok, _folder} = Accounts.add_to_collect(:post, post.id, folder.id, user)
       {:ok, _folder} = Accounts.add_to_collect(:post, post2.id, folder.id, user)
-      {:ok, _folder} = Accounts.add_to_collect(:job, job.id, folder.id, user)
 
       {:ok, folder} = Accounts.remove_from_collect(:post, post.id, folder.id, user)
 
       assert folder.meta.has_post
-      assert folder.meta.has_job
 
       assert folder.meta.post_count == 1
-      assert folder.meta.job_count == 1
     end
 
-    test "remove post to exsit colect-folder should update meta", ~m(user post post2 job)a do
+    test "remove post to exsit colect-folder should update meta", ~m(user post post2)a do
       {:ok, folder} = Accounts.create_collect_folder(%{title: "test folder"}, user)
       {:ok, _folder} = Accounts.add_to_collect(:post, post.id, folder.id, user)
       {:ok, _folder} = Accounts.add_to_collect(:post, post2.id, folder.id, user)
-      {:ok, _folder} = Accounts.add_to_collect(:job, job.id, folder.id, user)
 
       {:ok, folder} = Accounts.remove_from_collect(:post, post.id, folder.id, user)
       assert folder.meta.has_post
-      assert folder.meta.has_job
 
       {:ok, folder} = Accounts.remove_from_collect(:post, post2.id, folder.id, user)
 
       assert not folder.meta.has_post
-      assert folder.meta.has_job
-
-      {:ok, folder} = Accounts.remove_from_collect(:job, job.id, folder.id, user)
-
-      assert not folder.meta.has_post
-      assert not folder.meta.has_job
     end
 
-    test "can get articles of a collect folder", ~m(user post job)a do
+    test "can get articles of a collect folder", ~m(user post)a do
       {:ok, folder} = Accounts.create_collect_folder(%{title: "test folder"}, user)
       {:ok, _folder} = Accounts.add_to_collect(:post, post.id, folder.id, user)
-      {:ok, _folder} = Accounts.add_to_collect(:job, job.id, folder.id, user)
 
       {:ok, result} =
         Accounts.paged_collect_folder_articles(folder.id, %{page: 1, size: 10}, user)
 
       assert result |> is_valid_pagination?(:raw)
 
-      collect_job = result.entries |> List.first()
       collect_post = result.entries |> List.last()
-
-      assert collect_job.id == job.id
-      assert collect_job.title == job.title
 
       assert collect_post.id == post.id
       assert collect_post.title == post.title
     end
 
     test "can not get articles of a private collect folder if not owner",
-         ~m(user user2 post job)a do
+         ~m(user user2 post)a do
       {:ok, folder} = Accounts.create_collect_folder(%{title: "test folder", private: true}, user)
       {:ok, _folder} = Accounts.add_to_collect(:post, post.id, folder.id, user)
-      {:ok, _folder} = Accounts.add_to_collect(:job, job.id, folder.id, user)
 
       {:ok, result} =
         Accounts.paged_collect_folder_articles(folder.id, %{page: 1, size: 10}, user)

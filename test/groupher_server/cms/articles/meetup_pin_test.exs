@@ -46,7 +46,7 @@ defmodule GroupherServer.Test.CMS.Artilces.MeetupPin do
     test "can undo pin to a meetup", ~m(community meetup)a do
       {:ok, _} = CMS.pin_article(:meetup, meetup.id, community.id)
 
-      assert {:ok, unpinned} = CMS.undo_pin_article(:meetup, meetup.id, community.id)
+      assert {:ok, _unpinned} = CMS.undo_pin_article(:meetup, meetup.id, community.id)
 
       assert {:error, _} = ORM.find_by(PinnedArticle, %{meetup_id: meetup.id})
     end

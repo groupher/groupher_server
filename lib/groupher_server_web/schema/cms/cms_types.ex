@@ -70,19 +70,6 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
     timestamp_fields(:article)
   end
 
-  object :job do
-    interface(:article)
-
-    general_article_fields()
-    comments_fields()
-
-    field(:desc, :string)
-    field(:company, :string)
-    field(:company_link, :string)
-
-    timestamp_fields(:article)
-  end
-
   object :blog do
     interface(:article)
 

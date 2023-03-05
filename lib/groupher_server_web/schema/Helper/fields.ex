@@ -55,7 +55,7 @@ defmodule GroupherServerWeb.Schema.Helper.Fields do
   e.g:
 
   enum :post_thread, do: value(:post)
-  enum :job_thread, do: value(:job)
+  enum :xxx_thread, do: value(:xxx)
   # ..
   """
   defmacro article_thread_enums do
@@ -73,7 +73,6 @@ defmodule GroupherServerWeb.Schema.Helper.Fields do
   e.g:
 
   value(:post)
-  value(:job)
   # ...
   """
   defmacro article_values do
