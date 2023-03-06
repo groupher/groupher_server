@@ -69,7 +69,7 @@ defmodule GroupherServer.Test.Seeds.CommunitySeed do
     #   {:ok, tags} = CMS.paged_article_tags(filter)
     #   tags_titles = tags |> Enum.map(& &1.title)
 
-    #   assert tags_titles == ["打听", "讨论", "下班后", "推荐", "二手", "小聚", "吐槽", "求/转/合租", "奇奇怪怪"]
+    #   assert tags_titles == ["打听", "讨论", "下班后", "推荐", "二手", "吐槽", "求/转/合租", "奇奇怪怪"]
 
     #   assert community.title == "成都"
     #   assert community.raw == "chengdu"
@@ -91,7 +91,7 @@ defmodule GroupherServer.Test.Seeds.CommunitySeed do
       # filter = %{community_id: radom_community.id, thread: "POST"}
       # {:ok, tags} = CMS.paged_article_tags(filter)
       # tags_titles = tags |> Enum.map(& &1.title)
-      # assert tags_titles == ["求助", "讨论", "推荐", "小聚", "其他"]
+      # assert tags_titles == ["求助", "讨论", "推荐", "其他"]
 
       # threads = found.threads |> Enum.map(& &1.thread.title)
       # assert threads == ["帖子", "博客", "101", "awesome", "作品", "分布", "设置"]
@@ -105,7 +105,7 @@ defmodule GroupherServer.Test.Seeds.CommunitySeed do
       {:ok, tags} = CMS.paged_article_tags(filter)
       tags_titles = tags |> Enum.map(& &1.title)
 
-      assert tags_titles == ["求助", "分享推荐", "讨论", "学习资源", "小聚", "杂谈", "社区事务"]
+      assert tags_titles == ["求助", "分享推荐", "讨论", "学习资源", "杂谈", "社区事务"]
 
       assert community.title == "react"
       assert community.raw == "react"
