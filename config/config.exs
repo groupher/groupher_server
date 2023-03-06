@@ -113,8 +113,7 @@ config :groupher_server, :article,
     default: [weeks: -1],
     meetups: [months: -1],
     drink: [years: -99],
-    repo: [years: -99],
-    guide: [years: -99]
+    repo: [years: -99]
   }
 
 config :groupher_server, GroupherServerWeb.Gettext, default_locale: "zh_CN", locales: ~w(en zh_CN)

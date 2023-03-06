@@ -186,14 +186,6 @@ defmodule GroupherServerWeb.Schema.CMS.Metrics do
     field(:sort, :sort_enum)
   end
 
-  @desc "job_filter doc"
-  input_object :paged_jobs_filter do
-    @desc "limit of records (default 20), if first > 30, only return 30 at most"
-    pagination_args()
-    article_filter_fields()
-    field(:sort, :sort_enum)
-  end
-
   @desc "blog_filter doc"
   input_object :paged_blogs_filter do
     pagination_args()
@@ -203,13 +195,6 @@ defmodule GroupherServerWeb.Schema.CMS.Metrics do
 
   @desc "works_filter doc"
   input_object :paged_works_filter do
-    pagination_args()
-    article_filter_fields()
-    field(:sort, :sort_enum)
-  end
-
-  @desc "guide_filter doc"
-  input_object :paged_guides_filter do
     pagination_args()
     article_filter_fields()
     field(:sort, :sort_enum)

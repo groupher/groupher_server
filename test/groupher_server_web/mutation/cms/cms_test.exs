@@ -582,7 +582,6 @@ defmodule GroupherServer.Test.Mutation.CMS.Basic do
       }
     }
     """
-    @tag :wip
     test "login user can unsubscribe community", ~m(user community)a do
       {:ok, cur_subscribers} =
         CMS.community_members(:subscribers, %Community{id: community.id}, %{page: 1, size: 10})
