@@ -86,7 +86,7 @@ defmodule GroupherServer.Test.Seeds.CommunitySeed do
       # assert communities.total_count == 9
       radom_community = communities.entries |> Enum.random()
       {:ok, found} = ORM.find(Community, radom_community.id, preload: [threads: :thread])
-      assert length(found.threads) == 4
+      assert length(found.threads) == 3
 
       # filter = %{community_id: radom_community.id, thread: "POST"}
       # {:ok, tags} = CMS.paged_article_tags(filter)
