@@ -20,7 +20,6 @@ defmodule GroupherServerWeb.Schema.Statistics.Types do
     field(:posts_count, :integer)
     field(:works_count, :integer)
     field(:blogs_count, :integer)
-    field(:drinks_count, :integer)
 
     field(:categories_count, :integer)
     field(:article_tags_count, :integer)

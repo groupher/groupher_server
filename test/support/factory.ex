@@ -225,27 +225,6 @@ defmodule GroupherServer.Support.Factory do
     }
   end
 
-  defp mock_meta(:drink) do
-    text = Faker.Lorem.sentence(20)
-
-    %{
-      meta: @default_article_meta |> Map.merge(%{thread: "DRINK"}),
-      title: String.slice(text, 1, 49),
-      body: mock_rich_text(text),
-      digest: String.slice(text, 1, 150),
-      # length: String.length(text),
-      author: mock(:author),
-      views: Enum.random(0..2000),
-      original_community: mock(:community),
-      communities: [
-        mock(:community)
-      ],
-      emotions: @default_emotions,
-      active_at: Timex.shift(Timex.now(), seconds: +1),
-      pending: 0
-    }
-  end
-
   defp mock_meta(:comment) do
     %{body: mock_rich_text(), author: mock(:user)}
   end

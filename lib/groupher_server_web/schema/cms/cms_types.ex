@@ -102,15 +102,6 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
     timestamp_fields(:article)
   end
 
-  object :drink do
-    interface(:article)
-
-    general_article_fields()
-    comments_fields()
-
-    timestamp_fields(:article)
-  end
-
   object :repo do
     interface(:article)
 
