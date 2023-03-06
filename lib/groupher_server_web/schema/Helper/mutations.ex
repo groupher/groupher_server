@@ -12,14 +12,14 @@ defmodule GroupherServerWeb.Schema.Helper.Mutations do
     article_react_mutations(:post, [:upvote, :pin, :mark_delete, :delete, :emotion, :report, :sink, :lock_comment])
 
   it will expand as
-    article_upvote_mutation(:radar)
-    article_pin_mutation(:radar)
-    article_mark_delete_mutation(:radar)
-    article_delete_mutation(:radar)
-    article_emotion_mutation(:radar)
-    article_report_mutation(:radar)
-    article_sink_mutation(:radar)
-    article_lock_comment_mutation(:radar)
+    article_upvote_mutation(:thread)
+    article_pin_mutation(:thread)
+    article_mark_delete_mutation(:thread)
+    article_delete_mutation(:thread)
+    article_emotion_mutation(:thread)
+    article_report_mutation(:thread)
+    article_sink_mutation(:thread)
+    article_lock_comment_mutation(:thread)
 
   same for the job/repo .. article thread
   """

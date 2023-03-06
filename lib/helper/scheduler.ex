@@ -37,7 +37,6 @@ defmodule Helper.Scheduler do
   def articles_audition() do
     audit_articles(:post)
     audit_articles(:works)
-    audit_articles(:radar)
     audit_articles(:blog)
   end
 

@@ -102,17 +102,6 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
     timestamp_fields(:article)
   end
 
-  object :radar do
-    interface(:article)
-
-    general_article_fields()
-    comments_fields()
-
-    field(:link_addr, :string)
-
-    timestamp_fields(:article)
-  end
-
   object :guide do
     interface(:article)
 

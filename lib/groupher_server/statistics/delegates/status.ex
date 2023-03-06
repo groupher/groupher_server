@@ -14,7 +14,6 @@ defmodule GroupherServer.Statistics.Delegate.Status do
     Meetup,
     Drink,
     Blog,
-    Radar,
     Works,
     Drink,
     Community,
@@ -44,7 +43,6 @@ defmodule GroupherServer.Statistics.Delegate.Status do
     {:ok, %{total_count: works_count}} = find_total_count(Works)
     {:ok, %{total_count: meetups_count}} = find_total_count(Meetup)
     {:ok, %{total_count: guides_count}} = find_total_count(Guide)
-    {:ok, %{total_count: radars_count}} = find_total_count(Radar)
     {:ok, %{total_count: drinks_count}} = find_total_count(Drink)
 
     {:ok, %{total_count: threads_count}} = find_total_count(Thread)
@@ -52,7 +50,7 @@ defmodule GroupherServer.Statistics.Delegate.Status do
     {:ok, %{total_count: categories_count}} = find_total_count(Category)
 
     {:ok,
-     ~m(communities_count posts_count works_count meetups_count guides_count radars_count blogs_count drinks_count threads_count article_tags_count categories_count)a}
+     ~m(communities_count posts_count works_count meetups_count guides_count blogs_count drinks_count threads_count article_tags_count categories_count)a}
   end
 
   defp find_total_count(queryable), do: ORM.find_all(queryable, @count_filter)

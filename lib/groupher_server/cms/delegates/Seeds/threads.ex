@@ -7,11 +7,6 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Threads do
         index: 1
       },
       %{
-        title: "雷达",
-        raw: "radar",
-        index: 2
-      },
-      %{
         title: "博客",
         raw: "blog",
         index: 3
@@ -40,11 +35,6 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Threads do
         title: "账户",
         raw: "account",
         index: 2
-      },
-      %{
-        title: "雷达",
-        raw: "radar",
-        index: 4
       },
       %{
         title: "博客",
@@ -133,11 +123,6 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Threads do
         title: "帖子",
         raw: "post",
         index: 1
-      },
-      %{
-        title: "雷达",
-        raw: "radar",
-        index: 2
       },
       %{
         title: "博客",

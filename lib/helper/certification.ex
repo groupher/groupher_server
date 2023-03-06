@@ -136,11 +136,8 @@ end
 # middleware(M.Passport, claim: "cms->c?->posts.articles.edit")
 # middleware(M.Passport, claim: "cms->c?->job.articles.edit")
 # ....全部显示声明....
-# middleware(M.Passport, claim: "cms->c?->radar.articles.edit")
-
 # 可以给某个社区的某个版块添加/删除管理员, 实际上就是在给其他成员分配上面的权限,同时该用户会被添加到相应的管理员中
 # middleware(M.Passport, claim: "cms->c?->posts.managers.add")
-# middleware(M.Passport, claim: "cms->c?->jobs.managers.add")
 
 # 可以给社区的版块设置审核后发布
 # middleware(M.Passport, claim: "cms->c?->settings.posts.needReview")

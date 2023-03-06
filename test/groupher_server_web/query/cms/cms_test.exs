@@ -183,6 +183,7 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
       }
     }
     """
+    @tag :wip
     test "user can get viewer has subscribed state", ~m(user)a do
       {:ok, communities} = db_insert_multi(:community, 5)
       {:ok, _record} = CMS.subscribe_community(communities |> List.first(), user)
