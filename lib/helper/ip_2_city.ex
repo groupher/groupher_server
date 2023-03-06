@@ -4,6 +4,7 @@ defmodule Helper.IP2City do
   refer: https://lbs.amap.com/api/webservice/guide/api/ipconfig/?sug_index=0
   """
   use Tesla, only: [:get]
+
   import Helper.Utils, only: [get_config: 2]
 
   @endpoint "https://restapi.amap.com/v3/ip"
@@ -40,7 +41,7 @@ defmodule Helper.IP2City do
         {:ok, %Tesla.Env{status: 200, body: %{"city" => city}}} ->
           handle_result({:ok, city})
 
-        error ->
+        _error ->
           {:error, "error"}
       end
     else

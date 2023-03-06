@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :groupher_server, GroupherServerWeb.Endpoint,
   http: [port: 4001],

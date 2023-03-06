@@ -1,9 +1,9 @@
 # This file is responsible for configuring your application
-# and its dependencies with the aid of the Mix.Config module.
+# and its dependencies with the aid of the Config module.
 #
 # This configuration file is loaded before any dependency and
 # is restricted to this project.
-use Mix.Config
+import Config
 
 # General application configuration
 config :groupher_server, ecto_repos: [GroupherServer.Repo]
@@ -182,8 +182,8 @@ config :rihanna,
   jobs_table_name: "background_jobs",
   producer_postgres_connection: {Ecto, GroupherServer.Repo}
 
-import_config "#{Mix.env()}.exs"
+import_config "#{config_env()}.exs"
 
-if File.exists?("config/#{Mix.env()}.secret.exs") do
-  import_config "#{Mix.env()}.secret.exs"
+if File.exists?("config/#{config_env()}.secret.exs") do
+  import_config "#{config_env()}.secret.exs"
 end
