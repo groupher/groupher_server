@@ -306,10 +306,6 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Tags do
         raw: "trade"
       },
       %{
-        title: "小聚",
-        raw: "meetup"
-      },
-      %{
         title: "吐槽",
         raw: "WTF"
       },
@@ -351,11 +347,6 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Tags do
         title: "学习资源",
         raw: "tuts",
         group: "技术与工程"
-      },
-      %{
-        title: "小聚",
-        raw: "meetup",
-        group: "其他"
       },
       %{
         title: "杂谈",
@@ -511,11 +502,6 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Tags do
       %{
         title: "打招呼",
         raw: "say-hey",
-        group: "讨论"
-      },
-      %{
-        title: "小聚",
-        raw: "meetup",
         group: "讨论"
       },
       %{

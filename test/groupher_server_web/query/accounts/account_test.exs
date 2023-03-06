@@ -28,7 +28,6 @@ defmodule GroupherServer.Test.Query.Account.Basic do
           publishedPostsCount
           publishedBlogsCount
           publishedWorksCount
-          publishedMeetupsCount
         }
         views
         cmsPassport

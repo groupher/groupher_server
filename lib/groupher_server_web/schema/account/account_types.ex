@@ -23,7 +23,6 @@ defmodule GroupherServerWeb.Schema.Account.Types do
     field(:published_posts_count, :integer)
     field(:published_blogs_count, :integer)
     field(:published_works_count, :integer)
-    field(:published_meetups_count, :integer)
 
     # aduit
     field(:has_illegal_articles, :boolean)

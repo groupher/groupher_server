@@ -16,9 +16,6 @@ alias Seeds.Prod.Turning
 # {:ok, community} = ORM.find_by(Community, %{raw: "home"})
 # {:ok, user} = ORM.find_by(User, %{login: "hello you"})
 
-# post_attrs = mock_attrs(:meetup, %{community_id: community.id})
-
-# {:ok, _meetup} = CMS.create_article(community, :post, post_attrs, user)
 {:ok, _} = CMS.move_article(:post, 242, 105)
 
 # ---

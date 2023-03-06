@@ -200,13 +200,6 @@ defmodule GroupherServerWeb.Schema.CMS.Metrics do
     field(:sort, :sort_enum)
   end
 
-  @desc "meetup_filter doc"
-  input_object :paged_meetups_filter do
-    pagination_args()
-    article_filter_fields()
-    field(:sort, :sort_enum)
-  end
-
   @desc "drink_filter doc"
   input_object :paged_drinks_filter do
     pagination_args()
