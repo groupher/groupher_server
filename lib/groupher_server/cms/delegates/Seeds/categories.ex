@@ -40,11 +40,6 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Categories do
         index: 6
       },
       %{
-        title: "作品",
-        raw: "works",
-        index: 7
-      },
-      %{
         # blackhole, Feedback, dev
         title: "站务",
         raw: "feedback",

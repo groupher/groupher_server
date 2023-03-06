@@ -15,7 +15,6 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Tags do
   def get(_, :setting, _), do: []
   def get(_, :team, _), do: []
   def get(_, :kanban, _), do: []
-  def get(_, :works, _), do: []
   def get(_, :interview, _), do: []
 
   ## 首页 start
@@ -431,9 +430,6 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Tags do
 
   def get(_, :awesome, :pl), do: []
   def get(_, :awesome, :framework), do: []
-
-  def get(_, :works, :pl), do: []
-  def get(_, :works, :framework), do: []
 
   ## 语言与框架 end
 

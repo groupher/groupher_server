@@ -94,7 +94,7 @@ defmodule GroupherServer.Test.Seeds.CommunitySeed do
       # assert tags_titles == ["求助", "讨论", "推荐", "其他"]
 
       # threads = found.threads |> Enum.map(& &1.thread.title)
-      # assert threads == ["帖子", "博客", "101", "awesome", "作品", "分布", "设置"]
+      # assert threads == ["帖子", "博客", "101", "awesome",  "分布", "设置"]
     end
 
     test "can seed a general framework community" do
@@ -111,7 +111,7 @@ defmodule GroupherServer.Test.Seeds.CommunitySeed do
       assert community.raw == "react"
 
       threads = found.threads |> Enum.map(& &1.thread.title)
-      assert threads == ["帖子", "博客", "作品", "分布"]
+      assert threads == ["帖子", "博客", "分布"]
     end
   end
 end

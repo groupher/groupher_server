@@ -193,13 +193,6 @@ defmodule GroupherServerWeb.Schema.CMS.Metrics do
     field(:sort, :sort_enum)
   end
 
-  @desc "works_filter doc"
-  input_object :paged_works_filter do
-    pagination_args()
-    article_filter_fields()
-    field(:sort, :sort_enum)
-  end
-
   @desc "article_filter doc"
   input_object :paged_repos_filter do
     @desc "limit of records (default 20), if first > 30, only return 30 at most"
@@ -271,38 +264,6 @@ defmodule GroupherServerWeb.Schema.CMS.Metrics do
     field(:content_type, :report_content_type)
     field(:content_id, :id)
     pagination_args()
-  end
-
-  # works-spec
-  enum :profit_mode do
-    value(:ad)
-    value(:freemium)
-    value(:free)
-    value(:product)
-    value(:others)
-  end
-
-  enum :working_mode do
-    value(:fulltime)
-    value(:side_project)
-  end
-
-  object :city do
-    field(:title, :string)
-    field(:logo, :string)
-    field(:desc, :string)
-    field(:raw, :string)
-  end
-
-  object :techstack do
-    field(:title, :string)
-    field(:logo, :string)
-    field(:desc, :string)
-    field(:raw, :string)
-
-    field(:home_link, :string)
-    field(:community_link, :string)
-    field(:category, :string)
   end
 
   object :social do

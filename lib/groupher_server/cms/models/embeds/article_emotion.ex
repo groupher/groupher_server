@@ -30,7 +30,7 @@ end
 
 defmodule GroupherServer.CMS.Model.Embeds.ArticleEmotion do
   @moduledoc """
-  general article meta info for article-like content, like post, job, works ...
+  general article meta info for article-like content, like post, blog...
   """
   use Ecto.Schema
   use Accessible

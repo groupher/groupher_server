@@ -58,7 +58,6 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Prod.Turning do
       %{title: "数据库", raw: "db"},
       %{title: "人工智能", raw: "ai"},
       %{title: "区块链", raw: "blockchain"},
-      %{title: "作品 & 团队", raw: "works"},
       %{title: "城市", raw: "city"},
       %{title: "DevOps", raw: "devops"},
       %{title: "工具箱", raw: "toolbox"},

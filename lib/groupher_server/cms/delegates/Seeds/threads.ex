@@ -40,11 +40,6 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Threads do
         title: "博客",
         raw: "blog",
         index: 5
-      },
-      %{
-        title: "作品",
-        raw: "works",
-        index: 6
       }
     ]
   end
@@ -75,11 +70,6 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Threads do
         title: "帖子",
         raw: "post",
         index: 1
-      },
-      %{
-        title: "作品",
-        raw: "works",
-        index: 2
       },
       %{
         title: "访谈",
@@ -139,11 +129,6 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Threads do
       #   raw: "awesome",
       #   index: 5
       # },
-      %{
-        title: "作品",
-        raw: "works",
-        index: 6
-      },
       %{
         title: "分布",
         raw: "map",

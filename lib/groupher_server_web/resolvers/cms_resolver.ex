@@ -102,14 +102,6 @@ defmodule GroupherServerWeb.Resolvers.CMS do
     CMS.create_blog(%Community{id: community_id}, args, user)
   end
 
-  def create_works(_root, args, %{context: %{cur_user: user}}) do
-    CMS.create_works(args, user)
-  end
-
-  def update_works(_root, %{passport_source: works} = args, _info) do
-    CMS.update_works(works, args)
-  end
-
   def create_article(_root, ~m(community_id thread)a = args, %{context: %{cur_user: user}}) do
     CMS.create_article(%Community{id: community_id}, thread, args, user)
   end

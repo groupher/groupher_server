@@ -11,7 +11,6 @@ defmodule GroupherServer.CMS do
     AbuseReport,
     ArticleCURD,
     BlogCURD,
-    WorksCURD,
     ArticleCommunity,
     ArticleEmotion,
     CitedArtiment,
@@ -128,9 +127,6 @@ defmodule GroupherServer.CMS do
   defdelegate update_blog_rss(attrs), to: BlogCURD
   defdelegate blog_rss_info(rss), to: BlogCURD
   defdelegate update_rss_author(rss, attrs), to: BlogCURD
-
-  defdelegate create_works(attrs, user), to: WorksCURD
-  defdelegate update_works(attrs, user), to: WorksCURD
 
   defdelegate paged_citing_contents(type, id, filter), to: CitedArtiment
 

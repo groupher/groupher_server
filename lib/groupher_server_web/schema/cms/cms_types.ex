@@ -81,27 +81,6 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
     timestamp_fields(:article)
   end
 
-  object :works do
-    interface(:article)
-
-    general_article_fields()
-    comments_fields()
-
-    field(:cover, :string)
-    field(:desc, :string)
-    field(:home_link, :string)
-    field(:link_addr, :string)
-    field(:profit_mode, :string)
-    field(:working_mode, :string)
-    field(:cities, list_of(:city), resolve: dataloader(CMS, :cities))
-    field(:teammates, list_of(:common_user), resolve: dataloader(CMS, :teammates))
-    field(:techstacks, list_of(:techstack), resolve: dataloader(CMS, :techstacks))
-    field(:social_info, list_of(:social))
-    field(:app_store, list_of(:app_store))
-
-    timestamp_fields(:article)
-  end
-
   object :repo do
     interface(:article)
 
