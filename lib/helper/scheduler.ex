@@ -4,7 +4,9 @@ defmodule Helper.Scheduler do
   """
   use Quantum.Scheduler, otp_app: :groupher_server
 
+  import Config
   import Helper.Utils, only: [get_config: 2, done: 1]
+
   alias GroupherServer.CMS
   alias CMS.Delegate.Hooks
   alias Helper.Plausible

@@ -5,7 +5,7 @@ defmodule GroupherServer.Test.Seeds.Articles do
   # alias GroupherServer.Accounts.Model.User
   alias GroupherServer.CMS
 
-  alias CMS.Model.{Post, Radar}
+  alias CMS.Model.Post
   # alias CMS.Delegate.SeedsConfig
 
   alias Helper.ORM

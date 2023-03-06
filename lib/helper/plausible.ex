@@ -30,7 +30,7 @@ defmodule Helper.Plausible do
     path = "#{@realtime_visitors_query}"
     # NOTICE: DO NOT use Tesla.get, otherwise the middleware will not woking
     # see https://github.com/teamon/tesla/issues/88
-    # with true <- Mix.env() !== :test do
+    # with true <- config_env() !== :test do
     with {:ok, %{body: body}} <-
            get(path, query: query, headers: [{"Authorization", "Bearer #{get_token()}"}]) do
       case is_number(body) do
