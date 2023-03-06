@@ -11,10 +11,14 @@ defmodule GroupherServer.CMS.Constant do
   @community_normal 0
   @community_applying 1
 
+  @apply_public "PUBLIC"
+
   def pending(:legal), do: @artiment_legal
   def pending(:illegal), do: @artiment_illegal
   def pending(:audit_failed), do: @artiment_audit_failed
 
   def pending(:normal), do: @community_normal
   def pending(:applying), do: @community_applying
+
+  def apply_category(:public), do: @apply_public
 end
