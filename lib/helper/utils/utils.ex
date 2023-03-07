@@ -52,7 +52,6 @@ defmodule Helper.Utils do
   @doc """
   plural version of the thread
   """
-  def plural(:works), do: :works
   def plural(thread), do: :"#{thread}s"
 
   @doc """

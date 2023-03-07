@@ -23,7 +23,6 @@ defmodule GroupherServer.Test.Query.CMS.CommunityMeta do
         articlesCount
         meta {
           postsCount
-          reposCount
         }
       }
     }
@@ -33,15 +32,13 @@ defmodule GroupherServer.Test.Query.CMS.CommunityMeta do
 
       {:ok, _post} = CMS.create_article(community, :post, mock_attrs(:post), user)
       {:ok, _post} = CMS.create_article(community, :post, mock_attrs(:post), user)
-      {:ok, _post} = CMS.create_article(community, :repo, mock_attrs(:repo), user)
 
       variables = %{raw: community.raw}
       results = guest_conn |> query_result(@query, variables, "community")
 
       meta = results["meta"]
-      assert results["articlesCount"] == 3
+      assert results["articlesCount"] == 2
       assert meta["postsCount"] == 2
-      assert meta["reposCount"] == 1
     end
   end
 end

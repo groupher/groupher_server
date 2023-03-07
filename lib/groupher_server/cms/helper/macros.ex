@@ -22,7 +22,7 @@ defmodule GroupherServer.CMS.Helper.Macros do
   数据库层面的 migration 需要手动添加，参考：
 
   add(:post_id, references(:cms_posts, on_delete: :delete_all))
-  add(:repo_id, references(:cms_repos, on_delete: :delete_all))
+  add(:xxx_id, references(:cms_xxxs, on_delete: :delete_all))
   ...
   """
   defmacro article_belongs_to_fields() do

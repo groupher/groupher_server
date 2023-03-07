@@ -27,9 +27,6 @@ defmodule GroupherServer.Test.Query.Account.Basic do
         meta {
           publishedPostsCount
           publishedBlogsCount
-          publishedWorksCount
-          publishedRadarsCount
-          publishedMeetupsCount
         }
         views
         cmsPassport

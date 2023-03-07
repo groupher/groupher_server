@@ -15,7 +15,6 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Tags do
   def get(_, :setting, _), do: []
   def get(_, :team, _), do: []
   def get(_, :kanban, _), do: []
-  def get(_, :works, _), do: []
   def get(_, :interview, _), do: []
 
   ## 首页 start
@@ -97,52 +96,6 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Tags do
     |> Enum.map(fn attr -> Map.merge(%{thread: :post, color: random_color()}, attr) end)
   end
 
-  def get(_, :radar, :home) do
-    [
-      %{
-        title: "语言 & 框架",
-        raw: "tools"
-      },
-      %{
-        title: "业界",
-        raw: "industry"
-      },
-      %{
-        title: "硬件",
-        raw: "hardware"
-      },
-      %{
-        title: "人工智能",
-        raw: "ai"
-      },
-      %{
-        title: "黑暗森林",
-        raw: "security"
-      },
-      %{
-        title: "融资 & 并购",
-        raw: "finace"
-      },
-      %{
-        title: "黑科技",
-        raw: "edge"
-      },
-      %{
-        title: "数据",
-        raw: "number"
-      },
-      %{
-        title: "言论",
-        raw: "opinion"
-      },
-      %{
-        title: "奇奇怪怪",
-        raw: "others"
-      }
-    ]
-    |> Enum.map(fn attr -> Map.merge(%{thread: :radar, color: random_color()}, attr) end)
-  end
-
   def get(_, :blog, :home) do
     [
       %{
@@ -186,7 +139,7 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Tags do
         raw: "others"
       }
     ]
-    |> Enum.map(fn attr -> Map.merge(%{thread: :radar, color: random_color()}, attr) end)
+    |> Enum.map(fn attr -> Map.merge(%{thread: :blog, color: random_color()}, attr) end)
   end
 
   ## 首页 end
@@ -352,10 +305,6 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Tags do
         raw: "trade"
       },
       %{
-        title: "小聚",
-        raw: "meetup"
-      },
-      %{
         title: "吐槽",
         raw: "WTF"
       },
@@ -368,7 +317,7 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Tags do
         raw: "others"
       }
     ]
-    |> Enum.map(fn attr -> Map.merge(%{thread: :radar, color: random_color()}, attr) end)
+    |> Enum.map(fn attr -> Map.merge(%{thread: :post, color: random_color()}, attr) end)
   end
 
   ## 城市 end
@@ -399,11 +348,6 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Tags do
         group: "技术与工程"
       },
       %{
-        title: "小聚",
-        raw: "meetup",
-        group: "其他"
-      },
-      %{
         title: "杂谈",
         raw: "others",
         group: "其他"
@@ -415,40 +359,6 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Tags do
       }
     ]
     |> Enum.map(fn attr -> Map.merge(%{thread: :post, color: random_color()}, attr) end)
-  end
-
-  def get(_, :radar, :pl), do: get(:ignore, :radar, :framework)
-  def get(_, :radar, :devops), do: get(:ignore, :radar, :framework)
-
-  def get(_, :radar, :framework) do
-    [
-      %{
-        title: "官方",
-        raw: "offical",
-        group: "资讯"
-      },
-      %{
-        title: "业界新闻",
-        raw: "news",
-        group: "资讯"
-      },
-      %{
-        title: "言论",
-        raw: "views",
-        group: "资讯"
-      },
-      %{
-        title: "框架 / 库",
-        raw: "release",
-        group: "其他"
-      },
-      %{
-        title: "有意思",
-        raw: "others",
-        group: "其他"
-      }
-    ]
-    |> Enum.map(fn attr -> Map.merge(%{thread: :radar, color: random_color()}, attr) end)
   end
 
   def get(_, :blog, :pl) do
@@ -521,9 +431,6 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Tags do
   def get(_, :awesome, :pl), do: []
   def get(_, :awesome, :framework), do: []
 
-  def get(_, :works, :pl), do: []
-  def get(_, :works, :framework), do: []
-
   ## 语言与框架 end
 
   @doc "post thread of BLACK community"
@@ -591,11 +498,6 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Tags do
       %{
         title: "打招呼",
         raw: "say-hey",
-        group: "讨论"
-      },
-      %{
-        title: "小聚",
-        raw: "meetup",
         group: "讨论"
       },
       %{

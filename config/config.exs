@@ -69,7 +69,7 @@ config :groupher_server, :article,
   min_length: 10,
   max_length: 20_000,
   # NOTE: do not change unless you know what you are doing
-  threads: [:post, :repo, :blog, :works, :radar, :guide, :meetup, :drink],
+  threads: [:post, :blog],
   # in this period, paged articles will sort front if non-article-author commented
   # 在此时间段内，一旦有非文章作者的用户评论，该文章就会排到前面
   active_period_days: %{
@@ -79,7 +79,6 @@ config :groupher_server, :article,
     # ...
   },
   # record count in article meta
-  # works use 8
   max_upvoted_users_count: 8,
 
   # NOTE: if you want to add/remove emotion, just edit the list below
@@ -109,12 +108,9 @@ config :groupher_server, :article,
   ],
   digest_length: 150,
   archive_threshold: %{
-    # for post, blog, works, radar, job
+    # for post, blog
     default: [weeks: -1],
-    meetups: [months: -1],
-    drink: [years: -99],
-    repo: [years: -99],
-    guide: [years: -99]
+    repo: [years: -99]
   }
 
 config :groupher_server, GroupherServerWeb.Gettext, default_locale: "zh_CN", locales: ~w(en zh_CN)

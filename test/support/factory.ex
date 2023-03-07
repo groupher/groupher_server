@@ -18,8 +18,6 @@ defmodule GroupherServer.Support.Factory do
     Thread,
     CommunityThread,
     ArticleTag,
-    CommunityWiki,
-    CommunityCheatsheet,
     Comment
   }
 
@@ -108,77 +106,6 @@ defmodule GroupherServer.Support.Factory do
     }
   end
 
-  defp mock_meta(:repo) do
-    desc = Faker.Lorem.sentence(10)
-
-    %{
-      meta: @default_article_meta |> Map.merge(%{thread: "REPO"}),
-      title: String.slice(desc, 1, 49),
-      owner_name: "coderplanets",
-      owner_url: "http://www.github.com/coderplanets",
-      repo_url: "http://www.github.com/coderplanets//coderplanets_server",
-      desc: desc,
-      homepage_url: "http://www.github.com/coderplanets",
-      readme: desc,
-      issues_count: Enum.random(0..2000),
-      prs_count: Enum.random(0..2000),
-      fork_count: Enum.random(0..2000),
-      star_count: Enum.random(0..2000),
-      watch_count: Enum.random(0..2000),
-      license: "MIT",
-      release_tag: "v22",
-      primary_language: %{
-        name: "javascript",
-        color: "tomato"
-      },
-      contributors: [
-        mock_meta(:repo_contributor),
-        mock_meta(:repo_contributor)
-      ],
-      author: mock(:author),
-      views: Enum.random(0..2000),
-      original_community: mock(:community),
-      communities: [
-        mock(:community),
-        mock(:community)
-      ],
-      emotions: @default_emotions,
-      active_at: Timex.shift(Timex.now(), seconds: +1),
-      pending: 0
-    }
-  end
-
-  defp mock_meta(:wiki) do
-    %{
-      community: mock(:community),
-      readme: Faker.Lorem.sentence(10),
-      last_sync: Timex.today() |> Timex.to_datetime(),
-      contributors: [
-        mock_meta(:github_contributor),
-        mock_meta(:github_contributor),
-        mock_meta(:github_contributor)
-      ]
-    }
-  end
-
-  defp mock_meta(:cheatsheet) do
-    mock_meta(:wiki)
-  end
-
-  defp mock_meta(:github_contributor) do
-    unique_num = System.unique_integer([:positive, :monotonic])
-
-    %{
-      github_id: "#{unique_num}-#{Faker.Lorem.sentence(10)}",
-      avatar: Faker.Avatar.image_url(),
-      html_url: Faker.Avatar.image_url(),
-      nickname: "mydearxym2",
-      bio: Faker.Lorem.sentence(10),
-      location: "location #{unique_num}",
-      company: Faker.Company.name()
-    }
-  end
-
   defp mock_meta(:blog) do
     text = Faker.Lorem.sentence(10)
 
@@ -189,116 +116,6 @@ defmodule GroupherServer.Support.Factory do
       body: mock_rich_text(text),
       # digest: String.slice(text, 1, 150),
       length: String.length(text),
-      author: mock(:author),
-      views: Enum.random(0..2000),
-      original_community: mock(:community),
-      communities: [
-        mock(:community)
-      ],
-      emotions: @default_emotions,
-      active_at: Timex.shift(Timex.now(), seconds: +1),
-      pending: 0
-    }
-  end
-
-  defp mock_meta(:works) do
-    text = Faker.Lorem.sentence(10)
-
-    %{
-      meta: @default_article_meta |> Map.merge(%{thread: "WORKS"}),
-      cover: "cover attrs",
-      title: "works-#{String.slice(text, 1, 49)}",
-      desc: "works desc",
-      homeLink: "https://cool-works.com",
-      body: mock_rich_text(text),
-      digest: String.slice(text, 1, 150),
-      # length: String.length(text),
-      author: mock(:author),
-      views: Enum.random(0..2000),
-      original_community: mock(:community),
-      communities: [
-        mock(:community)
-      ],
-      emotions: @default_emotions,
-      active_at: Timex.shift(Timex.now(), seconds: +1),
-      pending: 0
-    }
-  end
-
-  defp mock_meta(:radar) do
-    text = Faker.Lorem.sentence(10)
-
-    %{
-      meta: @default_article_meta |> Map.merge(%{thread: "RADAR"}),
-      title: "radar-#{String.slice(text, 1, 49)}",
-      body: mock_rich_text(text),
-      digest: String.slice(text, 1, 150),
-      link_addr: "https://#{Faker.Company.name()}.com/#{Faker.Company.name()}/post",
-      # length: String.length(text),
-      author: mock(:author),
-      views: Enum.random(0..2000),
-      original_community: mock(:community),
-      communities: [
-        mock(:community)
-      ],
-      emotions: @default_emotions,
-      active_at: Timex.shift(Timex.now(), seconds: +1),
-      pending: 0
-    }
-  end
-
-  defp mock_meta(:guide) do
-    text = Faker.Lorem.sentence(10)
-
-    %{
-      meta: @default_article_meta |> Map.merge(%{thread: "GUIDE"}),
-      title: String.slice(text, 1, 49),
-      body: mock_rich_text(text),
-      digest: String.slice(text, 1, 150),
-      # length: String.length(text),
-      author: mock(:author),
-      views: Enum.random(0..2000),
-      original_community: mock(:community),
-      communities: [
-        mock(:community)
-      ],
-      emotions: @default_emotions,
-      active_at: Timex.shift(Timex.now(), seconds: +1),
-      pending: 0
-    }
-  end
-
-  defp mock_meta(:meetup) do
-    text = Faker.Lorem.sentence(20)
-
-    %{
-      meta: @default_article_meta |> Map.merge(%{thread: "MEETUP"}),
-      title: String.slice(text, 1, 49),
-      body: mock_rich_text(text),
-      digest: String.slice(text, 1, 150),
-      link_addr: "https://#{Faker.Company.name()}.com/#{Faker.Company.name()}/post",
-      # length: String.length(text),
-      author: mock(:author),
-      views: Enum.random(0..2000),
-      original_community: mock(:community),
-      communities: [
-        mock(:community)
-      ],
-      emotions: @default_emotions,
-      active_at: Timex.shift(Timex.now(), seconds: +1),
-      pending: 0
-    }
-  end
-
-  defp mock_meta(:drink) do
-    text = Faker.Lorem.sentence(20)
-
-    %{
-      meta: @default_article_meta |> Map.merge(%{thread: "DRINK"}),
-      title: String.slice(text, 1, 49),
-      body: mock_rich_text(text),
-      digest: String.slice(text, 1, 150),
-      # length: String.length(text),
       author: mock(:author),
       views: Enum.random(0..2000),
       original_community: mock(:community),
@@ -395,14 +212,6 @@ defmodule GroupherServer.Support.Factory do
     }
   end
 
-  defp mock_meta(:repo_contributor) do
-    %{
-      avatar: Faker.Avatar.image_url(),
-      html_url: Faker.Avatar.image_url(),
-      nickname: "mydearxym2"
-    }
-  end
-
   defp mock_meta(:github_profile) do
     unique_num = System.unique_integer([:positive, :monotonic])
 
@@ -440,12 +249,6 @@ defmodule GroupherServer.Support.Factory do
   def mock_attrs(:thread, attrs), do: mock_meta(:thread) |> Map.merge(attrs)
   def mock_attrs(:mention, attrs), do: mock_meta(:mention) |> Map.merge(attrs)
 
-  def mock_attrs(:wiki, attrs), do: mock_meta(:wiki) |> Map.merge(attrs)
-  def mock_attrs(:cheatsheet, attrs), do: mock_meta(:cheatsheet) |> Map.merge(attrs)
-
-  def mock_attrs(:github_contributor, attrs),
-    do: mock_meta(:github_contributor) |> Map.merge(attrs)
-
   def mock_attrs(:communities_threads, attrs),
     do: mock_meta(:communities_threads) |> Map.merge(attrs)
 
@@ -458,8 +261,6 @@ defmodule GroupherServer.Support.Factory do
 
   # NOTICE: avoid Recursive problem
   # this line of code will cause SERIOUS Recursive problem
-  defp mock(:wiki), do: CommunityWiki |> struct(mock_meta(:wiki))
-  defp mock(:cheatsheet), do: CommunityCheatsheet |> struct(mock_meta(:cheatsheet))
   defp mock(:comment), do: Comment |> struct(mock_meta(:comment))
   defp mock(:author), do: Author |> struct(mock_meta(:author))
   defp mock(:category), do: Category |> struct(mock_meta(:category))

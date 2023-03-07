@@ -21,10 +21,7 @@ defmodule GroupherServerWeb.Schema.Account.Types do
     field(:reported_count, :integer)
     field(:is_maker, :boolean)
     field(:published_posts_count, :integer)
-    field(:published_radars_count, :integer)
     field(:published_blogs_count, :integer)
-    field(:published_works_count, :integer)
-    field(:published_meetups_count, :integer)
 
     # aduit
     field(:has_illegal_articles, :boolean)

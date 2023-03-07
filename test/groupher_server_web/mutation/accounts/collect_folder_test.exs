@@ -11,13 +11,12 @@ defmodule GroupherServer.Test.Mutation.Accounts.CollectFolder do
   setup do
     {:ok, user} = db_insert(:user)
     {:ok, post} = db_insert(:post)
-    {:ok, repo} = db_insert(:repo)
     {:ok, blog} = db_insert(:blog)
 
     user_conn = simu_conn(:user, user)
     guest_conn = simu_conn(:guest)
 
-    {:ok, ~m(user_conn guest_conn user post repo blog)a}
+    {:ok, ~m(user_conn guest_conn user post blog)a}
   end
 
   describe "[Accounts CollectFolder CURD]" do
@@ -112,10 +111,8 @@ defmodule GroupherServer.Test.Mutation.Accounts.CollectFolder do
 
         meta {
           hasPost
-          hasRepo
           hasBlog
           postCount
-          repoCount
           blogCount
         }
       }
@@ -123,10 +120,8 @@ defmodule GroupherServer.Test.Mutation.Accounts.CollectFolder do
     """
     @meta %{
       "hasPost" => false,
-      "hasRepo" => false,
       "hasBlog" => false,
       "postCount" => 0,
-      "repoCount" => 0,
       "blogCount" => 0
     }
     test "user can add a post to collect folder", ~m(user user_conn post)a do
@@ -148,27 +143,6 @@ defmodule GroupherServer.Test.Mutation.Accounts.CollectFolder do
 
       assert folder_in_article_collect.meta.has_post
       assert folder_in_article_collect.meta.post_count == 1
-    end
-
-    test "user can add a repo to collect folder", ~m(user user_conn repo)a do
-      args = %{title: "folder_title", private: false}
-      {:ok, folder} = Accounts.create_collect_folder(args, user)
-
-      variables = %{articleId: repo.id, folderId: folder.id, thread: "REPO"}
-      folder = user_conn |> mutation_result(@query, variables, "addToCollect")
-
-      assert folder["totalCount"] == 1
-      assert folder["lastUpdated"] != nil
-
-      assert folder["meta"] == @meta |> Map.merge(%{"hasRepo" => true, "repoCount" => 1})
-
-      {:ok, article_collect} =
-        ArticleCollect |> ORM.find_by(%{repo_id: repo.id, user_id: user.id})
-
-      folder_in_article_collect = article_collect.collect_folders |> List.first()
-
-      assert folder_in_article_collect.meta.has_repo
-      assert folder_in_article_collect.meta.repo_count == 1
     end
 
     test "user can add a blog to collect folder", ~m(user user_conn blog)a do
@@ -202,10 +176,8 @@ defmodule GroupherServer.Test.Mutation.Accounts.CollectFolder do
 
         meta {
           hasPost
-          hasRepo
           hasBlog
           postCount
-          repoCount
           blogCount
         }
       }
@@ -217,18 +189,6 @@ defmodule GroupherServer.Test.Mutation.Accounts.CollectFolder do
       {:ok, _folder} = Accounts.add_to_collect(:post, post.id, folder.id, user)
 
       variables = %{articleId: post.id, folderId: folder.id, thread: "POST"}
-      result = user_conn |> mutation_result(@query, variables, "removeFromCollect")
-
-      assert result["meta"] == @meta
-      assert result["totalCount"] == 0
-    end
-
-    test "user can remove a repo from collect folder", ~m(user user_conn repo)a do
-      args = %{title: "folder_title", private: false}
-      {:ok, folder} = Accounts.create_collect_folder(args, user)
-      {:ok, _folder} = Accounts.add_to_collect(:repo, repo.id, folder.id, user)
-
-      variables = %{articleId: repo.id, folderId: folder.id, thread: "REPO"}
       result = user_conn |> mutation_result(@query, variables, "removeFromCollect")
 
       assert result["meta"] == @meta

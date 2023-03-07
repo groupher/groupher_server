@@ -188,8 +188,6 @@ defmodule GroupherServer.Test.AssertHelper do
 
   # log response info if need
   # usage:
-  # user_conn |> mutation_result(@query, variables, "createRepo")
-  # user_conn |> mutation_result(@query, variables, "createRepo", :debug)
   defp log_debug_info(res, :debug), do: IO.inspect(res, label: "debug")
   defp log_debug_info(res, _), do: res
 

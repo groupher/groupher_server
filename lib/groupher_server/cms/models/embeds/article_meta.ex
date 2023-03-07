@@ -1,6 +1,6 @@
 defmodule GroupherServer.CMS.Model.Embeds.ArticleMeta do
   @moduledoc """
-  general article meta info for article-like content, like post, job, works ...
+  general article meta info for article-like content, like post ...
   """
   use Ecto.Schema
   use Accessible

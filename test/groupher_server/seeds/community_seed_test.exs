@@ -14,10 +14,10 @@ defmodule GroupherServer.Test.Seeds.CommunitySeed do
 
       assert community.title == "CoderPlanets"
       assert community.raw == "home"
-      assert found.threads |> length == 4
+      assert found.threads |> length == 3
 
       threads = found.threads |> Enum.map(& &1.thread.title)
-      assert threads == ["帖子", "雷达", "博客", "CPer"]
+      assert threads == ["帖子", "博客", "CPer"]
     end
 
     # test "blackhole community" do
@@ -69,7 +69,7 @@ defmodule GroupherServer.Test.Seeds.CommunitySeed do
     #   {:ok, tags} = CMS.paged_article_tags(filter)
     #   tags_titles = tags |> Enum.map(& &1.title)
 
-    #   assert tags_titles == ["打听", "讨论", "下班后", "推荐", "二手", "小聚", "吐槽", "求/转/合租", "奇奇怪怪"]
+    #   assert tags_titles == ["打听", "讨论", "下班后", "推荐", "二手", "吐槽", "求/转/合租", "奇奇怪怪"]
 
     #   assert community.title == "成都"
     #   assert community.raw == "chengdu"
@@ -86,15 +86,15 @@ defmodule GroupherServer.Test.Seeds.CommunitySeed do
       # assert communities.total_count == 9
       radom_community = communities.entries |> Enum.random()
       {:ok, found} = ORM.find(Community, radom_community.id, preload: [threads: :thread])
-      assert length(found.threads) == 5
+      assert length(found.threads) == 3
 
       # filter = %{community_id: radom_community.id, thread: "POST"}
       # {:ok, tags} = CMS.paged_article_tags(filter)
       # tags_titles = tags |> Enum.map(& &1.title)
-      # assert tags_titles == ["求助", "讨论", "推荐", "小聚", "其他"]
+      # assert tags_titles == ["求助", "讨论", "推荐", "其他"]
 
       # threads = found.threads |> Enum.map(& &1.thread.title)
-      # assert threads == ["帖子", "雷达", "博客", "101", "awesome", "作品", "工作", "分布", "设置"]
+      # assert threads == ["帖子", "博客", "101", "awesome",  "分布", "设置"]
     end
 
     test "can seed a general framework community" do
@@ -105,13 +105,13 @@ defmodule GroupherServer.Test.Seeds.CommunitySeed do
       {:ok, tags} = CMS.paged_article_tags(filter)
       tags_titles = tags |> Enum.map(& &1.title)
 
-      assert tags_titles == ["求助", "分享推荐", "讨论", "学习资源", "小聚", "杂谈", "社区事务"]
+      assert tags_titles == ["求助", "分享推荐", "讨论", "学习资源", "杂谈", "社区事务"]
 
       assert community.title == "react"
       assert community.raw == "react"
 
       threads = found.threads |> Enum.map(& &1.thread.title)
-      assert threads == ["帖子", "雷达", "博客", "作品", "分布"]
+      assert threads == ["帖子", "博客", "分布"]
     end
   end
 end
