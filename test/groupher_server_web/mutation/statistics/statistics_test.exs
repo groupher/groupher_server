@@ -84,63 +84,6 @@ defmodule GroupherServer.Test.Mutation.Statistics do
       assert contributes.count == 1
     end
 
-    @create_repo_query """
-    mutation(
-      $title: String!,
-      $ownerName: String!,
-      $ownerUrl: String!,
-      $repoUrl: String!,
-      $desc: String!,
-      $homepageUrl: String,
-      $readme: String!,
-      $starCount: Int!,
-      $issuesCount: Int!,
-      $prsCount: Int!,
-      $forkCount: Int!,
-      $watchCount: Int!,
-      $license: String,
-      $releaseTag: String,
-      $primaryLanguage: RepoLangInput,
-      $contributors: [RepoContributorInput],
-      $communityId: ID!,
-      $articleTags: [Ids]
-    ) {
-      createRepo(
-        title: $title,
-        ownerName: $ownerName,
-        ownerUrl: $ownerUrl,
-        repoUrl: $repoUrl,
-        desc: $desc,
-        homepageUrl: $homepageUrl,
-        readme: $readme,
-        starCount: $starCount,
-        issuesCount: $issuesCount,
-        prsCount: $prsCount,
-        forkCount: $forkCount,
-        watchCount: $watchCount,
-        primaryLanguage: $primaryLanguage,
-        license: $license,
-        releaseTag: $releaseTag,
-        contributors: $contributors,
-        communityId: $communityId,
-        articleTags: $articleTags
-      ) {
-        id
-        title
-        desc
-      }
-    }
-    """
-    test "user should have contribute list after create a repo", ~m(user_conn user community)a do
-      repo_attr = mock_attrs(:repo)
-      variables = repo_attr |> Map.merge(%{communityId: community.id}) |> camelize_map_key
-
-      user_conn |> mutation_result(@create_repo_query, variables, "createRepo")
-
-      {:ok, contributes} = ORM.find_by(UserContribute, user_id: user.id)
-      assert contributes.count == 1
-    end
-
     @write_comment_query """
     mutation($thread: Thread!, $id: ID!, $body: String!) {
       createComment(thread: $thread, id: $id, body: $body) {

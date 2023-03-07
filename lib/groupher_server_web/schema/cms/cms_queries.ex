@@ -80,18 +80,6 @@ defmodule GroupherServerWeb.Schema.CMS.Queries do
       resolve(&R.CMS.paged_threads/3)
     end
 
-    @desc "get wiki by community raw name"
-    field :wiki, non_null(:wiki) do
-      arg(:community, :string)
-      resolve(&R.CMS.wiki/3)
-    end
-
-    @desc "get cheatsheet by community raw name"
-    field :cheatsheet, non_null(:cheatsheet) do
-      arg(:community, :string)
-      resolve(&R.CMS.cheatsheet/3)
-    end
-
     @desc "get paged article tags"
     field :paged_article_tags, :paged_article_tags do
       arg(:filter, :article_tags_filter)

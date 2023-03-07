@@ -36,8 +36,6 @@ defmodule GroupherServerWeb.Schema.CMS.Metrics do
   enum :thread do
     article_values()
     value(:user)
-    value(:wiki)
-    value(:cheatsheet)
     # home community
     value(:tech)
     value(:city)
@@ -81,18 +79,6 @@ defmodule GroupherServerWeb.Schema.CMS.Metrics do
     value(:least_watched)
     value(:least_comments)
     value(:recent_updated)
-  end
-
-  enum :repo_sort_enum do
-    value(:most_github_star)
-    value(:most_github_fork)
-    value(:most_github_watch)
-    value(:most_github_pr)
-    value(:most_github_issue)
-    value(:most_views)
-    value(:most_comments)
-    value(:recent_updated)
-    value(:most_upvotes)
   end
 
   enum :length_enum do
@@ -193,15 +179,6 @@ defmodule GroupherServerWeb.Schema.CMS.Metrics do
     field(:sort, :sort_enum)
   end
 
-  @desc "article_filter doc"
-  input_object :paged_repos_filter do
-    @desc "limit of records (default 20), if first > 30, only return 30 at most"
-    pagination_args()
-    article_filter_fields()
-
-    field(:sort, :repo_sort_enum)
-  end
-
   @desc "common filter for upvoted articles"
   input_object :upvoted_articles_filter do
     field(:thread, :thread)
@@ -218,36 +195,6 @@ defmodule GroupherServerWeb.Schema.CMS.Metrics do
   input_object :collected_articles_filter do
     field(:thread, :thread)
     pagination_args()
-  end
-
-  @desc """
-  cms github repo contribotor
-  """
-  input_object :repo_contributor_input do
-    field(:avatar, :string)
-    field(:html_url, :string)
-    field(:nickname, :string)
-  end
-
-  @desc """
-  cms github repo contribotor, detail version
-  """
-  input_object :github_contributor_input do
-    field(:github_id, non_null(:string))
-    field(:avatar, non_null(:string))
-    field(:html_url, non_null(:string))
-    field(:nickname, non_null(:string))
-    field(:bio, :string)
-    field(:location, :string)
-    field(:company, :string)
-  end
-
-  @desc """
-  cms github repo lang
-  """
-  input_object :repo_lang_input do
-    field(:name, :string)
-    field(:color, :string)
   end
 
   enum :report_content_type do

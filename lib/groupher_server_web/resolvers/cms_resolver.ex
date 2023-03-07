@@ -7,7 +7,7 @@ defmodule GroupherServerWeb.Resolvers.CMS do
   alias GroupherServer.{Accounts, CMS}
 
   alias Accounts.Model.User
-  alias CMS.Model.{Community, Category, Thread, CommunityWiki, CommunityCheatsheet}
+  alias CMS.Model.{Community, Category, Thread}
 
   alias Helper.ORM
 
@@ -434,22 +434,6 @@ defmodule GroupherServerWeb.Resolvers.CMS do
   # #######################
   # sync github content ..
   # #######################
-  def sync_wiki(_root, ~m(community_id readme last_sync)a, %{context: %{cur_user: _user}}) do
-    CMS.sync_github_content(%Community{id: community_id}, :wiki, ~m(readme last_sync)a)
-  end
-
-  def add_wiki_contributor(_root, ~m(id contributor)a, %{context: %{cur_user: _user}}) do
-    CMS.add_contributor(%CommunityWiki{id: id}, contributor)
-  end
-
-  def sync_cheatsheet(_root, ~m(community_id readme last_sync)a, %{context: %{cur_user: _user}}) do
-    CMS.sync_github_content(%Community{id: community_id}, :cheatsheet, ~m(readme last_sync)a)
-  end
-
-  def add_cheatsheet_contributor(_root, ~m(id contributor)a, %{context: %{cur_user: _user}}) do
-    CMS.add_contributor(%CommunityCheatsheet{id: id}, contributor)
-  end
-
   def search_communities(_root, %{title: title, category: category}, %{context: %{cur_user: user}}) do
     CMS.search_communities(title, category, user)
   end

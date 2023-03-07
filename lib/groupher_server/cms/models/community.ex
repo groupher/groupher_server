@@ -15,9 +15,7 @@ defmodule GroupherServer.CMS.Model.Community do
     Category,
     CommunityThread,
     CommunitySubscriber,
-    CommunityEditor,
-    CommunityWiki,
-    CommunityCheatsheet
+    CommunityEditor
   }
 
   @max_pinned_article_count_per_thread 2
@@ -58,9 +56,6 @@ defmodule GroupherServer.CMS.Model.Community do
     field(:viewer_has_subscribed, :boolean, default: false, virtual: true)
     field(:viewer_is_editor, :boolean, default: false, virtual: true)
     field(:contributes_digest, {:array, :integer}, default: [])
-
-    has_one(:wiki, CommunityWiki)
-    has_one(:cheatsheet, CommunityCheatsheet)
 
     many_to_many(
       :categories,

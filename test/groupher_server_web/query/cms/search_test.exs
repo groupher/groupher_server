@@ -18,12 +18,6 @@ defmodule GroupherServer.Test.Query.CMS.Search do
     {:ok, _community} = db_insert(:post, %{title: "javascript"})
     {:ok, _community} = db_insert(:post, %{title: "java"})
 
-    {:ok, _community} = db_insert(:repo, %{title: "react"})
-    {:ok, _community} = db_insert(:repo, %{title: "php"})
-    {:ok, _community} = db_insert(:repo, %{title: "每日妹子"})
-    {:ok, _community} = db_insert(:repo, %{title: "javascript"})
-    {:ok, _community} = db_insert(:repo, %{title: "java"})
-
     {:ok, ~m(guest_conn)a}
   end
 
