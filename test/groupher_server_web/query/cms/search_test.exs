@@ -57,42 +57,6 @@ defmodule GroupherServer.Test.Query.CMS.Search do
     end
   end
 
-  describe "[cms search repo query]" do
-    @query """
-    query($title: String!) {
-      searchRepos(title: $title) {
-        entries {
-          id
-          title
-        }
-        totalCount
-      }
-    }
-    """
-    test "search repo by full title should valid paged communities", ~m(guest_conn)a do
-      variables = %{title: "react"}
-      results = guest_conn |> query_result(@query, variables, "searchRepos")
-
-      assert results["totalCount"] == 1
-      assert results["entries"] |> Enum.any?(&(&1["title"] == "react"))
-
-      variables = %{title: "java"}
-      results = guest_conn |> query_result(@query, variables, "searchRepos")
-
-      assert results["totalCount"] == 2
-      assert results["entries"] |> Enum.any?(&(&1["title"] == "java"))
-      assert results["entries"] |> Enum.any?(&(&1["title"] == "javascript"))
-    end
-
-    test "search non-exsit repo should get empty pagi data", ~m(guest_conn)a do
-      variables = %{title: "non-exsit"}
-      results = guest_conn |> query_result(@query, variables, "searchRepos")
-
-      assert results["totalCount"] == 0
-      assert results["entries"] == []
-    end
-  end
-
   describe "[cms search community query]" do
     @query """
     query($title: String!, $category: String) {
