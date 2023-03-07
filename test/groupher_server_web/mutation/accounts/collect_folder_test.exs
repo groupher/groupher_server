@@ -111,10 +111,8 @@ defmodule GroupherServer.Test.Mutation.Accounts.CollectFolder do
 
         meta {
           hasPost
-          hasRepo
           hasBlog
           postCount
-          repoCount
           blogCount
         }
       }
@@ -122,10 +120,8 @@ defmodule GroupherServer.Test.Mutation.Accounts.CollectFolder do
     """
     @meta %{
       "hasPost" => false,
-      "hasRepo" => false,
       "hasBlog" => false,
       "postCount" => 0,
-      "repoCount" => 0,
       "blogCount" => 0
     }
     test "user can add a post to collect folder", ~m(user user_conn post)a do
@@ -180,10 +176,8 @@ defmodule GroupherServer.Test.Mutation.Accounts.CollectFolder do
 
         meta {
           hasPost
-          hasRepo
           hasBlog
           postCount
-          repoCount
           blogCount
         }
       }

@@ -5,7 +5,6 @@ defmodule GroupherServer.Accounts.Model.Embeds.CollectFolderMeta.Macros do
   e.g:
     field(:has_post, :boolean, default: false)
     field(:post_count, :integer, default: 0)
-    field(:has_repo, :boolean, default: false)
   """
   import Helper.Utils, only: [get_config: 2]
 
