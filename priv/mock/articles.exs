@@ -26,7 +26,7 @@ all_posts.entries
   # IO.inspect(cur_updated_at, label: "curent cur_updated_at")
 
   with {:ok, post} <- ORM.update_meta(post, default_meta) do
-    {:ok, _} = ORM.update(post, %{updated_at: cur_updated_at, actived_at: cur_updated_at})
+    {:ok, _} = ORM.update(post, %{updated_at: cur_updated_at, active_at: cur_updated_at})
   end
 end)
 

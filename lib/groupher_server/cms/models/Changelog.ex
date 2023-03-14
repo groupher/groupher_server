@@ -17,20 +17,11 @@ defmodule GroupherServer.CMS.Model.Changelog do
 
   @required_fields ~w(title digest)a
   @article_cast_fields general_article_cast_fields()
-  @optional_fields ~w(copy_right is_question is_solved solution_digest updated_at inserted_at active_at archived_at)a ++
+  @optional_fields ~w(updated_at inserted_at active_at archived_at)a ++
                      @article_cast_fields
 
   @type t :: %Changelog{}
   schema "cms_changelogs" do
-    field(:copy_right, :string)
-
-    field(:is_question, :boolean, default: false)
-    field(:is_solved, :boolean, default: false)
-    field(:solution_digest, :string)
-
-    # TODO: remove
-    field(:body, :string)
-
     article_tags_field(:changelog)
     article_communities_field(:changelog)
     general_article_fields(:changelog)

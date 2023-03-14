@@ -125,7 +125,6 @@ defmodule GroupherServer.Support.Factory do
       ],
       emotions: @default_emotions,
       active_at: Timex.shift(Timex.now(), seconds: -1),
-      is_question: false,
       is_solved: false,
       pending: 0
     }
