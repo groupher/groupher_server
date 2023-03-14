@@ -17,7 +17,6 @@ defmodule GroupherServer.Test.Collect.Changelog do
   end
 
   describe "[cms changelog collect]" do
-    @tag :wip
     test "changelog can be collect && collects_count should inc by 1",
          ~m(user user2 community changelog_attrs)a do
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
@@ -34,7 +33,6 @@ defmodule GroupherServer.Test.Collect.Changelog do
       assert article.collects_count == 2
     end
 
-    @tag :wip
     test "changelog can be undo collect && collects_count should dec by 1",
          ~m(user community changelog_attrs)a do
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
@@ -49,7 +47,6 @@ defmodule GroupherServer.Test.Collect.Changelog do
       assert article.collects_count == 0
     end
 
-    @tag :wip
     test "can get collect_users", ~m(user user2 community changelog_attrs)a do
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
 
@@ -63,7 +60,6 @@ defmodule GroupherServer.Test.Collect.Changelog do
       assert user_exist_in?(user2, users.entries)
     end
 
-    @tag :wip
     test "changelog meta history should be updated", ~m(user user2 community changelog_attrs)a do
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
       {:ok, _} = CMS.collect_article(:changelog, changelog.id, user)
@@ -78,7 +74,6 @@ defmodule GroupherServer.Test.Collect.Changelog do
       assert user2.id in article.meta.collected_user_ids
     end
 
-    @tag :wip
     test "changelog meta history should be updated after undo collect",
          ~m(user user2 community changelog_attrs)a do
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)

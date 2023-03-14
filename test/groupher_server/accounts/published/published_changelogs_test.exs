@@ -18,7 +18,6 @@ defmodule GroupherServer.Test.Accounts.Published.Changelog do
   end
 
   describe "[publised changelogs]" do
-    @tag :wip
     test "create changelog should update user published meta", ~m(community user)a do
       changelog_attrs = mock_attrs(:changelog, %{community_id: community.id})
       {:ok, _} = CMS.create_article(community, :changelog, changelog_attrs, user)
@@ -28,7 +27,6 @@ defmodule GroupherServer.Test.Accounts.Published.Changelog do
       assert user.meta.published_changelogs_count == 2
     end
 
-    @tag :wip
     test "fresh user get empty paged published changelogs", ~m(user)a do
       {:ok, results} = Accounts.paged_published_articles(user, :changelog, %{page: 1, size: 20})
 
@@ -36,7 +34,6 @@ defmodule GroupherServer.Test.Accounts.Published.Changelog do
       assert results.total_count == 0
     end
 
-    @tag :wip
     test "user can get paged published changelogs", ~m(user user2 community community2)a do
       pub_changelogs =
         Enum.reduce(1..@publish_count, [], fn _, acc ->
@@ -75,7 +72,6 @@ defmodule GroupherServer.Test.Accounts.Published.Changelog do
   end
 
   describe "[publised changelog comments]" do
-    @tag :wip
     test "can get published article comments", ~m(changelog user)a do
       total_count = 10
 

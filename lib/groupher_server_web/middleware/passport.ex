@@ -115,7 +115,7 @@ defmodule GroupherServerWeb.Middleware.Passport do
 
       nil ->
         resolution
-        |> handle_absinthe_error("PassportError: Passport not qualified.", ecode(:passport))
+        |> handle_absinthe_error("PassportError 1: Passport not qualified.", ecode(:passport))
     end
   end
 
@@ -134,7 +134,7 @@ defmodule GroupherServerWeb.Middleware.Passport do
 
       nil ->
         resolution
-        |> handle_absinthe_error("PassportError: Passport not qualified.", ecode(:passport))
+        |> handle_absinthe_error("PassportError 2: Passport not qualified.", ecode(:passport))
     end
   end
 
@@ -158,7 +158,7 @@ defmodule GroupherServerWeb.Middleware.Passport do
 
       nil ->
         resolution
-        |> handle_absinthe_error("PassportError: Passport not qualified.", ecode(:passport))
+        |> handle_absinthe_error("PassportError 3: Passport not qualified.", ecode(:passport))
     end
   end
 

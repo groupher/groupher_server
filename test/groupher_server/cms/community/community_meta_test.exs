@@ -56,7 +56,6 @@ defmodule GroupherServer.Test.Community.CommunityMeta do
       assert community2.meta.posts_count == 1
     end
 
-    @tag :wip
     test "create a post should inc changelogs_count in meta",
          ~m(user community community2 community3)a do
       changelog_attrs = mock_attrs(:changelog)

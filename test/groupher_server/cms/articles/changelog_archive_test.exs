@@ -29,7 +29,6 @@ defmodule GroupherServer.Test.CMS.ChangelogArchive do
   end
 
   describe "[cms changelog archive]" do
-    @tag :wip
     test "can archive changelogs", ~m(changelog_long_ago)a do
       {:ok, _} = CMS.archive_articles(:changelog)
 
@@ -43,7 +42,6 @@ defmodule GroupherServer.Test.CMS.ChangelogArchive do
       assert archived_changelog.id == changelog_long_ago.id
     end
 
-    @tag :wip
     test "can not edit archived changelog" do
       {:ok, _} = CMS.archive_articles(:changelog)
 
@@ -57,7 +55,6 @@ defmodule GroupherServer.Test.CMS.ChangelogArchive do
       assert reason |> is_error?(:archived)
     end
 
-    @tag :wip
     test "can not delete archived changelog" do
       {:ok, _} = CMS.archive_articles(:changelog)
 

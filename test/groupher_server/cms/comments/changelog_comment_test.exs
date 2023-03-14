@@ -27,7 +27,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
   end
 
   describe "[comments state]" do
-    @tag :wip
     test "can get basic state", ~m(user changelog)a do
       {:ok, _} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
       {:ok, _} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
@@ -41,7 +40,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
       assert not state.is_viewer_joined
     end
 
-    @tag :wip
     test "can get viewer joined state", ~m(user changelog)a do
       {:ok, _} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
       {:ok, _} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
@@ -54,7 +52,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
       assert state.is_viewer_joined
     end
 
-    @tag :wip
     test "can get viewer joined state 2", ~m(user user2 user3 changelog)a do
       {:ok, _} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user2)
       {:ok, _} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user3)
@@ -69,7 +66,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
   end
 
   describe "[basic article comment]" do
-    @tag :wip
     test "changelog are supported by article comment.", ~m(user changelog)a do
       {:ok, changelog_comment_1} =
         CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
@@ -83,13 +79,11 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
       assert exist_in?(changelog_comment_2, changelog.comments)
     end
 
-    @tag :wip
     test "comment should have default meta after create", ~m(user changelog)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
       assert comment.meta |> Map.from_struct() |> Map.delete(:id) == @default_comment_meta
     end
 
-    @tag :wip
     test "create comment should update active timestamp of changelog", ~m(user changelog)a do
       Process.sleep(1000)
       {:ok, _comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
@@ -99,7 +93,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
       assert changelog.active_at > changelog.inserted_at
     end
 
-    @tag :wip
     test "changelog author create comment will not update active timestamp",
          ~m(community user)a do
       changelog_attrs = mock_attrs(:changelog, %{community_id: community.id})
@@ -117,7 +110,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
       assert changelog.active_at == changelog.inserted_at
     end
 
-    @tag :wip
     test "old changelog will not update active after comment created", ~m(user)a do
       active_period_days = @active_period[:changelog] || @active_period[:default]
 
@@ -144,7 +136,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
                DateTime.utc_now() |> DateTime.to_unix()
     end
 
-    @tag :wip
     test "comment can be updated", ~m(changelog user)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
 
@@ -155,7 +146,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
   end
 
   describe "[article comment floor]" do
-    @tag :wip
     test "comment will have a floor number after created", ~m(user changelog)a do
       {:ok, changelog_comment} =
         CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
@@ -172,7 +162,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
   end
 
   describe "[article comment participator for changelog]" do
-    @tag :wip
     test "changelog will have participator after comment created", ~m(user changelog)a do
       {:ok, _} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
 
@@ -182,7 +171,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
       assert participator.id == user.id
     end
 
-    @tag :wip
     test "psot participator will not contains same user", ~m(user changelog)a do
       {:ok, _} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
       {:ok, _} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
@@ -192,7 +180,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
       assert 1 == length(changelog.comments_participants)
     end
 
-    @tag :wip
     test "recent comment user should appear at first of the psot participants",
          ~m(user user2 changelog)a do
       {:ok, _} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
@@ -207,7 +194,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
   end
 
   describe "[article comment upvotes]" do
-    @tag :wip
     test "user can upvote a changelog comment", ~m(user changelog)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
 
@@ -219,7 +205,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
       assert List.first(comment.upvotes).user_id == user.id
     end
 
-    @tag :wip
     test "user can upvote a changelog comment twice is fine", ~m(user changelog)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
 
@@ -230,7 +215,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
       assert 1 == length(comment.upvotes)
     end
 
-    @tag :wip
     test "article author upvote changelog comment will have flag", ~m(changelog user)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
       {:ok, author_user} = ORM.find(User, changelog.author.user.id)
@@ -241,7 +225,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
       assert comment.meta.is_article_author_upvoted
     end
 
-    @tag :wip
     test "user upvote changelog comment will add id to upvoted_user_ids", ~m(changelog user)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
       {:ok, comment} = CMS.upvote_comment(comment.id, user)
@@ -249,7 +232,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
       assert user.id in comment.meta.upvoted_user_ids
     end
 
-    @tag :wip
     test "user undo upvote changelog comment will remove id from upvoted_user_ids",
          ~m(changelog user user2)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
@@ -265,7 +247,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
       assert user2.id not in comment.meta.upvoted_user_ids
     end
 
-    @tag :wip
     test "user upvote a already-upvoted comment fails", ~m(user changelog)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
 
@@ -273,7 +254,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
       {:error, _} = CMS.upvote_comment(comment.id, user)
     end
 
-    @tag :wip
     test "upvote comment should inc the comment's upvotes_count", ~m(user user2 changelog)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
       {:ok, comment} = ORM.find(Comment, comment.id)
@@ -286,7 +266,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
       assert comment.upvotes_count == 2
     end
 
-    @tag :wip
     test "user can undo upvote a changelog comment", ~m(user changelog)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
       CMS.upvote_comment(comment.id, user)
@@ -298,7 +277,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
       assert 0 == comment.upvotes_count
     end
 
-    @tag :wip
     test "user can undo upvote a changelog comment with no upvote", ~m(user changelog)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
       {:ok, comment} = CMS.undo_upvote_comment(comment.id, user)
@@ -308,7 +286,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
       assert 0 == comment.upvotes_count
     end
 
-    @tag :wip
     test "upvote comment should update embeded replies too", ~m(user user2 user3 changelog)a do
       {:ok, parent_comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
       {:ok, replied_comment} = CMS.reply_comment(parent_comment.id, mock_comment(), user)
@@ -337,7 +314,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
   end
 
   describe "[article comment fold/unfold]" do
-    @tag :wip
     test "user can fold a comment", ~m(user changelog)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
       {:ok, comment} = ORM.find(Comment, comment.id)
@@ -352,7 +328,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
       assert changelog.meta.folded_comment_count == 1
     end
 
-    @tag :wip
     test "user can unfold a comment", ~m(user changelog)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
       {:ok, _comment} = CMS.fold_comment(comment.id, user)
@@ -370,7 +345,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
   end
 
   describe "[article comment pin/unpin]" do
-    @tag :wip
     test "user can pin a comment", ~m(user changelog)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
       {:ok, comment} = ORM.find(Comment, comment.id)
@@ -386,7 +360,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
       assert pined_record.changelog_id == changelog.id
     end
 
-    @tag :wip
     test "user can unpin a comment", ~m(user changelog)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
 
@@ -397,7 +370,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
       assert {:error, _} = PinnedComment |> ORM.find_by(%{comment_id: comment.id})
     end
 
-    @tag :wip
     test "pinned comments has a limit for each article", ~m(user changelog)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
 
@@ -429,7 +401,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
     #   {:ok, comment} = ORM.find(Comment, comment.id)
     # end
 
-    @tag :wip
     test "can undo a report with other user report it too", ~m(user user2 changelog)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
 
@@ -457,7 +428,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
       assert Enum.any?(report.report_cases, &(&1.user.login == user2.login))
     end
 
-    @tag :wip
     test "report user < @report_threshold_for_fold will not fold comment", ~m(user changelog)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
 
@@ -472,7 +442,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
       assert not comment.is_folded
     end
 
-    @tag :wip
     test "report user > @report_threshold_for_fold will cause comment fold",
          ~m(user changelog)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
@@ -490,7 +459,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
   end
 
   describe "paged article comments" do
-    @tag :wip
     test "can load paged comments participants of a article", ~m(user changelog)a do
       total_count = 30
       page_size = 10
@@ -513,7 +481,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
       assert results.total_count == total_count + 1
     end
 
-    @tag :wip
     test "paged article comments folded flag should be false", ~m(user changelog)a do
       total_count = 30
       page_number = 1
@@ -543,7 +510,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
       assert total_count == paged_comments.total_count
     end
 
-    @tag :wip
     test "paged article comments should contains pinned comments at top position",
          ~m(user changelog)a do
       total_count = 20
@@ -576,7 +542,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
       assert paged_comments.total_count == total_count + 2
     end
 
-    @tag :wip
     test "only page 1 have pinned coments",
          ~m(user changelog)a do
       total_count = 20
@@ -609,7 +574,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
       assert paged_comments.total_count == total_count
     end
 
-    @tag :wip
     test "paged article comments should not contains folded and repoted comments",
          ~m(user changelog)a do
       total_count = 15
@@ -648,7 +612,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
       assert total_count - 3 == paged_comments.total_count
     end
 
-    @tag :wip
     test "can loaded paged folded comment", ~m(user changelog)a do
       total_count = 10
       page_number = 1
@@ -680,7 +643,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
   end
 
   describe "[article comment delete]" do
-    @tag :wip
     test "delete comment still exsit in paged list and content is gone", ~m(user changelog)a do
       total_count = 10
       page_number = 1
@@ -710,7 +672,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
       assert deleted_comment.body_html == @delete_hint
     end
 
-    @tag :wip
     test "delete comment still update article's comments_count field", ~m(user changelog)a do
       {:ok, _comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
       {:ok, _comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
@@ -728,7 +689,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
       assert changelog.comments_count == 4
     end
 
-    @tag :wip
     test "delete comment still delete pinned record if needed", ~m(user changelog)a do
       total_count = 10
 
@@ -750,7 +710,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
   end
 
   describe "[article comment info]" do
-    @tag :wip
     test "author of the article comment a comment should have flag", ~m(user changelog)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
       assert not comment.is_article_author
@@ -762,7 +721,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
   end
 
   describe "[lock/unlock changelog comment]" do
-    @tag :wip
     test "locked changelog can not be comment", ~m(user changelog)a do
       {:ok, _} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
       {:ok, _} = CMS.lock_article_comments(:changelog, changelog.id)
@@ -789,7 +747,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogComment do
   end
 
   describe "[update user info in comments_participants]" do
-    @tag :wip
     test "basic find", ~m(user community)a do
       changelog_attrs = mock_attrs(:changelog, %{community_id: community.id, is_question: true})
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)

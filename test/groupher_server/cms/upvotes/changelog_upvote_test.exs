@@ -15,7 +15,6 @@ defmodule GroupherServer.Test.Upvotes.ChangelogUpvote do
   end
 
   describe "[cms changelog upvote]" do
-    @tag :wip
     test "changelog can be upvote && upvotes_count should inc by 1",
          ~m(user user2 community changelog_attrs)a do
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
@@ -28,7 +27,6 @@ defmodule GroupherServer.Test.Upvotes.ChangelogUpvote do
       assert article.upvotes_count == 2
     end
 
-    @tag :wip
     test "upvote a already upvoted changelog is fine", ~m(user community changelog_attrs)a do
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
 
@@ -39,7 +37,6 @@ defmodule GroupherServer.Test.Upvotes.ChangelogUpvote do
       assert article.upvotes_count == 1
     end
 
-    @tag :wip
     test "changelog can be undo upvote && upvotes_count should dec by 1",
          ~m(user user2 community changelog_attrs)a do
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
@@ -52,7 +49,6 @@ defmodule GroupherServer.Test.Upvotes.ChangelogUpvote do
       assert article.upvotes_count == 0
     end
 
-    @tag :wip
     test "can get upvotes_users", ~m(user user2 community changelog_attrs)a do
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
 
@@ -66,7 +62,6 @@ defmodule GroupherServer.Test.Upvotes.ChangelogUpvote do
       assert user_exist_in?(user2, users.entries)
     end
 
-    @tag :wip
     test "changelog meta history should be updated after upvote",
          ~m(user user2 community changelog_attrs)a do
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
@@ -78,7 +73,6 @@ defmodule GroupherServer.Test.Upvotes.ChangelogUpvote do
       assert user2.id in article.meta.upvoted_user_ids
     end
 
-    @tag :wip
     test "changelog meta history should be updated after undo upvote",
          ~m(user user2 community changelog_attrs)a do
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)

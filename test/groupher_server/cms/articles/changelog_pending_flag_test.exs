@@ -34,7 +34,6 @@ defmodule GroupherServer.Test.CMS.ChangelogPendingFlag do
   end
 
   describe "[pending changelogs flags]" do
-    @tag :wip
     test "pending changelog can not be read", ~m(changelog_m)a do
       {:ok, _} = CMS.read_article(:changelog, changelog_m.id)
 
@@ -52,7 +51,6 @@ defmodule GroupherServer.Test.CMS.ChangelogPendingFlag do
       assert reason |> is_error?(:pending)
     end
 
-    @tag :wip
     test "author can read it's own pending changelog", ~m(community user)a do
       changelog_attrs = mock_attrs(:changelog, %{community_id: community.id})
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
@@ -74,7 +72,6 @@ defmodule GroupherServer.Test.CMS.ChangelogPendingFlag do
       assert reason |> is_error?(:pending)
     end
 
-    @tag :wip
     test "pending changelog can set/unset pending", ~m(changelog_m)a do
       {:ok, _} = CMS.read_article(:changelog, changelog_m.id)
 
@@ -96,7 +93,6 @@ defmodule GroupherServer.Test.CMS.ChangelogPendingFlag do
       {:ok, _} = CMS.read_article(:changelog, changelog_m.id)
     end
 
-    @tag :wip
     test "pending changelog's meta should have info", ~m(changelog_m)a do
       {:ok, _} = CMS.read_article(:changelog, changelog_m.id)
 

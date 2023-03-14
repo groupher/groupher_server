@@ -22,7 +22,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogPendingFlag do
   end
 
   describe "[pending changelog comemnt flags]" do
-    @tag :wip
     test "pending changelog comment can set/unset pending", ~m(changelog user)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
 
@@ -47,7 +46,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogPendingFlag do
       assert comment.pending == @audit_legal
     end
 
-    @tag :wip
     test "pending changelog-comment's meta should have info", ~m(changelog user)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
 

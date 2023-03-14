@@ -19,7 +19,6 @@ defmodule GroupherServer.Test.CMS.ArticleCommunity.Changelog do
   end
 
   describe "[article mirror/move]" do
-    @tag :wip
     test "created changelog has origial community info", ~m(user community changelog_attrs)a do
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
       {:ok, changelog} = ORM.find(Changelog, changelog.id, preload: :original_community)
@@ -27,7 +26,6 @@ defmodule GroupherServer.Test.CMS.ArticleCommunity.Changelog do
       assert changelog.original_community_id == community.id
     end
 
-    @tag :wip
     test "changelog can be move to other community",
          ~m(user community community2 changelog_attrs)a do
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
@@ -42,7 +40,6 @@ defmodule GroupherServer.Test.CMS.ArticleCommunity.Changelog do
       assert exist_in?(community2, changelog.communities)
     end
 
-    @tag :wip
     test "tags should be clean after changelog move to other community",
          ~m(user community community2 changelog_attrs)a do
       article_tag_attrs = mock_attrs(:article_tag)
@@ -72,7 +69,6 @@ defmodule GroupherServer.Test.CMS.ArticleCommunity.Changelog do
       assert exist_in?(community2, changelog.communities)
     end
 
-    @tag :wip
     test "changelog move to other community with new tag",
          ~m(user community community2 changelog_attrs)a do
       article_tag_attrs0 = mock_attrs(:article_tag)
@@ -114,7 +110,6 @@ defmodule GroupherServer.Test.CMS.ArticleCommunity.Changelog do
       assert exist_in?(article_tag2, changelog.article_tags)
     end
 
-    @tag :wip
     test "changelog can be mirror to other community",
          ~m(user community community2 changelog_attrs)a do
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
@@ -133,7 +128,6 @@ defmodule GroupherServer.Test.CMS.ArticleCommunity.Changelog do
       assert exist_in?(community2, changelog.communities)
     end
 
-    @tag :wip
     test "changelog can be mirror to other community with tags",
          ~m(user community community2 changelog_attrs)a do
       article_tag_attrs = mock_attrs(:article_tag)
@@ -158,7 +152,6 @@ defmodule GroupherServer.Test.CMS.ArticleCommunity.Changelog do
       assert exist_in?(article_tag2, changelog.article_tags)
     end
 
-    @tag :wip
     test "changelog can be unmirror from community",
          ~m(user community community2 community3 changelog_attrs)a do
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
@@ -175,7 +168,6 @@ defmodule GroupherServer.Test.CMS.ArticleCommunity.Changelog do
       assert not exist_in?(community3, changelog.communities)
     end
 
-    @tag :wip
     test "changelog can be unmirror from community with tags",
          ~m(user community community2 community3 changelog_attrs)a do
       article_tag_attrs2 = mock_attrs(:article_tag)
@@ -198,7 +190,6 @@ defmodule GroupherServer.Test.CMS.ArticleCommunity.Changelog do
       assert not exist_in?(article_tag3, changelog.article_tags)
     end
 
-    @tag :wip
     test "changelog can not unmirror from original community",
          ~m(user community community2 community3 changelog_attrs)a do
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
@@ -212,7 +203,6 @@ defmodule GroupherServer.Test.CMS.ArticleCommunity.Changelog do
       assert reason |> is_error?(:mirror_article)
     end
 
-    @tag :wip
     test "changelog can be mirror to home", ~m(community changelog_attrs user)a do
       {:ok, home_community} = db_insert(:community, %{raw: "home"})
 
@@ -243,7 +233,6 @@ defmodule GroupherServer.Test.CMS.ArticleCommunity.Changelog do
       assert paged_articles.total_count === 1
     end
 
-    @tag :wip
     test "changelog can be mirror to home with tags", ~m(community changelog_attrs user)a do
       {:ok, home_community} = db_insert(:community, %{raw: "home"})
 
@@ -289,7 +278,6 @@ defmodule GroupherServer.Test.CMS.ArticleCommunity.Changelog do
       assert paged_articles.total_count === 1
     end
 
-    @tag :wip
     test "changelog can be move to blackhole", ~m(community changelog_attrs user)a do
       {:ok, blackhole_community} = db_insert(:community, %{raw: "blackhole"})
 
@@ -313,7 +301,6 @@ defmodule GroupherServer.Test.CMS.ArticleCommunity.Changelog do
       assert paged_articles.total_count === 1
     end
 
-    @tag :wip
     test "changelog can be move to blackhole with tags", ~m(community changelog_attrs user)a do
       {:ok, blackhole_community} = db_insert(:community, %{raw: "blackhole"})
 

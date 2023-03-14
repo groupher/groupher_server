@@ -1,4 +1,4 @@
-defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.CURD do
+defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.PostTagCURD do
   @moduledoc false
 
   use GroupherServer.TestTools
@@ -114,7 +114,6 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.CURD do
       }
     }
     """
-
     test "auth user can update a tag", ~m(article_tag_attrs community user)a do
       {:ok, article_tag} = CMS.create_article_tag(community, :post, article_tag_attrs, user)
 

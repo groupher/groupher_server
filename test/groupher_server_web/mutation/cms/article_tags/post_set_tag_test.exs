@@ -1,4 +1,4 @@
-defmodule GroupherServer.Test.Mutation.ArticleTags.PostTag do
+defmodule GroupherServer.Test.Mutation.ArticleTags.PostSetTag do
   @moduledoc false
 
   use GroupherServer.TestTools

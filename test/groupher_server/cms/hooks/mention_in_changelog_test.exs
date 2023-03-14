@@ -22,7 +22,6 @@ defmodule GroupherServer.Test.CMS.Hooks.MentionInChangelog do
   end
 
   describe "[mention in changelog basic]" do
-    @tag :wip
     test "mention multi user in changelog should work",
          ~m(user user2 user3 community  changelog_attrs)a do
       body =
@@ -56,7 +55,6 @@ defmodule GroupherServer.Test.CMS.Hooks.MentionInChangelog do
       assert mention.user.login == changelog.author.user.login
     end
 
-    @tag :wip
     test "mention in changelog's comment should work", ~m(user user2 changelog)a do
       comment_body =
         mock_rich_text(~s(hi <div class=#{@article_mention_class}>#{user2.login}</div>))
@@ -76,7 +74,6 @@ defmodule GroupherServer.Test.CMS.Hooks.MentionInChangelog do
       assert mention.user.login == comment.author.login
     end
 
-    @tag :wip
     test "can not mention author self in changelog or comment",
          ~m(community user changelog_attrs)a do
       body = mock_rich_text(~s(hi <div class=#{@article_mention_class}>#{user.login}</div>))

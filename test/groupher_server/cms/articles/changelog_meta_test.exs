@@ -20,7 +20,6 @@ defmodule GroupherServer.Test.CMS.ChangelogMeta do
   end
 
   describe "[cms changelog meta info]" do
-    @tag :wip
     test "can get default meta info", ~m(user community changelog_attrs)a do
       assert {:error, _} = ORM.find_by(Author, user_id: user.id)
 
@@ -31,7 +30,6 @@ defmodule GroupherServer.Test.CMS.ChangelogMeta do
       assert meta == @default_article_meta |> Map.merge(%{thread: "CHANGELOG"})
     end
 
-    @tag :wip
     test "is_edited flag should set to true after changelog updated",
          ~m(user community changelog_attrs)a do
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
@@ -45,7 +43,6 @@ defmodule GroupherServer.Test.CMS.ChangelogMeta do
       assert changelog.meta.is_edited
     end
 
-    @tag :wip
     test "changelog's lock/undo_lock article should work", ~m(user community changelog_attrs)a do
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
       assert not changelog.meta.is_comment_locked
