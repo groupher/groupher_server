@@ -55,5 +55,26 @@ defmodule GroupherServer.Test.Community.CommunityMeta do
       assert community2.articles_count == 1
       assert community2.meta.posts_count == 1
     end
+
+    @tag :wip
+    test "create a post should inc changelogs_count in meta",
+         ~m(user community community2 community3)a do
+      changelog_attrs = mock_attrs(:changelog)
+      changelog_attrs2 = mock_attrs(:changelog)
+
+      {:ok, _} = CMS.create_article(community, :changelog, changelog_attrs, user)
+      {:ok, _} = CMS.create_article(community, :changelog, changelog_attrs2, user)
+
+      {:ok, _} = CMS.create_article(community2, :changelog, changelog_attrs, user)
+      {:ok, _} = CMS.create_article(community3, :changelog, changelog_attrs, user)
+
+      {:ok, community} = ORM.find(Community, community.id)
+      assert community.articles_count == 2
+      assert community.meta.changelogs_count == 2
+
+      {:ok, community2} = ORM.find(Community, community2.id)
+      assert community2.articles_count == 1
+      assert community2.meta.changelogs_count == 1
+    end
   end
 end

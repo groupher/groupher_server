@@ -18,6 +18,7 @@ defmodule GroupherServerWeb.Schema.Statistics.Types do
   object :count_status_info do
     field(:communities_count, :integer)
     field(:posts_count, :integer)
+    field(:changelogs_count, :integer)
     field(:blogs_count, :integer)
 
     field(:categories_count, :integer)
