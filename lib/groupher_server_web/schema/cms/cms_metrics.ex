@@ -180,6 +180,14 @@ defmodule GroupherServerWeb.Schema.CMS.Metrics do
     field(:sort, :sort_enum)
   end
 
+  @desc "docs_filter doc"
+  input_object :paged_docs_filter do
+    @desc "limit of records (default 20), if first > 30, only return 30 at most"
+    pagination_args()
+    article_filter_fields()
+    field(:sort, :sort_enum)
+  end
+
   @desc "blog_filter doc"
   input_object :paged_blogs_filter do
     pagination_args()

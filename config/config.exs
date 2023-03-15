@@ -69,12 +69,13 @@ config :groupher_server, :article,
   min_length: 10,
   max_length: 20_000,
   # NOTE: do not change unless you know what you are doing
-  threads: [:post, :blog, :changelog],
+  threads: [:post, :blog, :changelog, :doc],
   # in this period, paged articles will sort front if non-article-author commented
   # 在此时间段内，一旦有非文章作者的用户评论，该文章就会排到前面
   active_period_days: %{
     default: 10,
-    changelog: 20
+    changelog: 20,
+    doc: 20
     # post: 10,
     # job: 10,
     # ...
