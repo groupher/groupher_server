@@ -22,7 +22,6 @@ defmodule GroupherServer.Test.CMS.Comments.DocPendingFlag do
   end
 
   describe "[pending doc comemnt flags]" do
-    @tag :wip
     test "pending doc comment can set/unset pending", ~m(doc user)a do
       {:ok, comment} = CMS.create_comment(:doc, doc.id, mock_comment(), user)
 
@@ -47,7 +46,6 @@ defmodule GroupherServer.Test.CMS.Comments.DocPendingFlag do
       assert comment.pending == @audit_legal
     end
 
-    @tag :wip
     test "pending doc-comment's meta should have info", ~m(doc user)a do
       {:ok, comment} = CMS.create_comment(:doc, doc.id, mock_comment(), user)
 

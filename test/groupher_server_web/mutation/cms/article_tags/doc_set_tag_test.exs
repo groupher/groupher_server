@@ -31,7 +31,7 @@ defmodule GroupherServer.Test.Mutation.ArticleTags.DocSetTag do
       }
     }
     """
-    @tag :wip
+
     test "auth user can set a valid tag to doc",
          ~m(community doc article_tag_attrs user)a do
       {:ok, article_tag} = CMS.create_article_tag(community, :doc, article_tag_attrs, user)
@@ -62,7 +62,6 @@ defmodule GroupherServer.Test.Mutation.ArticleTags.DocSetTag do
     }
     """
 
-    @tag :wip
     test "can unset tag to a doc",
          ~m(community doc article_tag_attrs article_tag_attrs2 user)a do
       {:ok, article_tag} = CMS.create_article_tag(community, :doc, article_tag_attrs, user)

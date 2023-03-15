@@ -28,7 +28,6 @@ defmodule GroupherServer.Test.CMS.DocArchive do
   end
 
   describe "[cms doc archive]" do
-    @tag :wip
     test "can archive docs", ~m(doc_long_ago)a do
       {:ok, _} = CMS.archive_articles(:doc)
 
@@ -42,7 +41,6 @@ defmodule GroupherServer.Test.CMS.DocArchive do
       assert archived_doc.id == doc_long_ago.id
     end
 
-    @tag :wip
     test "can not edit archived doc" do
       {:ok, _} = CMS.archive_articles(:doc)
 
@@ -56,7 +54,6 @@ defmodule GroupherServer.Test.CMS.DocArchive do
       assert reason |> is_error?(:archived)
     end
 
-    @tag :wip
     test "can not delete archived doc" do
       {:ok, _} = CMS.archive_articles(:doc)
 

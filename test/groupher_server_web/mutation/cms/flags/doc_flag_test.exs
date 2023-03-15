@@ -28,7 +28,7 @@ defmodule GroupherServer.Test.Mutation.Flags.DocFlag do
       }
     }
     """
-    @tag :wip
+
     test "auth user can markDelete doc", ~m(doc)a do
       variables = %{id: doc.id}
 
@@ -41,7 +41,6 @@ defmodule GroupherServer.Test.Mutation.Flags.DocFlag do
       assert updated["markDelete"] == true
     end
 
-    @tag :wip
     test "mark delete doc should update doc's communities meta count", ~m(user)a do
       community_attrs = mock_attrs(:community) |> Map.merge(%{user_id: user.id})
       {:ok, community} = CMS.create_community(community_attrs)
@@ -60,7 +59,6 @@ defmodule GroupherServer.Test.Mutation.Flags.DocFlag do
       assert community.meta.docs_count == 0
     end
 
-    @tag :wip
     test "unauth user markDelete doc fails", ~m(user_conn guest_conn doc)a do
       variables = %{id: doc.id}
       rule_conn = simu_conn(:user, cms: %{"what.ever" => true})
@@ -78,7 +76,7 @@ defmodule GroupherServer.Test.Mutation.Flags.DocFlag do
       }
     }
     """
-    @tag :wip
+
     test "auth user can undo markDelete doc", ~m(doc)a do
       variables = %{id: doc.id}
 
@@ -93,7 +91,6 @@ defmodule GroupherServer.Test.Mutation.Flags.DocFlag do
       assert updated["markDelete"] == false
     end
 
-    @tag :wip
     test "undo mark delete doc should update doc's communities meta count",
          ~m(user)a do
       community_attrs = mock_attrs(:community) |> Map.merge(%{user_id: user.id})
@@ -114,7 +111,6 @@ defmodule GroupherServer.Test.Mutation.Flags.DocFlag do
       assert community.meta.docs_count == 1
     end
 
-    @tag :wip
     test "unauth user undo markDelete doc fails", ~m(user_conn guest_conn doc)a do
       variables = %{id: doc.id}
       rule_conn = simu_conn(:user, cms: %{"what.ever" => true})
@@ -132,7 +128,6 @@ defmodule GroupherServer.Test.Mutation.Flags.DocFlag do
     }
     """
 
-    @tag :wip
     test "auth user can pin doc", ~m(community doc)a do
       variables = %{id: doc.id, communityId: community.id}
 
@@ -144,7 +139,6 @@ defmodule GroupherServer.Test.Mutation.Flags.DocFlag do
       assert updated["id"] == to_string(doc.id)
     end
 
-    @tag :wip
     test "unauth user pin doc fails", ~m(user_conn guest_conn community doc)a do
       variables = %{id: doc.id, communityId: community.id}
       rule_conn = simu_conn(:user, cms: %{"what.ever" => true})
@@ -163,7 +157,6 @@ defmodule GroupherServer.Test.Mutation.Flags.DocFlag do
     }
     """
 
-    @tag :wip
     test "auth user can undo pin doc", ~m(community doc)a do
       variables = %{id: doc.id, communityId: community.id}
 
@@ -176,7 +169,6 @@ defmodule GroupherServer.Test.Mutation.Flags.DocFlag do
       assert updated["id"] == to_string(doc.id)
     end
 
-    @tag :wip
     test "unauth user undo pin doc fails", ~m(user_conn guest_conn community doc)a do
       variables = %{id: doc.id, communityId: community.id}
       rule_conn = simu_conn(:user, cms: %{"what.ever" => true})

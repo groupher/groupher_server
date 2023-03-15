@@ -35,7 +35,7 @@ defmodule GroupherServer.Test.Query.Upvotes.DocUpvote do
       }
     }
     """
-    @tag :wip
+
     test "guest can get upvoted users list after upvote to a doc",
          ~m(guest_conn doc user user2)a do
       {:ok, _} = CMS.upvote_article(:doc, doc.id, user)

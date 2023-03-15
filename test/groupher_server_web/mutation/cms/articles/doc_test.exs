@@ -48,7 +48,7 @@ defmodule GroupherServer.Test.Mutation.Articles.Doc do
       }
     }
     """
-    @tag :wip
+
     test "create doc with valid attrs and make sure author exsit" do
       {:ok, user} = db_insert(:user)
       user_conn = simu_conn(:user, user)
@@ -76,7 +76,6 @@ defmodule GroupherServer.Test.Mutation.Articles.Doc do
       assert {:ok, _} = ORM.find_by(Author, user_id: user.id)
     end
 
-    @tag :wip
     test "create doc with valid tags id list", ~m(user_conn user community)a do
       article_tag_attrs = mock_attrs(:article_tag)
       {:ok, article_tag} = CMS.create_article_tag(community, :doc, article_tag_attrs, user)
@@ -93,7 +92,6 @@ defmodule GroupherServer.Test.Mutation.Articles.Doc do
       assert exist_in?(%{id: article_tag.id}, doc.article_tags)
     end
 
-    @tag :wip
     test "create doc should excape xss attracts" do
       {:ok, user} = db_insert(:user)
       user_conn = simu_conn(:user, user)
@@ -109,7 +107,6 @@ defmodule GroupherServer.Test.Mutation.Articles.Doc do
       assert not String.contains?(body_html, "script")
     end
 
-    @tag :wip
     test "create doc should excape xss attracts 2" do
       {:ok, user} = db_insert(:user)
       user_conn = simu_conn(:user, user)
@@ -128,7 +125,6 @@ defmodule GroupherServer.Test.Mutation.Articles.Doc do
     # NOTE: this test is IMPORTANT, cause json_codec: Jason in router will cause
     # server crash when GraphQL parse error
 
-    @tag :wip
     test "create doc with missing non_null field should get 200 error" do
       {:ok, user} = db_insert(:user)
       user_conn = simu_conn(:user, user)
@@ -148,7 +144,6 @@ defmodule GroupherServer.Test.Mutation.Articles.Doc do
     }
     """
 
-    @tag :wip
     test "delete a doc by doc's owner", ~m(owner_conn doc)a do
       deleted = owner_conn |> mutation_result(@query, %{id: doc.id}, "deleteDoc")
 
@@ -156,7 +151,6 @@ defmodule GroupherServer.Test.Mutation.Articles.Doc do
       assert {:error, _} = ORM.find(Doc, deleted["id"])
     end
 
-    @tag :wip
     test "can delete a doc by auth user", ~m(doc)a do
       doc = doc |> Repo.preload(:communities)
       belongs_community_title = doc.communities |> List.first() |> Map.get(:title)
@@ -169,12 +163,10 @@ defmodule GroupherServer.Test.Mutation.Articles.Doc do
       assert {:error, _} = ORM.find(Doc, deleted["id"])
     end
 
-    @tag :wip
     test "delete a doc without login user fails", ~m(guest_conn doc)a do
       assert guest_conn |> mutation_get_error?(@query, %{id: doc.id}, ecode(:account_login))
     end
 
-    @tag :wip
     test "login user with auth passport delete a doc", ~m(doc)a do
       doc = doc |> Repo.preload(:communities)
       doc_communities_0 = doc.communities |> List.first() |> Map.get(:title)
@@ -188,7 +180,6 @@ defmodule GroupherServer.Test.Mutation.Articles.Doc do
       assert deleted["id"] == to_string(doc.id)
     end
 
-    @tag :wip
     test "unauth user delete doc fails", ~m(user_conn guest_conn doc)a do
       variables = %{id: doc.id}
       rule_conn = simu_conn(:user, cms: %{"what.ever" => true})
@@ -220,7 +211,6 @@ defmodule GroupherServer.Test.Mutation.Articles.Doc do
     }
     """
 
-    @tag :wip
     test "update a doc without login user fails", ~m(guest_conn doc)a do
       unique_num = System.unique_integer([:positive, :monotonic])
 
@@ -233,7 +223,6 @@ defmodule GroupherServer.Test.Mutation.Articles.Doc do
       assert guest_conn |> mutation_get_error?(@query, variables, ecode(:account_login))
     end
 
-    @tag :wip
     test "doc can be update by owner", ~m(owner_conn doc)a do
       unique_num = System.unique_integer([:positive, :monotonic])
 
@@ -254,7 +243,6 @@ defmodule GroupherServer.Test.Mutation.Articles.Doc do
       assert result["title"] == variables.title
     end
 
-    @tag :wip
     test "update doc with valid attrs should have is_edited meta info update",
          ~m(owner_conn doc)a do
       unique_num = System.unique_integer([:positive, :monotonic])
@@ -270,7 +258,6 @@ defmodule GroupherServer.Test.Mutation.Articles.Doc do
       assert true == updated_doc["meta"]["isEdited"]
     end
 
-    @tag :wip
     test "login user with auth passport update a doc", ~m(doc)a do
       doc = doc |> Repo.preload(:communities)
       belongs_community_title = doc.communities |> List.first() |> Map.get(:title)
@@ -292,7 +279,6 @@ defmodule GroupherServer.Test.Mutation.Articles.Doc do
       assert updated_doc["id"] == to_string(doc.id)
     end
 
-    @tag :wip
     test "unauth user update doc fails", ~m(user_conn guest_conn doc)a do
       unique_num = System.unique_integer([:positive, :monotonic])
 

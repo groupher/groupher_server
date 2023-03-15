@@ -34,7 +34,6 @@ defmodule GroupherServer.Test.CMS.DocPendingFlag do
   end
 
   describe "[pending docs flags]" do
-    @tag :wip
     test "pending doc can not be read", ~m(docs_m)a do
       {:ok, _} = CMS.read_article(:doc, docs_m.id)
 
@@ -52,7 +51,6 @@ defmodule GroupherServer.Test.CMS.DocPendingFlag do
       assert reason |> is_error?(:pending)
     end
 
-    @tag :wip
     test "author can read it's own pending doc", ~m(community user)a do
       docs_attrs = mock_attrs(:doc, %{community_id: community.id})
       {:ok, doc} = CMS.create_article(community, :doc, docs_attrs, user)
@@ -74,7 +72,6 @@ defmodule GroupherServer.Test.CMS.DocPendingFlag do
       assert reason |> is_error?(:pending)
     end
 
-    @tag :wip
     test "pending doc can set/unset pending", ~m(docs_m)a do
       {:ok, _} = CMS.read_article(:doc, docs_m.id)
 
@@ -96,7 +93,6 @@ defmodule GroupherServer.Test.CMS.DocPendingFlag do
       {:ok, _} = CMS.read_article(:doc, docs_m.id)
     end
 
-    @tag :wip
     test "pending doc's meta should have info", ~m(docs_m)a do
       {:ok, _} = CMS.read_article(:doc, docs_m.id)
 

@@ -44,7 +44,7 @@ defmodule GroupherServer.Test.Query.Hooks.DocCiting do
       }
     }
     """
-    @tag :wip
+
     test "should get paged cittings", ~m(guest_conn community doc_attrs user)a do
       {:ok, doc2} = db_insert(:doc)
 

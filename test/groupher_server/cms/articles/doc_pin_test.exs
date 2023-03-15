@@ -20,7 +20,6 @@ defmodule GroupherServer.Test.CMS.Artilces.DocPin do
   end
 
   describe "[cms doc pin]" do
-    @tag :wip
     test "can pin a doc", ~m(community doc)a do
       {:ok, _} = CMS.pin_article(:doc, doc.id, community.id)
       {:ok, pind_article} = ORM.find_by(PinnedArticle, %{doc_id: doc.id})
@@ -28,7 +27,6 @@ defmodule GroupherServer.Test.CMS.Artilces.DocPin do
       assert pind_article.doc_id == doc.id
     end
 
-    @tag :wip
     test "one community & thread can only pin certern count of doc", ~m(community user)a do
       Enum.reduce(1..@max_pinned_article_count_per_thread, [], fn _, acc ->
         {:ok, new_doc} = CMS.create_article(community, :doc, mock_attrs(:doc), user)
@@ -43,12 +41,10 @@ defmodule GroupherServer.Test.CMS.Artilces.DocPin do
       assert reason |> Keyword.get(:code) == ecode(:too_much_pinned_article)
     end
 
-    @tag :wip
     test "can not pin a non-exsit doc", ~m(community)a do
       assert {:error, _} = CMS.pin_article(:doc, 8848, community.id)
     end
 
-    @tag :wip
     test "can undo pin to a doc", ~m(community doc)a do
       {:ok, _} = CMS.pin_article(:doc, doc.id, community.id)
 

@@ -28,7 +28,6 @@ defmodule GroupherServer.Test.CMS.Hooks.CiteDoc do
   end
 
   describe "[cite basic]" do
-    @tag :wip
     test "cited multi doc should work", ~m(user community doc2 doc3 doc4 doc5 doc_attrs)a do
       body =
         mock_rich_text(
@@ -58,7 +57,6 @@ defmodule GroupherServer.Test.CMS.Hooks.CiteDoc do
       assert doc5.meta.citing_count == 1
     end
 
-    @tag :wip
     test "cited doc itself should not work", ~m(user community doc_attrs)a do
       {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)
 
@@ -71,7 +69,6 @@ defmodule GroupherServer.Test.CMS.Hooks.CiteDoc do
       assert doc.meta.citing_count == 0
     end
 
-    @tag :wip
     test "cited comment itself should not work", ~m(user doc)a do
       {:ok, cited_comment} = CMS.create_comment(:doc, doc.id, mock_rich_text("hello"), user)
 
@@ -89,7 +86,6 @@ defmodule GroupherServer.Test.CMS.Hooks.CiteDoc do
       assert cited_comment.meta.citing_count == 0
     end
 
-    @tag :wip
     test "can cite doc's comment in doc", ~m(community user doc doc2 doc_attrs)a do
       {:ok, comment} = CMS.create_comment(:doc, doc.id, mock_rich_text("hello"), user)
 
@@ -111,7 +107,6 @@ defmodule GroupherServer.Test.CMS.Hooks.CiteDoc do
       assert cited_content.cited_by_type == "COMMENT"
     end
 
-    @tag :wip
     test "can cite a comment in a comment", ~m(user doc)a do
       {:ok, cited_comment} = CMS.create_comment(:doc, doc.id, mock_rich_text("hello"), user)
 
@@ -133,7 +128,6 @@ defmodule GroupherServer.Test.CMS.Hooks.CiteDoc do
       assert cited_content.cited_by_type == "COMMENT"
     end
 
-    @tag :wip
     test "can cited doc inside a comment", ~m(user doc doc2 doc3 doc4 doc5)a do
       comment_body =
         mock_rich_text(
@@ -163,7 +157,6 @@ defmodule GroupherServer.Test.CMS.Hooks.CiteDoc do
   end
 
   describe "[cite pagi]" do
-    @tag :wip
     test "can get paged cited articles.", ~m(user community doc2 doc_attrs)a do
       {:ok, comment} =
         CMS.create_comment(
@@ -221,7 +214,6 @@ defmodule GroupherServer.Test.CMS.Hooks.CiteDoc do
   end
 
   describe "[cross cite]" do
-    @tag :wip
     test "can citing multi type thread and comment in one time", ~m(user community doc2)a do
       doc_attrs = mock_attrs(:doc, %{community_id: community.id})
       blog_attrs = mock_attrs(:blog, %{community_id: community.id})

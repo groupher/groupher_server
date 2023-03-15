@@ -31,7 +31,6 @@ defmodule GroupherServer.Test.CMS.Comments.DocArchive do
   end
 
   describe "[cms comment archive]" do
-    @tag :wip
     test "can archive comments", ~m(comment_long_ago)a do
       {:ok, _} = CMS.archive_articles(:comment)
 
@@ -45,7 +44,6 @@ defmodule GroupherServer.Test.CMS.Comments.DocArchive do
       assert archived_comment.id == comment_long_ago.id
     end
 
-    @tag :wip
     test "can not edit archived comment" do
       {:ok, _} = CMS.archive_articles(:comment)
 
@@ -59,7 +57,6 @@ defmodule GroupherServer.Test.CMS.Comments.DocArchive do
       assert reason |> is_error?(:archived)
     end
 
-    @tag :wip
     test "can not delete archived comment" do
       {:ok, _} = CMS.archive_articles(:comment)
 

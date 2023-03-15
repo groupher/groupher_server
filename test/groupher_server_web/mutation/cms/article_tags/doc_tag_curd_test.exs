@@ -39,7 +39,7 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.DocTagCURD do
       }
     }
     """
-    @tag :wip
+
     test "create tag with valid attrs, has default DOC thread and default docs",
          ~m(community)a do
       variables = %{
@@ -66,7 +66,6 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.DocTagCURD do
       assert belong_community["id"] == to_string(community.id)
     end
 
-    @tag :wip
     test "create tag with extra", ~m(community)a do
       variables = %{
         title: "tag title",
@@ -86,7 +85,6 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.DocTagCURD do
       assert created["extra"] == ["menuID", "menuID2"]
     end
 
-    @tag :wip
     test "unauth user create tag fails", ~m(community user_conn guest_conn)a do
       variables = %{
         title: "tag title",
@@ -117,7 +115,7 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.DocTagCURD do
       }
     }
     """
-    @tag :wip
+
     test "auth user can update a tag", ~m(article_tag_attrs community user)a do
       {:ok, article_tag} = CMS.create_article_tag(community, :doc, article_tag_attrs, user)
 
@@ -150,7 +148,7 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.DocTagCURD do
       }
     }
     """
-    @tag :wip
+
     test "auth user can delete tag", ~m(article_tag_attrs community user)a do
       {:ok, article_tag} = CMS.create_article_tag(community, :doc, article_tag_attrs, user)
 
@@ -166,7 +164,6 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.DocTagCURD do
       assert deleted["id"] == to_string(article_tag.id)
     end
 
-    @tag :wip
     test "unauth user delete tag fails",
          ~m(article_tag_attrs community user_conn guest_conn user)a do
       {:ok, article_tag} = CMS.create_article_tag(community, :doc, article_tag_attrs, user)

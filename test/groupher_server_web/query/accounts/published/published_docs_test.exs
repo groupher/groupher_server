@@ -34,7 +34,7 @@ defmodule GroupherServer.Test.Query.Accounts.Published.Docs do
       }
     }
     """
-    @tag :wip
+
     test "can get published docs", ~m(guest_conn community user)a do
       doc_attrs = mock_attrs(:doc, %{community_id: community.id})
 
@@ -76,7 +76,7 @@ defmodule GroupherServer.Test.Query.Accounts.Published.Docs do
       }
     }
     """
-    @tag :wip
+
     test "user can get paged published comments on doc", ~m(guest_conn user doc)a do
       pub_comments =
         Enum.reduce(1..@publish_count, [], fn _, acc ->

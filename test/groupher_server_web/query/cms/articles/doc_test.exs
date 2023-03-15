@@ -32,7 +32,7 @@ defmodule GroupherServer.Test.Query.Articles.Doc do
     }
   }
   """
-  @tag :wip
+
   test "basic graphql query on doc with logined user",
        ~m(user_conn community user doc_attrs)a do
     {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)
@@ -53,7 +53,6 @@ defmodule GroupherServer.Test.Query.Articles.Doc do
     assert length(Map.keys(results)) == 5
   end
 
-  @tag :wip
   test "basic graphql query on doc with stranger(unloged user)",
        ~m(guest_conn doc)a do
     variables = %{id: doc.id}
@@ -63,7 +62,6 @@ defmodule GroupherServer.Test.Query.Articles.Doc do
     assert is_valid_kv?(results, "title", :string)
   end
 
-  @tag :wip
   test "pending state should in meta", ~m(guest_conn user_conn community user doc_attrs)a do
     {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)
     variables = %{id: doc.id}

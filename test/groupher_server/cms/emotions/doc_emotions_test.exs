@@ -22,7 +22,6 @@ defmodule GroupherServer.Test.CMS.Emotions.DocEmotions do
   end
 
   describe "[emotion in paged docs]" do
-    @tag :wip
     test "login user should got viewer has emotioned status",
          ~m(community doc_attrs user)a do
       total_count = 10
@@ -61,7 +60,6 @@ defmodule GroupherServer.Test.CMS.Emotions.DocEmotions do
   end
 
   describe "[basic article emotion]" do
-    @tag :wip
     test "doc has default emotions after created", ~m(community doc_attrs user)a do
       {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)
 
@@ -69,7 +67,6 @@ defmodule GroupherServer.Test.CMS.Emotions.DocEmotions do
       assert @default_emotions == emotions
     end
 
-    @tag :wip
     test "can make emotion to doc", ~m(community doc_attrs user user2)a do
       {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)
 
@@ -83,7 +80,6 @@ defmodule GroupherServer.Test.CMS.Emotions.DocEmotions do
       assert user_exist_in?(user2, emotions.latest_downvote_users)
     end
 
-    @tag :wip
     test "can undo emotion to doc", ~m(community doc_attrs user user2)a do
       {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)
 
@@ -100,7 +96,6 @@ defmodule GroupherServer.Test.CMS.Emotions.DocEmotions do
       assert not user_exist_in?(user2, emotions.latest_downvote_users)
     end
 
-    @tag :wip
     test "same user make same emotion to same doc.", ~m(community doc_attrs user)a do
       {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)
 
@@ -113,7 +108,6 @@ defmodule GroupherServer.Test.CMS.Emotions.DocEmotions do
       assert user_exist_in?(user, doc.emotions.latest_downvote_users)
     end
 
-    @tag :wip
     test "same user same emotion to same doc only have one user_emotion record",
          ~m(community doc_attrs user)a do
       {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)
@@ -132,7 +126,6 @@ defmodule GroupherServer.Test.CMS.Emotions.DocEmotions do
       assert record.heart
     end
 
-    @tag :wip
     test "different user can make same emotions on same doc",
          ~m(community doc_attrs user user2 user3)a do
       {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)
@@ -149,7 +142,6 @@ defmodule GroupherServer.Test.CMS.Emotions.DocEmotions do
       assert user_exist_in?(user3, emotions.latest_beer_users)
     end
 
-    @tag :wip
     test "same user can make differcent emotions on same doc",
          ~m(community doc_attrs user)a do
       {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)

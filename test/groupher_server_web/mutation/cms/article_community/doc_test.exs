@@ -24,7 +24,7 @@ defmodule GroupherServer.Test.Mutation.ArticleCommunity.Doc do
       }
     }
     """
-    @tag :wip
+
     test "auth user can mirror a doc to other community", ~m(doc)a do
       passport_rules = %{"doc.community.mirror" => true}
       rule_conn = simu_conn(:user, cms: passport_rules)
@@ -38,7 +38,6 @@ defmodule GroupherServer.Test.Mutation.ArticleCommunity.Doc do
       assert community.id in assoc_communities
     end
 
-    @tag :wip
     test "unauth user cannot mirror a doc to a community",
          ~m(user_conn guest_conn doc)a do
       {:ok, community} = db_insert(:community)
@@ -55,7 +54,6 @@ defmodule GroupherServer.Test.Mutation.ArticleCommunity.Doc do
              |> mutation_get_error?(@mirror_article_query, variables, ecode(:passport))
     end
 
-    @tag :wip
     test "auth user can mirror multi doc to other communities", ~m(doc)a do
       passport_rules = %{"doc.community.mirror" => true}
       rule_conn = simu_conn(:user, cms: passport_rules)
@@ -83,7 +81,7 @@ defmodule GroupherServer.Test.Mutation.ArticleCommunity.Doc do
       }
     }
     """
-    @tag :wip
+
     test "auth user can unmirror doc to a community", ~m(doc)a do
       passport_rules = %{"doc.community.mirror" => true}
       rule_conn = simu_conn(:user, cms: passport_rules)
@@ -120,7 +118,7 @@ defmodule GroupherServer.Test.Mutation.ArticleCommunity.Doc do
       }
     }
     """
-    @tag :wip
+
     test "auth user can mirror doc home", ~m(doc)a do
       {:ok, home_community} = db_insert(:community, %{raw: "home"})
 
@@ -143,7 +141,7 @@ defmodule GroupherServer.Test.Mutation.ArticleCommunity.Doc do
       }
     }
     """
-    @tag :wip
+
     test "auth user can move doc to blackhole", ~m(doc)a do
       {:ok, blackhole_community} = db_insert(:community, %{raw: "blackhole"})
 
@@ -167,7 +165,7 @@ defmodule GroupherServer.Test.Mutation.ArticleCommunity.Doc do
       }
     }
     """
-    @tag :wip
+
     test "auth user can move doc to other community", ~m(doc)a do
       passport_rules = %{"doc.community.mirror" => true}
       rule_conn = simu_conn(:user, cms: passport_rules)

@@ -21,7 +21,6 @@ defmodule GroupherServer.Test.CMS.Hooks.NotifyDoc do
   end
 
   describe "[upvote notify]" do
-    @tag :wip
     test "upvote hook should work on doc", ~m(user2 doc)a do
       {:ok, doc} = preload_author(doc)
 
@@ -40,7 +39,6 @@ defmodule GroupherServer.Test.CMS.Hooks.NotifyDoc do
       assert user_exist_in?(user2, notify.from_users)
     end
 
-    @tag :wip
     test "upvote hook should work on doc comment", ~m(user2 doc comment)a do
       {:ok, comment} = CMS.upvote_comment(comment.id, user2)
       {:ok, comment} = preload_author(comment)
@@ -60,7 +58,6 @@ defmodule GroupherServer.Test.CMS.Hooks.NotifyDoc do
       assert user_exist_in?(user2, notify.from_users)
     end
 
-    @tag :wip
     test "undo upvote hook should work on doc", ~m(user2 doc)a do
       {:ok, doc} = preload_author(doc)
 
@@ -75,7 +72,6 @@ defmodule GroupherServer.Test.CMS.Hooks.NotifyDoc do
       assert notifications.total_count == 0
     end
 
-    @tag :wip
     test "undo upvote hook should work on doc comment", ~m(user2 comment)a do
       {:ok, comment} = CMS.upvote_comment(comment.id, user2)
 
@@ -93,7 +89,6 @@ defmodule GroupherServer.Test.CMS.Hooks.NotifyDoc do
   end
 
   describe "[collect notify]" do
-    @tag :wip
     test "collect hook should work on doc", ~m(user2 doc)a do
       {:ok, doc} = preload_author(doc)
 
@@ -112,7 +107,6 @@ defmodule GroupherServer.Test.CMS.Hooks.NotifyDoc do
       assert user_exist_in?(user2, notify.from_users)
     end
 
-    @tag :wip
     test "undo collect hook should work on doc", ~m(user2 doc)a do
       {:ok, doc} = preload_author(doc)
 
@@ -129,7 +123,6 @@ defmodule GroupherServer.Test.CMS.Hooks.NotifyDoc do
   end
 
   describe "[comment notify]" do
-    @tag :wip
     test "doc author should get notify after some one comment on it",
          ~m(user2 doc)a do
       {:ok, doc} = preload_author(doc)
@@ -149,7 +142,6 @@ defmodule GroupherServer.Test.CMS.Hooks.NotifyDoc do
       assert user_exist_in?(user2, notify.from_users)
     end
 
-    @tag :wip
     test "doc comment author should get notify after some one reply it",
          ~m(user2 user3 doc)a do
       {:ok, doc} = preload_author(doc)

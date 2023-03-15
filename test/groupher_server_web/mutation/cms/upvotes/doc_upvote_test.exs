@@ -27,7 +27,7 @@ defmodule GroupherServer.Test.Mutation.Upvotes.DocUpvote do
       }
     }
     """
-    @tag :wip
+
     test "login user can upvote a doc", ~m(user_conn user doc)a do
       variables = %{id: doc.id}
       created = user_conn |> mutation_result(@query, variables, "upvoteDoc")
@@ -36,7 +36,6 @@ defmodule GroupherServer.Test.Mutation.Upvotes.DocUpvote do
       assert created["id"] == to_string(doc.id)
     end
 
-    @tag :wip
     test "unauth user upvote a doc fails", ~m(guest_conn doc)a do
       variables = %{id: doc.id}
 
@@ -55,7 +54,7 @@ defmodule GroupherServer.Test.Mutation.Upvotes.DocUpvote do
       }
     }
     """
-    @tag :wip
+
     test "login user can undo upvote to a doc", ~m(user_conn doc user)a do
       {:ok, _} = CMS.upvote_article(:doc, doc.id, user)
 
@@ -66,7 +65,6 @@ defmodule GroupherServer.Test.Mutation.Upvotes.DocUpvote do
       assert updated["id"] == to_string(doc.id)
     end
 
-    @tag :wip
     test "unauth user undo upvote a doc fails", ~m(guest_conn doc)a do
       variables = %{id: doc.id}
 

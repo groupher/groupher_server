@@ -20,7 +20,6 @@ defmodule GroupherServer.Test.CMS.DocMeta do
   end
 
   describe "[cms doc meta info]" do
-    @tag :wip
     test "can get default meta info", ~m(user community doc_attrs)a do
       assert {:error, _} = ORM.find_by(Author, user_id: user.id)
 
@@ -31,7 +30,6 @@ defmodule GroupherServer.Test.CMS.DocMeta do
       assert meta == @default_article_meta |> Map.merge(%{thread: "DOC"})
     end
 
-    @tag :wip
     test "is_edited flag should set to true after doc updated",
          ~m(user community doc_attrs)a do
       {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)
@@ -45,7 +43,6 @@ defmodule GroupherServer.Test.CMS.DocMeta do
       assert doc.meta.is_edited
     end
 
-    @tag :wip
     test "doc's lock/undo_lock article should work", ~m(user community doc_attrs)a do
       {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)
       assert not doc.meta.is_comment_locked
