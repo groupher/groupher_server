@@ -87,13 +87,6 @@ defmodule GroupherServerWeb.Resolvers.CMS do
 
   # TODO: login only
 
-  def wiki(_root, ~m(community)a, _info), do: CMS.get_wiki(%Community{raw: community})
-  def cheatsheet(_root, ~m(community)a, _info), do: CMS.get_cheatsheet(%Community{raw: community})
-
-  def create_blog(_root, ~m(community_id)a = args, %{context: %{cur_user: user}}) do
-    CMS.create_blog(%Community{id: community_id}, args, user)
-  end
-
   def create_article(_root, ~m(community_id thread)a = args, %{context: %{cur_user: user}}) do
     CMS.create_article(%Community{id: community_id}, thread, args, user)
   end

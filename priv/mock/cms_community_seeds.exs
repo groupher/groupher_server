@@ -6,7 +6,6 @@ alias GroupherServer.CMS
 # communities = ["js", "java", "nodejs", "elixir", "c", "python", "ruby", "lisp"]
 # communities = ["php", "julia", "rust", "cpp", "csharp", "clojure", "dart", "go", "kotlin"]
 communities = ["scala", "haskell", "swift", "typescript", "lua", "racket"]
-# threads = ["posts", "tuts", "users", "map", "cheatsheet"]
 
 {:ok, threads} = ORM.find_all(CMS.Thread, %{page: 1, size: 30})
 thread_ids = threads.entries |> Enum.map(& &1.id)
