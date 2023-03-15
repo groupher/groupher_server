@@ -115,7 +115,7 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.ChangelogTagCURD d
       }
     }
     """
-    @tag :wip
+
     test "auth user can update a tag", ~m(article_tag_attrs community user)a do
       {:ok, article_tag} = CMS.create_article_tag(community, :changelog, article_tag_attrs, user)
 
@@ -148,7 +148,7 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.ChangelogTagCURD d
       }
     }
     """
-    @tag :wip
+
     test "auth user can delete tag", ~m(article_tag_attrs community user)a do
       {:ok, article_tag} = CMS.create_article_tag(community, :changelog, article_tag_attrs, user)
 
@@ -164,7 +164,6 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.ChangelogTagCURD d
       assert deleted["id"] == to_string(article_tag.id)
     end
 
-    @tag :wip
     test "unauth user delete tag fails",
          ~m(article_tag_attrs community user_conn guest_conn user)a do
       {:ok, article_tag} = CMS.create_article_tag(community, :changelog, article_tag_attrs, user)

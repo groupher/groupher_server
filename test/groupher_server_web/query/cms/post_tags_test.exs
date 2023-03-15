@@ -1,4 +1,4 @@
-defmodule GroupherServer.Test.Query.CMS.ArticleTags do
+defmodule GroupherServer.Test.Query.CMS.PostTags do
   @moduledoc false
 
   use GroupherServer.TestTools

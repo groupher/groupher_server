@@ -26,7 +26,7 @@ defmodule GroupherServer.Test.Mutation.Sink.ChangelogSink do
       }
     }
     """
-    @tag :wip
+
     test "login user can sink a changelog", ~m(community changelog)a do
       variables = %{id: changelog.id, communityId: community.id}
       passport_rules = %{community.raw => %{"changelog.sink" => true}}
@@ -40,7 +40,6 @@ defmodule GroupherServer.Test.Mutation.Sink.ChangelogSink do
       assert changelog.active_at == changelog.inserted_at
     end
 
-    @tag :wip
     test "unauth user sink a changelog fails", ~m(guest_conn community changelog)a do
       variables = %{id: changelog.id, communityId: community.id}
 
@@ -54,7 +53,7 @@ defmodule GroupherServer.Test.Mutation.Sink.ChangelogSink do
       }
     }
     """
-    @tag :wip
+
     test "login user can undo sink to a changelog", ~m(community changelog)a do
       variables = %{id: changelog.id, communityId: community.id}
 
@@ -69,7 +68,6 @@ defmodule GroupherServer.Test.Mutation.Sink.ChangelogSink do
       assert not changelog.meta.is_sinked
     end
 
-    @tag :wip
     test "unauth user undo sink a changelog fails", ~m(guest_conn community changelog)a do
       variables = %{id: changelog.id, communityId: community.id}
 

@@ -27,7 +27,7 @@ defmodule GroupherServer.Test.Mutation.Upvotes.ChangelogUpvote do
       }
     }
     """
-    @tag :wip
+
     test "login user can upvote a changelog", ~m(user_conn user changelog)a do
       variables = %{id: changelog.id}
       created = user_conn |> mutation_result(@query, variables, "upvoteChangelog")
@@ -36,7 +36,6 @@ defmodule GroupherServer.Test.Mutation.Upvotes.ChangelogUpvote do
       assert created["id"] == to_string(changelog.id)
     end
 
-    @tag :wip
     test "unauth user upvote a changelog fails", ~m(guest_conn changelog)a do
       variables = %{id: changelog.id}
 
@@ -55,7 +54,7 @@ defmodule GroupherServer.Test.Mutation.Upvotes.ChangelogUpvote do
       }
     }
     """
-    @tag :wip
+
     test "login user can undo upvote to a changelog", ~m(user_conn changelog user)a do
       {:ok, _} = CMS.upvote_article(:changelog, changelog.id, user)
 
@@ -66,7 +65,6 @@ defmodule GroupherServer.Test.Mutation.Upvotes.ChangelogUpvote do
       assert updated["id"] == to_string(changelog.id)
     end
 
-    @tag :wip
     test "unauth user undo upvote a changelog fails", ~m(guest_conn changelog)a do
       variables = %{id: changelog.id}
 

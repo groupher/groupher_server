@@ -27,7 +27,7 @@ defmodule GroupherServer.Test.Mutation.Comments.ChangelogComment do
       }
     }
     """
-    @tag :wip
+
     test "write article comment to a exsit changelog", ~m(changelog user_conn)a do
       variables = %{thread: "CHANGELOG", id: changelog.id, body: mock_comment()}
 
@@ -45,7 +45,7 @@ defmodule GroupherServer.Test.Mutation.Comments.ChangelogComment do
       }
     }
     """
-    @tag :wip
+
     test "login user can reply to a comment", ~m(changelog user user_conn)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
       variables = %{id: comment.id, body: mock_comment("reply comment")}
@@ -64,7 +64,7 @@ defmodule GroupherServer.Test.Mutation.Comments.ChangelogComment do
       }
     }
     """
-    @tag :wip
+
     test "only owner can update a exsit comment",
          ~m(changelog user guest_conn user_conn owner_conn)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
@@ -89,7 +89,7 @@ defmodule GroupherServer.Test.Mutation.Comments.ChangelogComment do
       }
     }
     """
-    @tag :wip
+
     test "only owner can delete a exsit comment",
          ~m(changelog user guest_conn user_conn owner_conn)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
@@ -117,7 +117,7 @@ defmodule GroupherServer.Test.Mutation.Comments.ChangelogComment do
       }
     }
     """
-    @tag :wip
+
     test "login user can upvote a exsit changelog comment",
          ~m(changelog user guest_conn user_conn)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
@@ -142,7 +142,7 @@ defmodule GroupherServer.Test.Mutation.Comments.ChangelogComment do
       }
     }
     """
-    @tag :wip
+
     test "login user can undo upvote a exsit changelog comment",
          ~m(changelog user guest_conn user_conn)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
@@ -177,7 +177,7 @@ defmodule GroupherServer.Test.Mutation.Comments.ChangelogComment do
       }
     }
     """
-    @tag :wip
+
     test "login user can emotion to a comment", ~m(changelog user user_conn)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
       variables = %{id: comment.id, emotion: "BEER"}
@@ -204,7 +204,7 @@ defmodule GroupherServer.Test.Mutation.Comments.ChangelogComment do
       }
     }
     """
-    @tag :wip
+
     test "login user can undo emotion to a comment", ~m(changelog user owner_conn)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
       {:ok, _} = CMS.emotion_to_comment(comment.id, :beer, user)
@@ -228,7 +228,7 @@ defmodule GroupherServer.Test.Mutation.Comments.ChangelogComment do
       }
     }
     """
-    @tag :wip
+
     test "can lock a changelog's comment", ~m(community changelog)a do
       variables = %{id: changelog.id, communityId: community.id}
       passport_rules = %{community.raw => %{"changelog.lock_comment" => true}}
@@ -241,7 +241,6 @@ defmodule GroupherServer.Test.Mutation.Comments.ChangelogComment do
       assert changelog.meta.is_comment_locked
     end
 
-    @tag :wip
     test "unauth user  fails", ~m(guest_conn community changelog)a do
       variables = %{id: changelog.id, communityId: community.id}
 
@@ -255,7 +254,7 @@ defmodule GroupherServer.Test.Mutation.Comments.ChangelogComment do
       }
     }
     """
-    @tag :wip
+
     test "can undo lock a changelog's comment", ~m(community changelog)a do
       {:ok, _} = CMS.lock_article_comments(:changelog, changelog.id)
       {:ok, changelog} = ORM.find(Changelog, changelog.id)
@@ -272,7 +271,6 @@ defmodule GroupherServer.Test.Mutation.Comments.ChangelogComment do
       assert not changelog.meta.is_comment_locked
     end
 
-    @tag :wip
     test "unauth user undo fails", ~m(guest_conn community changelog)a do
       variables = %{id: changelog.id, communityId: community.id}
 
@@ -289,7 +287,7 @@ defmodule GroupherServer.Test.Mutation.Comments.ChangelogComment do
       }
     }
     """
-    @tag :wip
+
     test "can pin a changelog's comment", ~m(owner_conn changelog user)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
 
@@ -300,7 +298,6 @@ defmodule GroupherServer.Test.Mutation.Comments.ChangelogComment do
       assert result["isPinned"]
     end
 
-    @tag :wip
     test "unauth user fails.", ~m(guest_conn changelog user)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
       variables = %{id: comment.id}
@@ -316,7 +313,7 @@ defmodule GroupherServer.Test.Mutation.Comments.ChangelogComment do
       }
     }
     """
-    @tag :wip
+
     test "can undo pin a changelog's comment", ~m(owner_conn changelog user)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
       {:ok, _} = CMS.pin_comment(comment.id)
@@ -328,7 +325,6 @@ defmodule GroupherServer.Test.Mutation.Comments.ChangelogComment do
       assert not result["isPinned"]
     end
 
-    @tag :wip
     test "unauth user undo fails.", ~m(guest_conn changelog user)a do
       {:ok, comment} = CMS.create_comment(:changelog, changelog.id, mock_comment(), user)
       {:ok, _} = CMS.pin_comment(comment.id)

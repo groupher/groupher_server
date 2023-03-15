@@ -32,7 +32,7 @@ defmodule GroupherServer.Test.Mutation.Articles.ChangelogEmotion do
       }
     }
     """
-    @tag :wip
+
     test "login user can emotion to a changelog", ~m(community changelog_attrs user user_conn)a do
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
 
@@ -58,7 +58,7 @@ defmodule GroupherServer.Test.Mutation.Articles.ChangelogEmotion do
       }
     }
     """
-    @tag :wip
+
     test "login user can undo emotion to a changelog",
          ~m(community changelog_attrs user owner_conn)a do
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)

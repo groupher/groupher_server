@@ -48,7 +48,7 @@ defmodule GroupherServer.Test.Mutation.Articles.Changelog do
       }
     }
     """
-    @tag :wip
+
     test "create changelog with valid attrs and make sure author exsit" do
       {:ok, user} = db_insert(:user)
       user_conn = simu_conn(:user, user)
@@ -77,7 +77,6 @@ defmodule GroupherServer.Test.Mutation.Articles.Changelog do
       assert {:ok, _} = ORM.find_by(Author, user_id: user.id)
     end
 
-    @tag :wip
     test "create changelog with valid tags id list", ~m(user_conn user community)a do
       article_tag_attrs = mock_attrs(:article_tag)
       {:ok, article_tag} = CMS.create_article_tag(community, :changelog, article_tag_attrs, user)
@@ -95,7 +94,6 @@ defmodule GroupherServer.Test.Mutation.Articles.Changelog do
       assert exist_in?(%{id: article_tag.id}, changelog.article_tags)
     end
 
-    @tag :wip
     test "create changelog should excape xss attracts" do
       {:ok, user} = db_insert(:user)
       user_conn = simu_conn(:user, user)
@@ -111,7 +109,6 @@ defmodule GroupherServer.Test.Mutation.Articles.Changelog do
       assert not String.contains?(body_html, "script")
     end
 
-    @tag :wip
     test "create changelog should excape xss attracts 2" do
       {:ok, user} = db_insert(:user)
       user_conn = simu_conn(:user, user)
@@ -129,7 +126,7 @@ defmodule GroupherServer.Test.Mutation.Articles.Changelog do
 
     # NOTE: this test is IMPORTANT, cause json_codec: Jason in router will cause
     # server crash when GraphQL parse error
-    @tag :wip
+
     test "create changelog with missing non_null field should get 200 error" do
       {:ok, user} = db_insert(:user)
       user_conn = simu_conn(:user, user)
@@ -148,7 +145,7 @@ defmodule GroupherServer.Test.Mutation.Articles.Changelog do
       }
     }
     """
-    @tag :wip
+
     test "delete a changelog by changelog's owner", ~m(owner_conn changelog)a do
       deleted = owner_conn |> mutation_result(@query, %{id: changelog.id}, "deleteChangelog")
 
@@ -156,7 +153,6 @@ defmodule GroupherServer.Test.Mutation.Articles.Changelog do
       assert {:error, _} = ORM.find(Changelog, deleted["id"])
     end
 
-    @tag :wip
     test "can delete a changelog by auth user", ~m(changelog)a do
       changelog = changelog |> Repo.preload(:communities)
       belongs_community_title = changelog.communities |> List.first() |> Map.get(:title)
@@ -170,12 +166,10 @@ defmodule GroupherServer.Test.Mutation.Articles.Changelog do
       assert {:error, _} = ORM.find(Changelog, deleted["id"])
     end
 
-    @tag :wip
     test "delete a changelog without login user fails", ~m(guest_conn changelog)a do
       assert guest_conn |> mutation_get_error?(@query, %{id: changelog.id}, ecode(:account_login))
     end
 
-    @tag :wip
     test "login user with auth passport delete a changelog", ~m(changelog)a do
       changelog = changelog |> Repo.preload(:communities)
       changelog_communities_0 = changelog.communities |> List.first() |> Map.get(:title)
@@ -189,7 +183,6 @@ defmodule GroupherServer.Test.Mutation.Articles.Changelog do
       assert deleted["id"] == to_string(changelog.id)
     end
 
-    @tag :wip
     test "unauth user delete changelog fails", ~m(user_conn guest_conn changelog)a do
       variables = %{id: changelog.id}
       rule_conn = simu_conn(:user, cms: %{"what.ever" => true})
@@ -220,7 +213,7 @@ defmodule GroupherServer.Test.Mutation.Articles.Changelog do
       }
     }
     """
-    @tag :wip
+
     test "update a changelog without login user fails", ~m(guest_conn changelog)a do
       unique_num = System.unique_integer([:positive, :monotonic])
 
@@ -233,7 +226,6 @@ defmodule GroupherServer.Test.Mutation.Articles.Changelog do
       assert guest_conn |> mutation_get_error?(@query, variables, ecode(:account_login))
     end
 
-    @tag :wip
     test "changelog can be update by owner", ~m(owner_conn changelog)a do
       unique_num = System.unique_integer([:positive, :monotonic])
 
@@ -254,7 +246,6 @@ defmodule GroupherServer.Test.Mutation.Articles.Changelog do
       assert result["title"] == variables.title
     end
 
-    @tag :wip
     test "update changelog with valid attrs should have is_edited meta info update",
          ~m(owner_conn changelog)a do
       unique_num = System.unique_integer([:positive, :monotonic])
@@ -270,7 +261,6 @@ defmodule GroupherServer.Test.Mutation.Articles.Changelog do
       assert true == updated_changelog["meta"]["isEdited"]
     end
 
-    @tag :wip
     test "login user with auth passport update a changelog", ~m(changelog)a do
       changelog = changelog |> Repo.preload(:communities)
       belongs_community_title = changelog.communities |> List.first() |> Map.get(:title)
@@ -292,7 +282,6 @@ defmodule GroupherServer.Test.Mutation.Articles.Changelog do
       assert updated_changelog["id"] == to_string(changelog.id)
     end
 
-    @tag :wip
     test "unauth user update changelog fails", ~m(user_conn guest_conn changelog)a do
       unique_num = System.unique_integer([:positive, :monotonic])
 
