@@ -1,4 +1,4 @@
-defmodule GroupherServer.Test.ArticleCollect do
+defmodule GroupherServer.Test.Collect.Post do
   @moduledoc false
   use GroupherServer.TestTools
 

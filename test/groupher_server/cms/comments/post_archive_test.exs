@@ -1,4 +1,4 @@
-defmodule GroupherServer.Test.CMS.Comments.Archive do
+defmodule GroupherServer.Test.CMS.Comments.PostArchive do
   @moduledoc false
   use GroupherServer.TestTools
   import Helper.Utils, only: [get_config: 2]

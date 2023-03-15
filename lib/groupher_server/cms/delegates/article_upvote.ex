@@ -51,7 +51,8 @@ defmodule GroupherServer.CMS.Delegate.ArticleUpvote do
         with {:ok, _} <- ORM.create(ArticleUpvote, args) do
           article |> done
         else
-          _ -> {:error, [message: "viewer already upvoted", code: ecode(:already_upvoted)]}
+          _ ->
+            {:error, [message: "viewer already upvoted", code: ecode(:already_upvoted)]}
         end
       end)
       |> Multi.run(:after_hooks, fn _, _ ->

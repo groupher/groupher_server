@@ -1,4 +1,4 @@
-defmodule GroupherServer.Test.Query.Accounts.UpvotedArticles do
+defmodule GroupherServer.Test.Query.Accounts.UpvotedChangelogs do
   @moduledoc false
   use GroupherServer.TestTools
 
@@ -8,15 +8,15 @@ defmodule GroupherServer.Test.Query.Accounts.UpvotedArticles do
 
   setup do
     {:ok, user} = db_insert(:user)
-    {:ok, posts} = db_insert_multi(:post, @total_count)
+    {:ok, changelogs} = db_insert_multi(:changelog, @total_count)
 
     guest_conn = simu_conn(:guest)
     user_conn = simu_conn(:user, user)
 
-    {:ok, ~m(guest_conn user_conn user posts)a}
+    {:ok, ~m(guest_conn user_conn user changelogs)a}
   end
 
-  describe "[accounts upvoted posts]" do
+  describe "[accounts upvoted changelogs]" do
     @query """
     query($login: String!, $filter: UpvotedArticlesFilter!) {
       pagedUpvotedArticles(login: $login, filter: $filter) {
@@ -30,17 +30,17 @@ defmodule GroupherServer.Test.Query.Accounts.UpvotedArticles do
     }
     """
 
-    test "both login and unlogin user can get one's paged upvoteded posts",
-         ~m(user_conn guest_conn posts)a do
+    test "both login and unlogin user can get one's paged upvoteded changelogs",
+         ~m(user_conn guest_conn changelogs)a do
       {:ok, user} = db_insert(:user)
 
-      Enum.each(posts, fn post ->
-        {:ok, _} = CMS.upvote_article(:post, post.id, user)
+      Enum.each(changelogs, fn changelog ->
+        {:ok, _} = CMS.upvote_article(:changelog, changelog.id, user)
       end)
 
       variables = %{
         login: user.login,
-        filter: %{thread: "POST", page: 1, size: 20}
+        filter: %{thread: "CHANGELOG", page: 1, size: 20}
       }
 
       results = user_conn |> query_result(@query, variables, "pagedUpvotedArticles")
@@ -51,11 +51,11 @@ defmodule GroupherServer.Test.Query.Accounts.UpvotedArticles do
     end
 
     test "if no thread filter will get alll paged upvoteded articles",
-         ~m(guest_conn posts)a do
+         ~m(guest_conn changelogs)a do
       {:ok, user} = db_insert(:user)
 
-      Enum.each(posts, fn post ->
-        {:ok, _} = CMS.upvote_article(:post, post.id, user)
+      Enum.each(changelogs, fn changelog ->
+        {:ok, _} = CMS.upvote_article(:changelog, changelog.id, user)
       end)
 
       variables = %{

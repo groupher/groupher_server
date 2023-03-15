@@ -70,6 +70,16 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
     timestamp_fields(:article)
   end
 
+  object :changelog do
+    meta(:cache, max_age: 30)
+    interface(:article)
+
+    general_article_fields()
+    comments_fields()
+
+    timestamp_fields(:article)
+  end
+
   object :blog do
     interface(:article)
 
