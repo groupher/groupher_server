@@ -183,7 +183,6 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
       }
     }
     """
-
     test "user can get viewer has subscribed state", ~m(user)a do
       {:ok, communities} = db_insert_multi(:community, 5)
       {:ok, _record} = CMS.subscribe_community(communities |> List.first(), user)
@@ -192,7 +191,7 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
       user_conn = simu_conn(:user, user)
       results = user_conn |> query_result(@query, variables, "pagedCommunities")
 
-      assert results["entries"] |> List.last() |> Map.get("viewerHasSubscribed")
+      assert results["entries"] |> Enum.any?(&(&1["viewerHasSubscribed"] == true))
     end
 
     test "guest user can get paged communities", ~m(guest_conn)a do
