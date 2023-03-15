@@ -28,6 +28,7 @@ defmodule GroupherServer.Test.Mutation.Flags.BlogFlag do
       }
     }
     """
+
     test "auth user can markDelete blog", ~m(blog)a do
       variables = %{id: blog.id}
 
@@ -75,6 +76,7 @@ defmodule GroupherServer.Test.Mutation.Flags.BlogFlag do
       }
     }
     """
+
     test "auth user can undo markDelete blog", ~m(blog)a do
       variables = %{id: blog.id}
 

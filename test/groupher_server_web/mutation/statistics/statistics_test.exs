@@ -57,23 +57,33 @@ defmodule GroupherServer.Test.Mutation.Statistics do
     end
 
     @create_blog_query """
-    mutation (
-      $title: String!,
-      $rss: String!
-      $communityId: ID!,
-      $articleTags: [Ids]
+    mutation(
+      $title: String!
+      $body: String!
+      $communityId: ID!
+      $articleTags: [Id]
+      $linkAddr: String
     ) {
       createBlog(
-        title: $title,
-        rss: $rss,
-        communityId: $communityId,
+        title: $title
+        body: $body
+        communityId: $communityId
         articleTags: $articleTags
+        linkAddr: $linkAddr
       ) {
         id
         title
+        linkAddr
+        document {
+          bodyHtml
+        }
+        originalCommunity {
+          id
+        }
       }
     }
     """
+
     test "user should have contribute list after create a blog", ~m(user_conn user community)a do
       blog_attr = mock_attrs(:blog)
       variables = blog_attr |> Map.merge(%{communityId: community.id}) |> camelize_map_key

@@ -41,7 +41,7 @@ defmodule GroupherServer.Test.Query.CMS.PostTags do
     }
     """
     test "guest user can get paged tags without filter",
-         ~m(guest_conn community article_tag_attrs article_tag_attrs2 user)a do
+         ~m(guest_conn community article_tag_attrs user)a do
       variables = %{}
       {:ok, _article_tag} = CMS.create_article_tag(community, :post, article_tag_attrs, user)
       results = guest_conn |> query_result(@query, variables, "pagedArticleTags")
@@ -51,7 +51,7 @@ defmodule GroupherServer.Test.Query.CMS.PostTags do
     end
 
     test "guest user can get all paged tags belongs to a community",
-         ~m(guest_conn community article_tag_attrs article_tag_attrs2 user)a do
+         ~m(guest_conn community article_tag_attrs user)a do
       {:ok, _article_tag} = CMS.create_article_tag(community, :post, article_tag_attrs, user)
 
       variables = %{filter: %{communityId: community.id}}
@@ -68,7 +68,7 @@ defmodule GroupherServer.Test.Query.CMS.PostTags do
     end
 
     test "guest user can get tags by communityId and thread",
-         ~m(guest_conn community community2 article_tag_attrs article_tag_attrs2 user)a do
+         ~m(guest_conn community community2 article_tag_attrs user)a do
       {:ok, article_tag} = CMS.create_article_tag(community, :post, article_tag_attrs, user)
 
       variables = %{filter: %{communityId: community.id, thread: "POST"}}

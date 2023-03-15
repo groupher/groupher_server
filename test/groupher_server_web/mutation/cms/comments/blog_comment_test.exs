@@ -27,6 +27,7 @@ defmodule GroupherServer.Test.Mutation.Comments.BlogComment do
       }
     }
     """
+
     test "write article comment to a exsit blog", ~m(blog user_conn)a do
       variables = %{thread: "BLOG", id: blog.id, body: mock_comment()}
 
@@ -44,6 +45,7 @@ defmodule GroupherServer.Test.Mutation.Comments.BlogComment do
       }
     }
     """
+
     test "login user can reply to a comment", ~m(blog user user_conn)a do
       {:ok, comment} = CMS.create_comment(:blog, blog.id, mock_comment(), user)
       variables = %{id: comment.id, body: mock_comment("reply comment")}
@@ -87,6 +89,7 @@ defmodule GroupherServer.Test.Mutation.Comments.BlogComment do
       }
     }
     """
+
     test "only owner can delete a exsit comment",
          ~m(blog user guest_conn user_conn owner_conn)a do
       {:ok, comment} = CMS.create_comment(:blog, blog.id, mock_comment(), user)
@@ -172,6 +175,7 @@ defmodule GroupherServer.Test.Mutation.Comments.BlogComment do
       }
     }
     """
+
     test "login user can emotion to a comment", ~m(blog user user_conn)a do
       {:ok, comment} = CMS.create_comment(:blog, blog.id, mock_comment(), user)
       variables = %{id: comment.id, emotion: "BEER"}
@@ -198,6 +202,7 @@ defmodule GroupherServer.Test.Mutation.Comments.BlogComment do
       }
     }
     """
+
     test "login user can undo emotion to a comment", ~m(blog user owner_conn)a do
       {:ok, comment} = CMS.create_comment(:blog, blog.id, mock_comment(), user)
       {:ok, _} = CMS.emotion_to_comment(comment.id, :beer, user)

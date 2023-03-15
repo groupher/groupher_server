@@ -86,14 +86,6 @@ defmodule GroupherServerWeb.Resolvers.CMS do
   end
 
   # TODO: login only
-  def blog_rss_info(_root, ~m(rss)a, _) do
-    CMS.blog_rss_info(rss)
-  end
-
-  def update_rss_author(_root, attrs, _) do
-    rss = Map.get(attrs, :rss)
-    CMS.update_rss_author(rss, attrs)
-  end
 
   def wiki(_root, ~m(community)a, _info), do: CMS.get_wiki(%Community{raw: community})
   def cheatsheet(_root, ~m(community)a, _info), do: CMS.get_cheatsheet(%Community{raw: community})

@@ -1,14 +1,14 @@
-defmodule GroupherServer.Test.Articles.Blog do
+defmodule GroupherServer.Test.CMS.Articles.Blog do
   use GroupherServer.TestTools
 
   import Helper.Utils, only: [get_config: 2]
 
+  alias Helper.ORM
   alias GroupherServer.{CMS, Repo}
   alias Helper.Converter.{EditorToHTML, HtmlSanitizer}
 
   alias EditorToHTML.{Class, Validator}
-  alias CMS.Model.{Author, Blog, Community, ArticleDocument, BlogDocument}
-  alias Helper.ORM
+  alias CMS.Model.{Author, ArticleDocument, Community, Blog, BlogDocument}
 
   @root_class Class.article()
   @last_year Timex.shift(Timex.beginning_of_year(Timex.now()), days: -3, seconds: -1)
@@ -17,16 +17,19 @@ defmodule GroupherServer.Test.Articles.Blog do
   setup do
     {:ok, user} = db_insert(:user)
     {:ok, user2} = db_insert(:user)
+
     {:ok, community} = db_insert(:community)
+    {:ok, blog} = db_insert(:blog)
 
     blog_attrs = mock_attrs(:blog, %{community_id: community.id})
 
-    {:ok, ~m(user user2 community blog_attrs)a}
+    {:ok, ~m(user user2 community blog blog_attrs)a}
   end
 
-  describe "[cms blogs curd]" do
+  describe "[cms blog curd]" do
     test "can create blog with valid attrs", ~m(user community blog_attrs)a do
       assert {:error, _} = ORM.find_by(Author, user_id: user.id)
+
       {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user)
       blog = Repo.preload(blog, :document)
 
@@ -60,8 +63,6 @@ defmodule GroupherServer.Test.Articles.Blog do
     test "read blog should update views and meta viewed_user_list",
          ~m(blog_attrs community user user2)a do
       {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user)
-      {:ok, _} = CMS.read_article(:blog, blog.id, user)
-      {:ok, _created} = ORM.find(Blog, blog.id)
 
       # same user duplicate case
       {:ok, _} = CMS.read_article(:blog, blog.id, user)
@@ -78,7 +79,8 @@ defmodule GroupherServer.Test.Articles.Blog do
       assert user2.id in created.meta.viewed_user_ids
     end
 
-    test "read blog should contains viewer_has_xxx state", ~m(blog_attrs community user user2)a do
+    test "read blog should contains viewer_has_xxx state",
+         ~m(blog_attrs community user user2)a do
       {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user)
       {:ok, blog} = CMS.read_article(:blog, blog.id, user)
 
@@ -109,7 +111,16 @@ defmodule GroupherServer.Test.Articles.Blog do
       assert blog.viewer_has_reported
     end
 
-    test "create blog with an exsit community fails", ~m(user)a do
+    test "add user to cms authors, if the user is not exsit in cms authors",
+         ~m(user community blog_attrs)a do
+      assert {:error, _} = ORM.find_by(Author, user_id: user.id)
+
+      {:ok, _} = CMS.create_article(community, :blog, blog_attrs, user)
+      {:ok, author} = ORM.find_by(Author, user_id: user.id)
+      assert author.user_id == user.id
+    end
+
+    test "create blog with an non-exsit community fails", ~m(user)a do
       invalid_attrs = mock_attrs(:blog, %{community_id: non_exsit_id()})
       ivalid_community = %Community{id: non_exsit_id()}
 
@@ -124,12 +135,13 @@ defmodule GroupherServer.Test.Articles.Blog do
 
       assert blog.meta.can_undo_sink
 
-      {:ok, blog_last_year} = db_insert(:blog, %{title: "last year", inserted_at: @last_year})
-      {:ok, blog_last_year} = CMS.read_article(:blog, blog_last_year.id)
-      assert not blog_last_year.meta.can_undo_sink
+      {:ok, doc_last_year} = db_insert(:blog, %{title: "last year", inserted_at: @last_year})
 
-      {:ok, blog_last_year} = CMS.read_article(:blog, blog_last_year.id, user)
-      assert not blog_last_year.meta.can_undo_sink
+      {:ok, doc_last_year} = CMS.read_article(:blog, doc_last_year.id)
+      assert not doc_last_year.meta.can_undo_sink
+
+      {:ok, doc_last_year} = CMS.read_article(:blog, doc_last_year.id, user)
+      assert not doc_last_year.meta.can_undo_sink
     end
 
     test "can sink a blog", ~m(user community blog_attrs)a do
@@ -153,9 +165,9 @@ defmodule GroupherServer.Test.Articles.Blog do
     end
 
     test "can not undo sink to old blog", ~m()a do
-      {:ok, blog_last_year} = db_insert(:blog, %{title: "last year", inserted_at: @last_year})
+      {:ok, doc_last_year} = db_insert(:blog, %{title: "last year", inserted_at: @last_year})
 
-      {:error, reason} = CMS.undo_sink_article(:blog, blog_last_year.id)
+      {:error, reason} = CMS.undo_sink_article(:blog, doc_last_year.id)
       is_error?(reason, :undo_sink_old_article)
     end
   end
@@ -169,16 +181,20 @@ defmodule GroupherServer.Test.Articles.Blog do
       assert not is_nil(blog.document.body_html)
 
       {:ok, article_doc} = ORM.find_by(ArticleDocument, %{article_id: blog.id, thread: "BLOG"})
-      {:ok, blog_doc} = ORM.find_by(BlogDocument, %{blog_id: blog.id})
 
-      assert blog.document.body == blog_doc.body
-      assert article_doc.body == blog_doc.body
+      {:ok, doc_doc} = ORM.find_by(BlogDocument, %{blog_id: blog.id})
+
+      assert blog.document.body == doc_doc.body
+      assert article_doc.body == doc_doc.body
     end
 
-    test "delete blog should also delete related document", ~m(user community blog_attrs)a do
+    test "delete blog should also delete related document",
+         ~m(user community blog_attrs)a do
       {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user)
+
       {:ok, _article_doc} = ORM.find_by(ArticleDocument, %{article_id: blog.id, thread: "BLOG"})
-      {:ok, _blog_doc} = ORM.find_by(BlogDocument, %{blog_id: blog.id})
+
+      {:ok, _doc} = ORM.find_by(BlogDocument, %{blog_id: blog.id})
 
       {:ok, _} = CMS.delete_article(blog)
 
@@ -187,16 +203,18 @@ defmodule GroupherServer.Test.Articles.Blog do
       {:error, _} = ORM.find_by(BlogDocument, %{blog_id: blog.id})
     end
 
-    test "update blog should also update related document", ~m(user community blog_attrs)a do
+    test "update blog should also update related document",
+         ~m(user community blog_attrs)a do
       {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user)
 
       body = mock_rich_text(~s(new content))
       {:ok, blog} = CMS.update_article(blog, %{body: body})
 
       {:ok, article_doc} = ORM.find_by(ArticleDocument, %{article_id: blog.id, thread: "BLOG"})
-      {:ok, blog_doc} = ORM.find_by(BlogDocument, %{blog_id: blog.id})
 
-      assert String.contains?(blog_doc.body, "new content")
+      {:ok, doc_doc} = ORM.find_by(BlogDocument, %{blog_id: blog.id})
+
+      assert String.contains?(doc_doc.body, "new content")
       assert String.contains?(article_doc.body, "new content")
     end
   end

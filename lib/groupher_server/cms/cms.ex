@@ -122,12 +122,6 @@ defmodule GroupherServer.CMS do
 
   defdelegate archive_articles(thread), to: ArticleCURD
 
-  defdelegate create_blog(community, attrs, user), to: BlogCURD
-  defdelegate create_blog_rss(attrs), to: BlogCURD
-  defdelegate update_blog_rss(attrs), to: BlogCURD
-  defdelegate blog_rss_info(rss), to: BlogCURD
-  defdelegate update_rss_author(rss, attrs), to: BlogCURD
-
   defdelegate paged_citing_contents(type, id, filter), to: CitedArtiment
 
   defdelegate upvote_article(thread, article_id, user), to: ArticleUpvote

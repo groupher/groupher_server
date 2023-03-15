@@ -31,7 +31,8 @@ defmodule GroupherServer.Test.CMS.AbuseReports.BlogReport do
       assert report.article.thread == "BLOG"
     end
 
-    test "report a blog should have a abuse report record", ~m(community user blog_attrs)a do
+    test "report a blog should have a abuse report record",
+         ~m(community user blog_attrs)a do
       {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user)
       {:ok, _report} = CMS.report_article(:blog, blog.id, "reason", "attr_info", user)
 
@@ -111,6 +112,7 @@ defmodule GroupherServer.Test.CMS.AbuseReports.BlogReport do
       {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user)
 
       {:ok, _report} = CMS.report_article(:blog, blog.id, "reason", "attr_info", user)
+
       {:ok, _report} = CMS.report_article(:blog, blog.id, "reason2", "attr_info 2", user2)
 
       filter = %{content_type: :blog, content_id: blog.id, page: 1, size: 20}
@@ -131,6 +133,7 @@ defmodule GroupherServer.Test.CMS.AbuseReports.BlogReport do
       {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user)
 
       {:ok, _report} = CMS.report_article(:blog, blog.id, "reason", "attr_info", user)
+
       assert {:error, _report} = CMS.report_article(:blog, blog.id, "reason", "attr_info", user)
     end
   end
