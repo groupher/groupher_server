@@ -1,4 +1,4 @@
-defmodule GroupherServer.Test.Mutation.ArticleTags.BlogTag do
+defmodule GroupherServer.Test.Mutation.ArticleTags.BlogSetTag do
   @moduledoc false
 
   use GroupherServer.TestTools
@@ -32,7 +32,8 @@ defmodule GroupherServer.Test.Mutation.ArticleTags.BlogTag do
     }
     """
 
-    test "auth user can set a valid tag to blog", ~m(community blog article_tag_attrs user)a do
+    test "auth user can set a valid tag to blog",
+         ~m(community blog article_tag_attrs user)a do
       {:ok, article_tag} = CMS.create_article_tag(community, :blog, article_tag_attrs, user)
 
       passport_rules = %{community.title => %{"blog.article_tag.set" => true}}
@@ -64,6 +65,7 @@ defmodule GroupherServer.Test.Mutation.ArticleTags.BlogTag do
     test "can unset tag to a blog",
          ~m(community blog article_tag_attrs article_tag_attrs2 user)a do
       {:ok, article_tag} = CMS.create_article_tag(community, :blog, article_tag_attrs, user)
+
       {:ok, article_tag2} = CMS.create_article_tag(community, :blog, article_tag_attrs2, user)
 
       {:ok, _} = CMS.set_article_tag(:blog, blog.id, article_tag.id)

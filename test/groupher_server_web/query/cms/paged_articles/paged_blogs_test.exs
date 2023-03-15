@@ -66,6 +66,7 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedBlogs do
       }
     }
     """
+
     test "should get pagination info", ~m(guest_conn)a do
       variables = %{filter: %{page: 1, size: 10}}
       results = guest_conn |> query_result(@query, variables, "pagedBlogs")
@@ -347,6 +348,7 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedBlogs do
       }
     }
     """
+
     test "THIS_YEAR option should work", ~m(guest_conn blog_last_year)a do
       variables = %{filter: %{when: "THIS_YEAR"}}
       results = guest_conn |> query_result(@query, variables, "pagedBlogs")
@@ -402,6 +404,7 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedBlogs do
       }
     }
     """
+
     test "basic filter should work", ~m(guest_conn)a do
       {:ok, blog} = db_insert(:blog)
       {:ok, blog2} = db_insert(:blog)

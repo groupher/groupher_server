@@ -30,11 +30,13 @@ defmodule GroupherServer.Test.CMS.Artilces.BlogPin do
     test "one community & thread can only pin certern count of blog", ~m(community user)a do
       Enum.reduce(1..@max_pinned_article_count_per_thread, [], fn _, acc ->
         {:ok, new_blog} = CMS.create_article(community, :blog, mock_attrs(:blog), user)
+
         {:ok, _} = CMS.pin_article(:blog, new_blog.id, community.id)
         acc
       end)
 
       {:ok, new_blog} = CMS.create_article(community, :blog, mock_attrs(:blog), user)
+
       {:error, reason} = CMS.pin_article(:blog, new_blog.id, community.id)
       assert reason |> Keyword.get(:code) == ecode(:too_much_pinned_article)
     end

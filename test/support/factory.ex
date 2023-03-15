@@ -159,8 +159,7 @@ defmodule GroupherServer.Support.Factory do
 
     %{
       meta: @default_article_meta |> Map.merge(%{thread: "BLOG"}),
-      title: "任意两个点的曲线连接JS算法",
-      rss: mock_rss_addr(),
+      title: "blog-#{String.slice(text, 1, 49)}",
       body: mock_rich_text(text),
       # digest: String.slice(text, 1, 150),
       length: String.length(text),
@@ -374,15 +373,6 @@ defmodule GroupherServer.Support.Factory do
   @spec mock_images(Number.t()) :: [String.t()]
   def mock_images(count \\ 1) do
     @images |> Enum.slice(0, count)
-  end
-
-  def mock_rss_addr() do
-    # "https://www.xiabingbao.com/atom.xml" # 不规范
-    # "https://rsshub.app/blogs/wangyin"
-    "https://www.zhangxinxu.com/wordpress/feed/"
-    # "https://overreacted.io/rss.xml"
-    # "https://www.ruanyifeng.com/blog/atom.xml"
-    # "https://lutaonan.com/rss.xml"
   end
 
   def mock_mention_for(user, from_user) do

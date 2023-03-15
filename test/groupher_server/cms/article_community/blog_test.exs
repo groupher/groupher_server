@@ -26,11 +26,13 @@ defmodule GroupherServer.Test.CMS.ArticleCommunity.Blog do
       assert blog.original_community_id == community.id
     end
 
-    test "blog can be move to other community", ~m(user community community2 blog_attrs)a do
+    test "blog can be move to other community",
+         ~m(user community community2 blog_attrs)a do
       {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user)
       assert blog.original_community_id == community.id
 
       {:ok, _} = CMS.move_article(:blog, blog.id, community2.id)
+
       {:ok, blog} = ORM.find(Blog, blog.id, preload: [:original_community, :communities])
 
       assert blog.original_community.id == community2.id
@@ -44,9 +46,10 @@ defmodule GroupherServer.Test.CMS.ArticleCommunity.Blog do
 
       {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user)
       {:ok, article_tag} = CMS.create_article_tag(community, :blog, article_tag_attrs, user)
+
       {:ok, article_tag2} = CMS.create_article_tag(community, :blog, article_tag_attrs2, user)
 
-      {:ok, _blog} = CMS.set_article_tag(:blog, blog.id, article_tag.id)
+      {:ok, _} = CMS.set_article_tag(:blog, blog.id, article_tag.id)
       {:ok, blog} = CMS.set_article_tag(:blog, blog.id, article_tag2.id)
 
       assert blog.article_tags |> length == 2
@@ -62,13 +65,16 @@ defmodule GroupherServer.Test.CMS.ArticleCommunity.Blog do
       assert exist_in?(community2, blog.communities)
     end
 
-    test "blog move to other community with new tag", ~m(user community community2 blog_attrs)a do
+    test "blog move to other community with new tag",
+         ~m(user community community2 blog_attrs)a do
       article_tag_attrs0 = mock_attrs(:article_tag)
       article_tag_attrs = mock_attrs(:article_tag)
       article_tag_attrs2 = mock_attrs(:article_tag)
 
       {:ok, article_tag0} = CMS.create_article_tag(community, :blog, article_tag_attrs0, user)
+
       {:ok, article_tag} = CMS.create_article_tag(community2, :blog, article_tag_attrs, user)
+
       {:ok, article_tag2} = CMS.create_article_tag(community2, :blog, article_tag_attrs2, user)
 
       {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user)
@@ -80,7 +86,10 @@ defmodule GroupherServer.Test.CMS.ArticleCommunity.Blog do
       assert blog.article_tags |> length == 3
 
       {:ok, _} =
-        CMS.move_article(:blog, blog.id, community2.id, [article_tag.id, article_tag2.id])
+        CMS.move_article(:blog, blog.id, community2.id, [
+          article_tag.id,
+          article_tag2.id
+        ])
 
       {:ok, blog} =
         ORM.find(Blog, blog.id, preload: [:original_community, :communities, :article_tags])
@@ -93,7 +102,8 @@ defmodule GroupherServer.Test.CMS.ArticleCommunity.Blog do
       assert exist_in?(article_tag2, blog.article_tags)
     end
 
-    test "blog can be mirror to other community", ~m(user community community2 blog_attrs)a do
+    test "blog can be mirror to other community",
+         ~m(user community community2 blog_attrs)a do
       {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user)
 
       {:ok, blog} = ORM.find(Blog, blog.id, preload: :communities)
@@ -115,12 +125,16 @@ defmodule GroupherServer.Test.CMS.ArticleCommunity.Blog do
       article_tag_attrs = mock_attrs(:article_tag)
       article_tag_attrs2 = mock_attrs(:article_tag)
       {:ok, article_tag} = CMS.create_article_tag(community2, :blog, article_tag_attrs, user)
+
       {:ok, article_tag2} = CMS.create_article_tag(community2, :blog, article_tag_attrs2, user)
 
       {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user)
 
       {:ok, _} =
-        CMS.mirror_article(:blog, blog.id, community2.id, [article_tag.id, article_tag2.id])
+        CMS.mirror_article(:blog, blog.id, community2.id, [
+          article_tag.id,
+          article_tag2.id
+        ])
 
       {:ok, blog} = ORM.find(Blog, blog.id, preload: :article_tags)
       assert blog.article_tags |> length == 2
@@ -149,7 +163,9 @@ defmodule GroupherServer.Test.CMS.ArticleCommunity.Blog do
          ~m(user community community2 community3 blog_attrs)a do
       article_tag_attrs2 = mock_attrs(:article_tag)
       article_tag_attrs3 = mock_attrs(:article_tag)
+
       {:ok, article_tag2} = CMS.create_article_tag(community2, :blog, article_tag_attrs2, user)
+
       {:ok, article_tag3} = CMS.create_article_tag(community3, :blog, article_tag_attrs3, user)
 
       {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user)
@@ -183,6 +199,7 @@ defmodule GroupherServer.Test.CMS.ArticleCommunity.Blog do
       assert blog.original_community_id == community.id
 
       {:ok, _} = CMS.mirror_to_home(:blog, blog.id)
+
       {:ok, blog} = ORM.find(Blog, blog.id, preload: [:original_community, :communities])
 
       assert blog.original_community_id == community.id
@@ -253,6 +270,7 @@ defmodule GroupherServer.Test.CMS.ArticleCommunity.Blog do
       assert blog.original_community_id == community.id
 
       {:ok, _} = CMS.move_to_blackhole(:blog, blog.id)
+
       {:ok, blog} = ORM.find(Blog, blog.id, preload: [:original_community, :communities])
 
       assert blog.original_community.id == blackhole_community.id

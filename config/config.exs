@@ -144,11 +144,6 @@ config :groupher_server, :cache,
       size: 10_000,
       seconds: 10_080 * 60
     },
-    blog_rss: %{
-      name: :blog_rss,
-      size: 1000,
-      seconds: 15 * 60
-    },
     online_status: %{
       name: :online_status,
       size: 30,

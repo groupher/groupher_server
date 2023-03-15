@@ -91,12 +91,11 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
   end
 
   object :blog do
+    meta(:cache, max_age: 30)
     interface(:article)
 
     general_article_fields()
     comments_fields()
-
-    field(:rss, :string)
 
     timestamp_fields(:article)
   end
@@ -268,16 +267,6 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
     field(:intro, :string)
     field(:github, :string)
     field(:twitter, :string)
-  end
-
-  object :blog_rss do
-    field(:rss, :string)
-    field(:title, :string)
-    field(:subtitle, :string)
-    field(:link, :string)
-    field(:updated, :string)
-    field(:author, :blog_author)
-    field(:history_feed, list_of(:blog_feed))
   end
 
   paged_article_objects()
