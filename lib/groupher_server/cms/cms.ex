@@ -68,12 +68,6 @@ defmodule GroupherServer.CMS do
   defdelegate unset_article_tag(thread, article_id, tag_id), to: ArticleTag
   defdelegate paged_article_tags(filter), to: ArticleTag
 
-  # >> wiki & cheatsheet (sync with github)
-  defdelegate get_wiki(community), to: CommunitySync
-  defdelegate get_cheatsheet(community), to: CommunitySync
-  defdelegate sync_github_content(community, thread, attrs), to: CommunitySync
-  defdelegate add_contributor(content, attrs), to: CommunitySync
-
   # CommunityOperation
   # >> category
   defdelegate set_category(community, category), to: CommunityOperation
