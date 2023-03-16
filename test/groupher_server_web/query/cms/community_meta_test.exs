@@ -23,22 +23,38 @@ defmodule GroupherServer.Test.Query.CMS.CommunityMeta do
         articlesCount
         meta {
           postsCount
+          changelogsCount
+          docsCount
+          blogsCount
         }
       }
     }
     """
-    test "community have valid [thread]s_count in meta", ~m(guest_conn community_attrs user)a do
+    test "community have valid [thread]s_count in meta info",
+         ~m(guest_conn community_attrs user)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
-      {:ok, _post} = CMS.create_article(community, :post, mock_attrs(:post), user)
-      {:ok, _post} = CMS.create_article(community, :post, mock_attrs(:post), user)
+      {:ok, _} = CMS.create_article(community, :post, mock_attrs(:post), user)
+      {:ok, _} = CMS.create_article(community, :post, mock_attrs(:post), user)
+
+      {:ok, _} = CMS.create_article(community, :changelog, mock_attrs(:changelog), user)
+      {:ok, _} = CMS.create_article(community, :changelog, mock_attrs(:changelog), user)
+
+      {:ok, _} = CMS.create_article(community, :doc, mock_attrs(:doc), user)
+      {:ok, _} = CMS.create_article(community, :doc, mock_attrs(:doc), user)
+      {:ok, _} = CMS.create_article(community, :doc, mock_attrs(:doc), user)
+
+      {:ok, _} = CMS.create_article(community, :blog, mock_attrs(:blog), user)
 
       variables = %{raw: community.raw}
       results = guest_conn |> query_result(@query, variables, "community")
 
       meta = results["meta"]
-      assert results["articlesCount"] == 2
+      assert results["articlesCount"] == 8
       assert meta["postsCount"] == 2
+      assert meta["changelogsCount"] == 2
+      assert meta["docsCount"] == 3
+      assert meta["blogsCount"] == 1
     end
   end
 end
