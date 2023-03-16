@@ -38,5 +38,39 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
 
       assert not is_nil(find_community.dashboard)
     end
+
+    @tag :wip
+    test "can update base info in community dashboard", ~m(community_attrs)a do
+      {:ok, community} = CMS.create_community(community_attrs)
+
+      {:ok, _} =
+        CMS.update_dashboard(community.id, :base_info, %{homepage: "https://groupher.com"})
+
+      {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
+
+      assert find_community.dashboard.base_info.homepage == "https://groupher.com"
+    end
+
+    @tag :wip
+    test "can update seo in community dashboard", ~m(community_attrs)a do
+      {:ok, community} = CMS.create_community(community_attrs)
+
+      {:ok, _} = CMS.update_dashboard(community.id, :seo, %{og_title: "groupher"})
+
+      {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
+
+      assert find_community.dashboard.seo.og_title == "groupher"
+    end
+
+    @tag :wip
+    test "can update layout in community dashboard", ~m(community_attrs)a do
+      {:ok, community} = CMS.create_community(community_attrs)
+
+      {:ok, _} = CMS.update_dashboard(community.id, :layout, %{post_layout: "upvote_first"})
+
+      {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
+
+      assert find_community.dashboard.layout.post_layout == "upvote_first"
+    end
   end
 end

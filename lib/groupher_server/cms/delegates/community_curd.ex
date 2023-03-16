@@ -89,6 +89,18 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
   end
 
   @doc """
+  update dashboard settings of a community
+  """
+  def update_dashboard(id, key, args) do
+    with {:ok, community} <- ORM.find(Community, id),
+         {:ok, community_dashboard} <-
+           ORM.find_by(CommunityDashboard, community_id: community.id),
+         {:ok, _} <- ORM.update_dashboard(community_dashboard, key, args) do
+      {:ok, community}
+    end
+  end
+
+  @doc """
   check if community exist
   """
   def is_community_exist?(raw) do

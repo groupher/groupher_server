@@ -12,6 +12,8 @@ defmodule Helper.ORM do
   alias GroupherServer.Repo
   alias Helper.{QueryBuilder, SpecType}
 
+  alias GroupherServer.CMS.Model.CommunityDashboard
+
   @article_threads get_config(:article, :threads)
 
   @doc """
@@ -304,6 +306,13 @@ defmodule Helper.ORM do
     queryable
     |> Ecto.Changeset.change()
     |> Ecto.Changeset.put_embed(:meta, meta)
+    |> Repo.update()
+  end
+
+  def update_dashboard(%CommunityDashboard{} = community_dashboard, key, args) do
+    community_dashboard
+    |> Ecto.Changeset.change(%{})
+    |> Ecto.Changeset.put_embed(key, args)
     |> Repo.update()
   end
 
