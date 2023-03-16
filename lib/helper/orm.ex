@@ -292,8 +292,7 @@ defmodule Helper.ORM do
   update meta info for article / comment
   """
   def update_meta(queryable, meta, changes: changes) when is_map(changes) do
-    meta = meta |> strip_struct
-
+    # meta = meta |> strip_struct
     queryable
     |> Ecto.Changeset.change(changes)
     |> Ecto.Changeset.put_embed(:meta, meta)
@@ -304,7 +303,7 @@ defmodule Helper.ORM do
     meta = meta |> strip_struct
 
     queryable
-    |> Ecto.Changeset.change()
+    |> Ecto.Changeset.change(%{})
     |> Ecto.Changeset.put_embed(:meta, meta)
     |> Repo.update()
   end
