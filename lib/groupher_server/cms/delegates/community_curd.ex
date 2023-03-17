@@ -93,10 +93,23 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
   """
   def update_dashboard(id, key, args) do
     with {:ok, community} <- ORM.find(Community, id),
-         {:ok, community_dashboard} <-
-           ORM.find_by(CommunityDashboard, community_id: community.id),
-         {:ok, _} <- ORM.update_dashboard(community_dashboard, key, args) do
+         {:ok, community_dashboard} <- ensure_dashboard_exist(community),
+         {:ok, _} <-
+           ORM.update_dashboard(community_dashboard, key, args) do
       {:ok, community}
+    end
+  end
+
+  defp ensure_dashboard_exist(%Community{} = community) do
+    case ORM.find_by(CommunityDashboard, community_id: community.id) do
+      {:error, _} ->
+        ORM.create(
+          CommunityDashboard,
+          %{community_id: community.id} |> Map.merge(@default_dashboard)
+        )
+
+      {:ok, community_dashboard} ->
+        {:ok, community_dashboard}
     end
   end
 

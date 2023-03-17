@@ -335,4 +335,12 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
     field(:apply_msg, :string)
     field(:apply_category, :string)
   end
+
+  # dashboard types
+
+  ## seo info
+  object :dashboard_seo do
+    field(:og_title, :string)
+    field(:og_description, :string)
+  end
 end

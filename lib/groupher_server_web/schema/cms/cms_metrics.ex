@@ -42,6 +42,13 @@ defmodule GroupherServerWeb.Schema.CMS.Metrics do
     value(:share)
   end
 
+  enum :dashboard_section do
+    value(:seo)
+    value(:layout)
+    value(:base_info)
+    ## ...
+  end
+
   enum :content do
     article_values()
     value(:comment)

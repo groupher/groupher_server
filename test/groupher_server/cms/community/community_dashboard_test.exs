@@ -55,22 +55,32 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
     test "can update seo in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
-      {:ok, _} = CMS.update_dashboard(community.id, :seo, %{og_title: "groupher"})
+      {:ok, _} =
+        CMS.update_dashboard(community.id, :seo, %{
+          og_title: "groupher",
+          og_description: "forum sass provider"
+        })
 
       {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
 
       assert find_community.dashboard.seo.og_title == "groupher"
+      assert find_community.dashboard.seo.og_description == "forum sass provider"
     end
 
     @tag :wip
     test "can update layout in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
-      {:ok, _} = CMS.update_dashboard(community.id, :layout, %{post_layout: "upvote_first"})
+      {:ok, _} =
+        CMS.update_dashboard(community.id, :layout, %{
+          post_layout: "upvote_first",
+          changelog_layout: "full"
+        })
 
       {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
 
       assert find_community.dashboard.layout.post_layout == "upvote_first"
+      assert find_community.dashboard.layout.changelog_layout == "full"
     end
   end
 end

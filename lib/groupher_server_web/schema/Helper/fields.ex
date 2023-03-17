@@ -6,6 +6,7 @@ defmodule GroupherServerWeb.Schema.Helper.Fields do
   import Absinthe.Resolution.Helpers, only: [dataloader: 2]
 
   alias GroupherServer.CMS
+  alias GroupherServer.CMS.Model.Metrics.Dashboard
 
   @page_size get_config(:general, :page_size)
 
@@ -252,5 +253,46 @@ defmodule GroupherServerWeb.Schema.Helper.Fields do
         field(unquote(:"#{thread}_count"), :integer)
       end
     end)
+  end
+
+  @doc """
+  fields for dashboard seo
+  """
+  defmacro dashboard_cast_fields(section \\ :layout) do
+    quote do
+      Enum.reduce(unquote(Dashboard.macro_schema(section)), [], fn [k, _, _], acc ->
+        [k] ++ acc
+      end)
+    end
+  end
+
+  defmacro dashboard_args(section \\ :layout) do
+    Dashboard.macro_schema(section)
+    |> Enum.map(fn item ->
+      [key, type, _default_v] = item
+
+      quote do
+        arg(unquote(key), unquote(type))
+      end
+    end)
+  end
+
+  defmacro dashboard_fields(section \\ :layout) do
+    Dashboard.macro_schema(section)
+    |> Enum.map(fn item ->
+      [key, type, default_v] = item
+
+      quote do
+        field(unquote(key), unquote(type), default: unquote(default_v))
+      end
+    end)
+  end
+
+  defmacro dashboard_default(section \\ :layout) do
+    quote do
+      Enum.reduce(unquote(Dashboard.macro_schema(section)), %{}, fn [k, _t, v], acc ->
+        Map.put(acc, k, v)
+      end)
+    end
   end
 end

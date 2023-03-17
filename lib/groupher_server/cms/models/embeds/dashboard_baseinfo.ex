@@ -7,27 +7,16 @@ defmodule GroupherServer.CMS.Model.Embeds.DashboardBaseInfo do
 
   import Ecto.Changeset
 
-  @optional_fields ~w(favicon title logo homepage city techstack)a
+  import GroupherServerWeb.Schema.Helper.Fields,
+    only: [dashboard_cast_fields: 1, dashboard_default: 1, dashboard_fields: 1]
+
+  @optional_fields dashboard_cast_fields(:base_info)
 
   @doc "for test usage"
-  def default() do
-    %{
-      favicon: "",
-      title: "",
-      logo: "",
-      homepage: "",
-      city: "",
-      techstack: ""
-    }
-  end
+  def default(), do: dashboard_default(:base_info)
 
   embedded_schema do
-    field(:favicon, :string, default: "")
-    field(:title, :string, default: "")
-    field(:logo, :string, default: "")
-    field(:homepage, :string, default: "")
-    field(:city, :string, default: "")
-    field(:techstack, :string, default: "")
+    dashboard_fields(:base_info)
   end
 
   def changeset(struct, params) do
