@@ -121,6 +121,16 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
     field(:records, list_of(:contribute))
   end
 
+  object(:dasbboard_seo, do: dashboard_gq_fields(:seo))
+  object(:dasbboard_layout, do: dashboard_gq_fields(:layout))
+  object(:dasbboard_base_info, do: dashboard_gq_fields(:base_info))
+
+  object :dashboard do
+    field(:seo, :dasbboard_seo)
+    field(:layout, :dasbboard_layout)
+    field(:base_info, :dasbboard_base_info)
+  end
+
   object :community do
     meta(:cache, max_age: 30)
     field(:id, :id)
@@ -132,6 +142,7 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
     field(:author, :user, resolve: dataloader(CMS, :author))
     field(:threads, list_of(:thread_item), resolve: dataloader(CMS, :threads))
     field(:categories, list_of(:category), resolve: dataloader(CMS, :categories))
+    field(:dashboard, :dashboard, resolve: dataloader(CMS, :dashboard))
     field(:meta, :community_meta)
     field(:views, :integer)
     field(:contributes_digest, list_of(:integer))

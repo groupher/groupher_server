@@ -288,6 +288,17 @@ defmodule GroupherServerWeb.Schema.Helper.Fields do
     end)
   end
 
+  defmacro dashboard_gq_fields(section \\ :layout) do
+    Dashboard.macro_schema(section)
+    |> Enum.map(fn item ->
+      [key, type, _default_v] = item
+
+      quote do
+        field(unquote(key), unquote(type))
+      end
+    end)
+  end
+
   defmacro dashboard_default(section \\ :layout) do
     quote do
       Enum.reduce(unquote(Dashboard.macro_schema(section)), %{}, fn [k, _t, v], acc ->

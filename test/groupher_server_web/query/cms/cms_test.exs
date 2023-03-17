@@ -363,10 +363,47 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
       }
     }
     """
-
     test "guest user can get community info without args fails", ~m(guest_conn)a do
       variables = %{}
       assert guest_conn |> query_get_error?(@query, variables)
+    end
+
+    @query """
+    query($raw: String!) {
+      community(raw: $raw) {
+        id
+        title
+        desc
+        dashboard {
+          seo {
+            ogTitle
+            ogDescription
+          }
+          layout {
+            postLayout
+          }
+          baseInfo {
+            favicon
+          }
+        }
+      }
+    }
+    """
+    @tag :wip
+    test "user can get community info without args fails", ~m(guest_conn user)a do
+      community_attrs = mock_attrs(:community) |> Map.merge(%{user_id: user.id})
+
+      {:ok, community} = CMS.create_community(community_attrs)
+      {:ok, _} = CMS.update_dashboard(community.id, :seo, %{og_title: "groupher"})
+      {:ok, _} = CMS.update_dashboard(community.id, :layout, %{post_layout: "new layout"})
+      {:ok, _} = CMS.update_dashboard(community.id, :base_info, %{favicon: "new favicon"})
+
+      variables = %{raw: community.raw}
+
+      results = guest_conn |> query_result(@query, variables, "community")
+      assert get_in(results, ["dashboard", "seo", "ogTitle"]) == "groupher"
+      assert get_in(results, ["dashboard", "layout", "postLayout"]) == "new layout"
+      assert get_in(results, ["dashboard", "baseInfo", "favicon"]) == "new favicon"
     end
   end
 
