@@ -52,5 +52,20 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Dashboard do
       middleware(M.PublishThrottle, interval: 3, hour_limit: 15, day_limit: 30)
       resolve(&R.CMS.update_dashboard/3)
     end
+
+    @desc "update name alias in dashboard"
+    field :update_dashboard_name_alias, :community do
+      arg(:id, non_null(:id))
+      arg(:dashboard_section, :dashboard_section, default_value: :name_alias)
+
+      arg(:name_alias, list_of(:dashboard_alias_map))
+
+      middleware(M.Authorize, :login)
+      middleware(M.Passport, claim: "cms->community.update")
+
+      # middleware(M.PublishThrottle)
+      middleware(M.PublishThrottle, interval: 3, hour_limit: 15, day_limit: 30)
+      resolve(&R.CMS.update_dashboard/3)
+    end
   end
 end

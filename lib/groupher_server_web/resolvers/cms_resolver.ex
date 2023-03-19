@@ -39,6 +39,12 @@ defmodule GroupherServerWeb.Resolvers.CMS do
     CMS.update_community(args.id, args)
   end
 
+  def update_dashboard(_root, %{dashboard_section: :name_alias, id: id} = args, _info) do
+    dashboard_args = Map.drop(args, [:id, :dashboard_section]) |> Map.get(:name_alias)
+
+    CMS.update_dashboard(id, :name_alias, dashboard_args)
+  end
+
   ## dashboard actions
   def update_dashboard(_root, %{dashboard_section: key, id: id} = args, _info) do
     dashboard_args = Map.drop(args, [:id, :dashboard_section])

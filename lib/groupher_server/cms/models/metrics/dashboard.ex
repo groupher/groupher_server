@@ -73,4 +73,14 @@ defmodule GroupherServer.CMS.Model.Metrics.Dashboard do
       [:rss_feed_count, :integer, 20]
     ]
   end
+
+  def macro_schema(:name_alias) do
+    [
+      [:raw, :string, ""],
+      [:name, :string, ""],
+      [:original, :string, ""],
+      [:group, :string, ""]
+      # TODO: suggestions:
+    ]
+  end
 end

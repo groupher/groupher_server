@@ -23,7 +23,8 @@ defmodule GroupherServer.CMS.Model.CommunityDashboard do
       base_info: Embeds.DashboardBaseInfo.default(),
       seo: Embeds.DashboardSEO.default(),
       layout: Embeds.DashboardLayout.default(),
-      rss: Embeds.DashboardRSS.default()
+      rss: Embeds.DashboardRSS.default(),
+      name_alias: Embeds.DashboardNameAlias.default()
     }
   end
 
@@ -33,6 +34,7 @@ defmodule GroupherServer.CMS.Model.CommunityDashboard do
     embeds_one(:seo, Embeds.DashboardSEO, on_replace: :delete)
     embeds_one(:layout, Embeds.DashboardLayout, on_replace: :delete)
     embeds_one(:rss, Embeds.DashboardRSS, on_replace: :delete)
+    embeds_many(:name_alias, Embeds.DashboardNameAlias, on_replace: :delete)
 
     # posts_block_list ...
     timestamps(type: :utc_datetime)
@@ -46,6 +48,7 @@ defmodule GroupherServer.CMS.Model.CommunityDashboard do
     |> cast_embed(:seo, with: &Embeds.DashboardSEO.changeset/2)
     |> cast_embed(:layout, with: &Embeds.DashboardLayout.changeset/2)
     |> cast_embed(:rss, with: &Embeds.DashboardRSS.changeset/2)
+    |> cast_embed(:name_alias, with: &Embeds.DashboardNameAlias.changeset/2)
   end
 
   @doc false

@@ -92,5 +92,74 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert find_community.dashboard.rss.rss_feed_type == "full"
       assert find_community.dashboard.rss.rss_feed_count == 25
     end
+
+    test "can update alias in community dashboard", ~m(community_attrs)a do
+      {:ok, community} = CMS.create_community(community_attrs)
+
+      {:ok, _} =
+        CMS.update_dashboard(community.id, :name_alias, [
+          %{
+            raw: "raw",
+            name: "name",
+            original: "original",
+            group: "group"
+          }
+        ])
+
+      {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
+
+      first = find_community.dashboard.name_alias |> Enum.at(0)
+
+      assert first.raw == "raw"
+      assert first.name == "name"
+      assert first.original == "original"
+      assert first.group == "group"
+    end
+
+    test "should overwirte all alias in community dashboard everytime", ~m(community_attrs)a do
+      {:ok, community} = CMS.create_community(community_attrs)
+
+      {:ok, _} =
+        CMS.update_dashboard(community.id, :name_alias, [
+          %{
+            raw: "raw",
+            name: "name",
+            original: "original",
+            group: "group"
+          },
+          %{
+            raw: "raw2",
+            name: "name2",
+            original: "original2",
+            group: "group2"
+          }
+        ])
+
+      {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
+
+      assert find_community.dashboard.name_alias |> length == 2
+
+      first = find_community.dashboard.name_alias |> Enum.at(0)
+      second = find_community.dashboard.name_alias |> Enum.at(1)
+
+      assert first.raw == "raw"
+      assert second.raw == "raw2"
+
+      {:ok, _} =
+        CMS.update_dashboard(community.id, :name_alias, [
+          %{
+            raw: "raw3",
+            name: "name3",
+            original: "original3",
+            group: "group3"
+          }
+        ])
+
+      {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
+      assert find_community.dashboard.name_alias |> length == 1
+
+      third = find_community.dashboard.name_alias |> Enum.at(0)
+      assert third.raw == "raw3"
+    end
   end
 end
