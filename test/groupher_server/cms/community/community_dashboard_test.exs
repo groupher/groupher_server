@@ -22,7 +22,6 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
   end
 
   describe "[community dashboard base info]" do
-    @tag :wip
     test "created community should have default dashboard.", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
       {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
@@ -30,7 +29,6 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert find_community.dashboard.base_info.homepage == @default_dashboard.base_info.homepage
     end
 
-    @tag :wip
     test "read a exist community should have default dashboard field", ~m(community)a do
       {:ok, community} = CMS.read_community(community.raw)
 
@@ -39,7 +37,6 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert not is_nil(find_community.dashboard)
     end
 
-    @tag :wip
     test "can update base info in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
@@ -51,7 +48,6 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert find_community.dashboard.base_info.homepage == "https://groupher.com"
     end
 
-    @tag :wip
     test "can update seo in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
@@ -67,7 +63,6 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert find_community.dashboard.seo.og_description == "forum sass provider"
     end
 
-    @tag :wip
     test "can update layout in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
@@ -83,7 +78,6 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert find_community.dashboard.layout.changelog_layout == "full"
     end
 
-    @tag :wip2
     test "can update rss in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 

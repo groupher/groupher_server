@@ -35,7 +35,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       }
     }
     """
-    @tag :wip
+
     test "update community dashboard seo info", ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
       variables = %{id: community.id, ogTitle: "new title"}
@@ -55,7 +55,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       }
     }
     """
-    @tag :wip
+
     test "update community dashboard layout info", ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
 
@@ -85,7 +85,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       }
     }
     """
-    @tag :wip2
+
     test "update community dashboard rss info", ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
 

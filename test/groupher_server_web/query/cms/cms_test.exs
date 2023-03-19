@@ -389,7 +389,7 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
       }
     }
     """
-    @tag :wip
+
     test "user can get community info without args fails", ~m(guest_conn user)a do
       community_attrs = mock_attrs(:community) |> Map.merge(%{user_id: user.id})
 
