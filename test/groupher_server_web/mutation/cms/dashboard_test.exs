@@ -3,10 +3,9 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
 
   use GroupherServer.TestTools
 
-  alias GroupherServer.{Accounts, CMS}
+  alias GroupherServer.CMS
 
-  alias Accounts.Model.User
-  alias CMS.Model.{Category, Community, CommunityEditor, Passport}
+  alias CMS.Model.Community
 
   alias Helper.ORM
   alias CMS.Constant
@@ -35,7 +34,6 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       }
     }
     """
-
     test "update community dashboard seo info", ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
       variables = %{id: community.id, ogTitle: "new title"}
@@ -55,7 +53,6 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       }
     }
     """
-
     test "update community dashboard layout info", ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
 
@@ -77,7 +74,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       assert found.dashboard.layout.kanban_bg_colors == ["#111", "#222"]
     end
 
-    @update_layout_query """
+    @update_seo_query """
     mutation($id: ID!, $rssFeedType: String, $rssFeedCount: Int) {
       updateDashboardRss(id: $id, rssFeedType: $rssFeedType, rssFeedCount: $rssFeedCount) {
         id
@@ -85,7 +82,6 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       }
     }
     """
-
     test "update community dashboard rss info", ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
 
@@ -97,12 +93,48 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
 
       updated =
         rule_conn
-        |> mutation_result(@update_layout_query, variables, "updateDashboardRss")
+        |> mutation_result(@update_seo_query, variables, "updateDashboardRss")
 
       {:ok, found} = Community |> ORM.find(updated["id"], preload: :dashboard)
 
       assert found.dashboard.rss.rss_feed_type == "digest"
       assert found.dashboard.rss.rss_feed_count == 22
+    end
+
+    @update_alias_query """
+    mutation($id: ID!, $nameAlias: [dashboardAliasMap]) {
+      updateDashboardNameAlias(id: $id, nameAlias: $nameAlias) {
+        id
+        title
+      }
+    }
+    """
+    test "update community dashboard name alias info", ~m(community)a do
+      rule_conn = simu_conn(:user, cms: %{"community.update" => true})
+
+      variables = %{
+        id: community.id,
+        nameAlias: [
+          %{
+            raw: "raw1",
+            name: "name",
+            original: "original",
+            group: "group1"
+          }
+        ]
+      }
+
+      updated =
+        rule_conn
+        |> mutation_result(@update_alias_query, variables, "updateDashboardNameAlias")
+
+      {:ok, found} = Community |> ORM.find(updated["id"], preload: :dashboard)
+
+      found_alias = found.dashboard.name_alias |> Enum.at(0)
+
+      assert found_alias.raw == "raw1"
+      assert found_alias.name == "name"
+      assert found_alias.group == "group1"
     end
   end
 end

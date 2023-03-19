@@ -47,6 +47,7 @@ defmodule GroupherServerWeb.Schema.CMS.Metrics do
     value(:layout)
     value(:base_info)
     value(:rss)
+    value(:name_alias)
     ## ...
   end
 
@@ -255,5 +256,9 @@ defmodule GroupherServerWeb.Schema.CMS.Metrics do
   input_object :app_store_info do
     field(:platform, :string)
     field(:link, :string)
+  end
+
+  input_object :dashboard_alias_map do
+    dashboard_gq_fields(:name_alias)
   end
 end

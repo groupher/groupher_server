@@ -385,11 +385,20 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
           baseInfo {
             favicon
           }
+
+          rss {
+            rssFeedType
+            rssFeedCount
+          }
+
+          nameAlias {
+            raw
+            name
+          }
         }
       }
     }
     """
-
     test "user can get community info without args fails", ~m(guest_conn user)a do
       community_attrs = mock_attrs(:community) |> Map.merge(%{user_id: user.id})
 
@@ -398,12 +407,25 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
       {:ok, _} = CMS.update_dashboard(community.id, :layout, %{post_layout: "new layout"})
       {:ok, _} = CMS.update_dashboard(community.id, :base_info, %{favicon: "new favicon"})
 
+      {:ok, _} =
+        CMS.update_dashboard(community.id, :rss, %{rss_feed_type: "digest", rss_feed_count: 50})
+
+      {:ok, _} =
+        CMS.update_dashboard(community.id, :name_alias, [%{raw: "raw 0", name: "name 0"}])
+
       variables = %{raw: community.raw}
 
       results = guest_conn |> query_result(@query, variables, "community")
       assert get_in(results, ["dashboard", "seo", "ogTitle"]) == "groupher"
       assert get_in(results, ["dashboard", "layout", "postLayout"]) == "new layout"
       assert get_in(results, ["dashboard", "baseInfo", "favicon"]) == "new favicon"
+
+      assert get_in(results, ["dashboard", "rss", "rssFeedType"]) == "digest"
+      assert get_in(results, ["dashboard", "rss", "rssFeedCount"]) == 50
+
+      assert get_in(results, ["dashboard", "nameAlias"]) == [
+               %{"name" => "name 0", "raw" => "raw 0"}
+             ]
     end
   end
 

@@ -121,14 +121,18 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
     field(:records, list_of(:contribute))
   end
 
+  object(:dasbboard_rss, do: dashboard_gq_fields(:rss))
   object(:dasbboard_seo, do: dashboard_gq_fields(:seo))
   object(:dasbboard_layout, do: dashboard_gq_fields(:layout))
   object(:dasbboard_base_info, do: dashboard_gq_fields(:base_info))
+  object(:dasbboard_name_alias, do: dashboard_gq_fields(:name_alias))
 
   object :dashboard do
     field(:seo, :dasbboard_seo)
     field(:layout, :dasbboard_layout)
     field(:base_info, :dasbboard_base_info)
+    field(:rss, :dasbboard_rss)
+    field(:name_alias, list_of(:dasbboard_name_alias))
   end
 
   object :community do
