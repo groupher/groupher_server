@@ -82,5 +82,21 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert find_community.dashboard.layout.post_layout == "upvote_first"
       assert find_community.dashboard.layout.changelog_layout == "full"
     end
+
+    @tag :wip2
+    test "can update rss in community dashboard", ~m(community_attrs)a do
+      {:ok, community} = CMS.create_community(community_attrs)
+
+      {:ok, _} =
+        CMS.update_dashboard(community.id, :rss, %{
+          rss_feed_type: "full",
+          rss_feed_count: 25
+        })
+
+      {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
+
+      assert find_community.dashboard.rss.rss_feed_type == "full"
+      assert find_community.dashboard.rss.rss_feed_count == 25
+    end
   end
 end

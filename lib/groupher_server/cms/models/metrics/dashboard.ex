@@ -66,4 +66,11 @@ defmodule GroupherServer.CMS.Model.Metrics.Dashboard do
       [:tw_image_height, :string, ""]
     ]
   end
+
+  def macro_schema(:rss) do
+    [
+      [:rss_feed_type, :string, "digest"],
+      [:rss_feed_count, :integer, 20]
+    ]
+  end
 end

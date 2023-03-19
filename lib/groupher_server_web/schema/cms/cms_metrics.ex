@@ -46,6 +46,7 @@ defmodule GroupherServerWeb.Schema.CMS.Metrics do
     value(:seo)
     value(:layout)
     value(:base_info)
+    value(:rss)
     ## ...
   end
 

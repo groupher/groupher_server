@@ -76,5 +76,33 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       assert found.dashboard.layout.broadcast_enable == true
       assert found.dashboard.layout.kanban_bg_colors == ["#111", "#222"]
     end
+
+    @update_layout_query """
+    mutation($id: ID!, $rssFeedType: String, $rssFeedCount: Int) {
+      updateDashboardRss(id: $id, rssFeedType: $rssFeedType, rssFeedCount: $rssFeedCount) {
+        id
+        title
+      }
+    }
+    """
+    @tag :wip2
+    test "update community dashboard rss info", ~m(community)a do
+      rule_conn = simu_conn(:user, cms: %{"community.update" => true})
+
+      variables = %{
+        id: community.id,
+        rssFeedType: "digest",
+        rssFeedCount: 22
+      }
+
+      updated =
+        rule_conn
+        |> mutation_result(@update_layout_query, variables, "updateDashboardRss")
+
+      {:ok, found} = Community |> ORM.find(updated["id"], preload: :dashboard)
+
+      assert found.dashboard.rss.rss_feed_type == "digest"
+      assert found.dashboard.rss.rss_feed_count == 22
+    end
   end
 end
