@@ -12,6 +12,7 @@ defmodule GroupherServer.CMS.Model.Community do
 
   alias CMS.Model.{
     Embeds,
+    CommunityDashboard,
     Category,
     CommunityThread,
     CommunitySubscriber,
@@ -44,6 +45,8 @@ defmodule GroupherServer.CMS.Model.Community do
     has_many(:threads, {"communities_threads", CommunityThread}, on_delete: :delete_all)
     has_many(:subscribers, {"communities_subscribers", CommunitySubscriber})
     has_many(:editors, {"communities_editors", CommunityEditor})
+
+    has_one(:dashboard, CommunityDashboard)
 
     field(:articles_count, :integer, default: 0)
     field(:editors_count, :integer, default: 0)
@@ -79,6 +82,7 @@ defmodule GroupherServer.CMS.Model.Community do
     |> cast(attrs, @optional_fields ++ @required_fields)
     |> validate_required(@required_fields)
     |> cast_embed(:meta, with: &Embeds.CommunityMeta.changeset/2)
+    |> cast_assoc(:dashboard)
     |> validate_length(:title, min: 1, max: 30)
     |> validate_length(:raw, min: 1, max: 30)
     |> foreign_key_constraint(:user_id)

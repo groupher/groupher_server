@@ -39,6 +39,13 @@ defmodule GroupherServerWeb.Resolvers.CMS do
     CMS.update_community(args.id, args)
   end
 
+  ## dashboard actions
+  def update_dashboard(_root, %{dashboard_section: key, id: id} = args, _info) do
+    dashboard_args = Map.drop(args, [:id, :dashboard_section])
+
+    CMS.update_dashboard(id, key, dashboard_args)
+  end
+
   def delete_community(_root, %{id: id}, _info), do: Community |> ORM.find_delete!(id)
 
   def apply_community(_root, args, %{context: %{cur_user: user}}) do

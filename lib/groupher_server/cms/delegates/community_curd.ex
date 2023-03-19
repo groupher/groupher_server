@@ -19,6 +19,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
     ArticleTag,
     Category,
     Community,
+    CommunityDashboard,
     CommunityEditor,
     CommunitySubscriber,
     Thread
@@ -27,6 +28,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
   alias CMS.Constant
 
   @default_meta Embeds.CommunityMeta.default_meta()
+  @default_dashboard CommunityDashboard.default()
   @article_threads get_config(:article, :threads)
 
   @default_user_meta Accounts.Model.Embeds.UserMeta.default_meta()
@@ -62,7 +64,14 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
   """
   def create_community(%{user_id: user_id} = args) do
     with {:ok, author} <- ensure_author_exists(%User{id: user_id}) do
-      args = args |> Map.merge(%{user_id: author.user_id, meta: @default_meta})
+      args =
+        args
+        |> Map.merge(%{
+          user_id: author.user_id,
+          meta: @default_meta,
+          dashboard: @default_dashboard
+        })
+
       Community |> ORM.create(args)
     end
   end
@@ -76,6 +85,31 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
         nil -> ORM.update(community, args |> Map.merge(%{meta: @default_meta}))
         _ -> ORM.update(community, args)
       end
+    end
+  end
+
+  @doc """
+  update dashboard settings of a community
+  """
+  def update_dashboard(id, key, args) do
+    with {:ok, community} <- ORM.find(Community, id),
+         {:ok, community_dashboard} <- ensure_dashboard_exist(community),
+         {:ok, _} <-
+           ORM.update_dashboard(community_dashboard, key, args) do
+      {:ok, community}
+    end
+  end
+
+  defp ensure_dashboard_exist(%Community{} = community) do
+    case ORM.find_by(CommunityDashboard, community_id: community.id) do
+      {:error, _} ->
+        ORM.create(
+          CommunityDashboard,
+          %{community_id: community.id} |> Map.merge(@default_dashboard)
+        )
+
+      {:ok, community_dashboard} ->
+        {:ok, community_dashboard}
     end
   end
 
@@ -330,7 +364,8 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
   end
 
   defp do_read_community(raw) do
-    with {:ok, community} <- find_community(raw) do
+    with {:ok, raw_community} <- find_community(raw),
+         {:ok, community} <- ensure_community_with_dashboard(raw_community) do
       case community.meta do
         nil ->
           {:ok, community} = ORM.update_meta(community, @default_meta)
@@ -342,10 +377,24 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
     end
   end
 
+  defp ensure_community_with_dashboard(%Community{} = community) do
+    case community.dashboard do
+      nil ->
+        community
+        |> Ecto.Changeset.change()
+        |> Ecto.Changeset.put_assoc(:dashboard, @default_dashboard)
+        |> Repo.update()
+
+      _ ->
+        {:ok, community}
+    end
+  end
+
   defp find_community(raw) do
     Community
     |> where([c], c.pending == ^@community_normal)
     |> where([c], c.raw == ^raw or c.aka == ^raw)
+    |> preload(:dashboard)
     |> Repo.one()
     |> done
   end

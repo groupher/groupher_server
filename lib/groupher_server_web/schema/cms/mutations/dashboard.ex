@@ -1,0 +1,56 @@
+defmodule GroupherServerWeb.Schema.CMS.Mutations.Dashboard do
+  @moduledoc """
+  CMS mutations for post
+  """
+  use Helper.GqlSchemaSuite
+
+  import GroupherServerWeb.Schema.Helper.Fields, only: [dashboard_args: 1]
+
+  object :cms_dashboard_mutations do
+    @desc "update seo in dashboard"
+    field :update_dashboard_seo, :community do
+      arg(:id, non_null(:id))
+      arg(:dashboard_section, :dashboard_section, default_value: :seo)
+
+      dashboard_args(:seo)
+
+      middleware(M.Authorize, :login)
+      middleware(M.Passport, claim: "cms->community.update")
+
+      # middleware(M.PublishThrottle)
+      middleware(M.PublishThrottle, interval: 3, hour_limit: 15, day_limit: 30)
+      resolve(&R.CMS.update_dashboard/3)
+    end
+
+    @desc "update layout in dashboard"
+    field :update_dashboard_layout, :community do
+      arg(:id, non_null(:id))
+      arg(:dashboard_section, :dashboard_section, default_value: :layout)
+
+      dashboard_args(:layout)
+      arg(:kanban_bg_colors, list_of(:string))
+
+      middleware(M.Authorize, :login)
+      middleware(M.Passport, claim: "cms->community.update")
+
+      # middleware(M.PublishThrottle)
+      middleware(M.PublishThrottle, interval: 3, hour_limit: 15, day_limit: 30)
+      resolve(&R.CMS.update_dashboard/3)
+    end
+
+    @desc "update rss in dashboard"
+    field :update_dashboard_rss, :community do
+      arg(:id, non_null(:id))
+      arg(:dashboard_section, :dashboard_section, default_value: :rss)
+
+      dashboard_args(:rss)
+
+      middleware(M.Authorize, :login)
+      middleware(M.Passport, claim: "cms->community.update")
+
+      # middleware(M.PublishThrottle)
+      middleware(M.PublishThrottle, interval: 3, hour_limit: 15, day_limit: 30)
+      resolve(&R.CMS.update_dashboard/3)
+    end
+  end
+end

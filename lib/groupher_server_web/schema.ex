@@ -36,6 +36,7 @@ defmodule GroupherServerWeb.Schema do
   import_types(CMS.Mutations.Operation)
 
   import_types(CMS.Mutations.Comment)
+  import_types(CMS.Mutations.Dashboard)
 
   import_article_fields(:mutations, :module)
 
@@ -60,6 +61,7 @@ defmodule GroupherServerWeb.Schema do
     import_article_fields(:mutations)
 
     import_fields(:cms_comment_mutations)
+    import_fields(:cms_dashboard_mutations)
   end
 
   def middleware(middleware, _field, %{identifier: :query}) do
