@@ -11,8 +11,6 @@ defmodule GroupherServer.CMS.Model.Post do
   alias GroupherServer.CMS
   alias CMS.Model.Embeds
 
-  alias Helper.HTML
-
   @timestamps_opts [type: :utc_datetime_usec]
 
   @required_fields ~w(title digest)a
@@ -27,9 +25,6 @@ defmodule GroupherServer.CMS.Model.Post do
     field(:is_question, :boolean, default: false)
     field(:is_solved, :boolean, default: false)
     field(:solution_digest, :string)
-
-    # TODO: remove
-    field(:body, :string)
 
     article_tags_field(:post)
     article_communities_field(:post)
@@ -57,6 +52,5 @@ defmodule GroupherServer.CMS.Model.Post do
     |> validate_length(:title, min: 3, max: 100)
     |> cast_embed(:emotions, with: &Embeds.ArticleEmotion.changeset/2)
     |> validate_length(:link_addr, min: 5, max: 400)
-    |> HTML.safe_string(:body)
   end
 end
