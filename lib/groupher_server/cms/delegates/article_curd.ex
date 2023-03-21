@@ -116,11 +116,19 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
     end
   end
 
+  @doc """
+  get grouped kanban posts for a community, only for first load of kanban page
+  """
   def grouped_kanban_posts(community_id) do
+    filter = %{page: 1, size: 20}
+
     with {:ok, community} <- ORM.find(Community, community_id),
-         {:ok, paged_todo} <- paged_kanban_posts(community, @article_state.todo),
-         {:ok, paged_wip} <- paged_kanban_posts(community, @article_state.wip),
-         {:ok, paged_done} <- paged_kanban_posts(community, @article_state.done) do
+         {:ok, paged_todo} <-
+           paged_kanban_posts(community, Map.merge(filter, %{state: @article_state.todo})),
+         {:ok, paged_wip} <-
+           paged_kanban_posts(community, Map.merge(filter, %{state: @article_state.wip})),
+         {:ok, paged_done} <-
+           paged_kanban_posts(community, Map.merge(filter, %{state: @article_state.done})) do
       %{
         todo: paged_todo,
         wip: paged_wip,
@@ -130,22 +138,26 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
     end
   end
 
-  def paged_kanban_posts(%Community{} = community, state) do
-    filter = %{
-      page: 1,
-      size: 20,
+  def paged_kanban_posts(%Community{} = community, filter) do
+    %{page: page, size: size, state: state} = filter
+
+    flags = %{
       mark_delete: false,
       pending: :legal,
       original_community_id: community.id,
       state: state
     }
 
-    %{page: page, size: size} = filter
-
     Post
-    |> QueryBuilder.filter_pack(filter)
+    |> QueryBuilder.filter_pack(Map.merge(filter, flags))
     |> ORM.paginator(~m(page size)a)
     |> done()
+  end
+
+  def paged_kanban_posts(community_id, filter) do
+    with {:ok, community} <- ORM.find(Community, community_id) do
+      paged_kanban_posts(community, filter)
+    end
   end
 
   @doc "paged published articles for accounts"
