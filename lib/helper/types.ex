@@ -20,7 +20,7 @@ defmodule Helper.Types do
 
   @type id :: non_neg_integer() | String.t()
 
-  @type article_thread :: :post | :blog
+  @type article_thread :: :post | :blog | :changelog | :doc
 
   @type paged_filter :: %{
           page: Integer.t(),

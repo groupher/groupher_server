@@ -82,12 +82,27 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
 
         article
         |> Map.merge(viewer_has_states)
+        |> covert_cat_state_ifneed()
         |> done
       end)
       |> Repo.transaction()
       |> result()
     end
   end
+
+  defp covert_cat_state_ifneed(%Post{cat: cat, state: state} = article)
+       when is_nil(cat) or is_nil(state) do
+    article
+  end
+
+  defp covert_cat_state_ifneed(%Post{cat: cat, state: state} = article) do
+    cat_value = Constant.article_cat_value(cat)
+    state_value = Constant.article_state_value(state)
+
+    article |> Map.merge(%{cat: cat_value, state: state_value})
+  end
+
+  defp covert_cat_state_ifneed(article), do: article
 
   @doc """
   get paged articles

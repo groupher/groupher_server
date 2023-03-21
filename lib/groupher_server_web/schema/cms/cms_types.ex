@@ -67,6 +67,9 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
 
     field(:is_question, :boolean)
 
+    field(:cat, :string)
+    field(:state, :string)
+
     timestamp_fields(:article)
   end
 

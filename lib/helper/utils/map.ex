@@ -145,6 +145,12 @@ defmodule Helper.Utils.Map do
     results |> Enum.into(%{})
   end
 
+  def reverse_kv(map) when is_map(map) do
+    Enum.reduce(map, %{}, fn {key, value}, reversed_map ->
+      Map.put(reversed_map, value, key)
+    end)
+  end
+
   def deep_merge(left, right), do: Map.merge(left, right, &deep_resolve/3)
 
   # Key exists in both maps, and both values are maps as well.
