@@ -3,8 +3,6 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
 
   use GroupherServer.TestTools
 
-  import Helper.Utils, only: [strip_struct: 1]
-
   alias GroupherServer.CMS
   alias CMS.Model.{Community, CommunityDashboard}
 

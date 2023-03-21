@@ -94,6 +94,10 @@ defmodule GroupherServerWeb.Resolvers.CMS do
     CMS.paged_articles(thread, filter)
   end
 
+  def grouped_kanban_posts(_root, %{community_id: community_id}, _info) do
+    CMS.grouped_kanban_posts(community_id)
+  end
+
   def paged_reports(_root, ~m(filter)a, _) do
     CMS.paged_reports(filter)
   end

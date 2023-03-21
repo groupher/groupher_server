@@ -7,7 +7,7 @@ defmodule GroupherServer.Test.Accounts.CollectFolder do
   alias GroupherServer.{Accounts, CMS}
 
   alias CMS.Model.ArticleCollect
-  alias Accounts.Model.{Embeds}
+  alias Accounts.Model.Embeds
 
   @default_meta Embeds.CollectFolderMeta.default_meta()
 

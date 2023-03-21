@@ -8,10 +8,10 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
   alias CMS.Model.Community
 
   alias Helper.ORM
-  alias CMS.Constant
+  # alias CMS.Constant
 
-  @community_normal Constant.pending(:normal)
-  @community_applying Constant.pending(:applying)
+  # @community_normal Constant.pending(:normal)
+  # @community_applying Constant.pending(:applying)
 
   setup do
     {:ok, category} = db_insert(:category)
