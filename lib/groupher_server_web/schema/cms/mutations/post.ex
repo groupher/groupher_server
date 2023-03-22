@@ -42,6 +42,30 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Post do
       resolve(&R.CMS.update_article/3)
     end
 
+    @desc "set cat for a post"
+    field :set_post_cat, :post do
+      arg(:id, non_null(:id))
+      arg(:cat, non_null(:article_cat_enum))
+
+      middleware(M.Authorize, :login)
+      middleware(M.PassportLoader, source: :post)
+      middleware(M.Passport, claim: "owner;cms->c?->post.edit")
+
+      resolve(&R.CMS.set_post_cat/3)
+    end
+
+    @desc "set cat for a post"
+    field :set_post_state, :post do
+      arg(:id, non_null(:id))
+      arg(:state, non_null(:article_state_enum))
+
+      middleware(M.Authorize, :login)
+      middleware(M.PassportLoader, source: :post)
+      middleware(M.Passport, claim: "owner;cms->c?->post.edit")
+
+      resolve(&R.CMS.set_post_state/3)
+    end
+
     article_react_mutations(:post, [
       :upvote,
       :pin,

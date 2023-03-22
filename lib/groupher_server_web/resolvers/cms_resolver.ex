@@ -9,8 +9,11 @@ defmodule GroupherServerWeb.Resolvers.CMS do
   alias Accounts.Model.User
   alias CMS.Model.{Community, Category, Thread}
 
+  alias CMS.Constant
   alias Helper.ORM
 
+  @article_cat Constant.article_cat()
+  @article_state Constant.article_state()
   # #######################
   # community ..
   # #######################
@@ -84,6 +87,14 @@ defmodule GroupherServerWeb.Resolvers.CMS do
 
   def read_article(_root, %{thread: thread, id: id}, _info) do
     CMS.read_article(thread, id)
+  end
+
+  def set_post_cat(_root, %{passport_source: post, cat: cat}, _info) do
+    CMS.set_post_cat(post, Map.get(@article_cat, cat))
+  end
+
+  def set_post_state(_root, %{passport_source: post, state: state}, _info) do
+    CMS.set_post_state(post, Map.get(@article_state, state))
   end
 
   def paged_articles(_root, ~m(thread filter)a, %{context: %{cur_user: user}}) do

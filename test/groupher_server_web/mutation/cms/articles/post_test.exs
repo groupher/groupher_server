@@ -20,6 +20,64 @@ defmodule GroupherServer.Test.Mutation.Articles.Post do
     {:ok, ~m(user_conn guest_conn owner_conn user community post)a}
   end
 
+  describe "[post cat & state]" do
+    @set_cat_query """
+    mutation(
+      $id: ID!
+      $cat: articleCatEnum!
+    ) {
+      setPostCat(
+        id: $id
+        cat: $cat
+      ) {
+        id
+        cat
+      }
+    }
+    """
+
+    test "can set cat for a exsiting post", ~m(community)a do
+      {:ok, user} = db_insert(:user)
+      user_conn = simu_conn(:user, user)
+
+      post_attrs = mock_attrs(:post, %{community_id: community.id})
+      {:ok, post} = CMS.create_article(community, :post, post_attrs, user)
+
+      variables = %{id: post.id, cat: "FEATURE"}
+      created = user_conn |> mutation_result(@set_cat_query, variables, "setPostCat")
+
+      assert "FEATURE" == created["cat"]
+    end
+
+    @set_state_query """
+    mutation(
+      $id: ID!
+      $state: articleStateEnum!
+    ) {
+      setPostState(
+        id: $id
+        state: $state
+      ) {
+        id
+        state
+      }
+    }
+    """
+
+    test "can set state for a exsiting post", ~m(community)a do
+      {:ok, user} = db_insert(:user)
+      user_conn = simu_conn(:user, user)
+
+      post_attrs = mock_attrs(:post, %{community_id: community.id})
+      {:ok, post} = CMS.create_article(community, :post, post_attrs, user)
+
+      variables = %{id: post.id, state: "DONE"}
+      created = user_conn |> mutation_result(@set_state_query, variables, "setPostState")
+
+      assert "DONE" == created["state"]
+    end
+  end
+
   describe "[mutation post curd]" do
     @create_post_query """
     mutation(

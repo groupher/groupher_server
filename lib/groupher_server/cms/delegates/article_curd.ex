@@ -91,8 +91,18 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
   end
 
   defp covert_cat_state_ifneed(%Post{cat: cat, state: state} = article)
-       when is_nil(cat) or is_nil(state) do
+       when is_nil(cat) and is_nil(state) do
     article
+  end
+
+  defp covert_cat_state_ifneed(%Post{cat: cat, state: state} = article) when is_nil(state) do
+    cat_value = Constant.article_cat_value(cat)
+    article |> Map.merge(%{cat: cat_value})
+  end
+
+  defp covert_cat_state_ifneed(%Post{cat: cat, state: state} = article) when is_nil(cat) do
+    state_value = Constant.article_state_value(state)
+    article |> Map.merge(%{state: state_value})
   end
 
   defp covert_cat_state_ifneed(%Post{cat: cat, state: state} = article) do
@@ -203,6 +213,18 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
       |> QueryBuilder.filter_pack(Map.merge(filter, flags))
       |> ORM.paginator(~m(page size)a)
       |> done()
+    end
+  end
+
+  def set_post_cat(%Post{} = post, cat) do
+    with {:ok, updated} <- ORM.update(post, %{cat: cat}) do
+      updated |> covert_cat_state_ifneed |> done
+    end
+  end
+
+  def set_post_state(%Post{} = post, state) do
+    with {:ok, updated} <- ORM.update(post, %{state: state}) do
+      updated |> covert_cat_state_ifneed |> done
     end
   end
 

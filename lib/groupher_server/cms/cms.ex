@@ -114,6 +114,9 @@ defmodule GroupherServer.CMS do
   defdelegate delete_article(article), to: ArticleCURD
   defdelegate delete_article(article, reason), to: ArticleCURD
 
+  defdelegate set_post_cat(post, cat), to: ArticleCURD
+  defdelegate set_post_state(post, state), to: ArticleCURD
+
   defdelegate update_active_timestamp(thread, article), to: ArticleCURD
   defdelegate sink_article(thread, id), to: ArticleCURD
   defdelegate undo_sink_article(thread, id), to: ArticleCURD
