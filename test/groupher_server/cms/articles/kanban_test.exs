@@ -23,8 +23,8 @@ defmodule GroupherServer.Test.CMS.Articles.Kanban do
   end
 
   describe "[cms kanban curd]" do
-    @test "can create kanban post should have default cat & state",
-          ~m(user community post_attrs)a do
+    test "can create kanban post should have default cat & state",
+         ~m(user community post_attrs)a do
       assert {:error, _} = ORM.find_by(Author, user_id: user.id)
 
       kanban_attrs = post_attrs
@@ -35,21 +35,21 @@ defmodule GroupherServer.Test.CMS.Articles.Kanban do
       assert kanban.state == nil
     end
 
-    @test "can set cat of a post", ~m(user community post_attrs)a do
+    test "can set cat of a post", ~m(user community post_attrs)a do
       {:ok, kanban} = CMS.create_article(community, :post, post_attrs, user)
       {:ok, post} = CMS.set_post_cat(kanban, @article_cat.feature)
 
       assert post.cat == "FEATURE"
     end
 
-    @test "can set state of a post", ~m(user community post_attrs)a do
+    test "can set state of a post", ~m(user community post_attrs)a do
       {:ok, kanban} = CMS.create_article(community, :post, post_attrs, user)
       {:ok, post} = CMS.set_post_state(kanban, @article_state.todo)
 
       assert post.state == "TODO"
     end
 
-    @test "can create kanban post with valid attrs", ~m(user community post_attrs)a do
+    test "can create kanban post with valid attrs", ~m(user community post_attrs)a do
       assert {:error, _} = ORM.find_by(Author, user_id: user.id)
 
       kanban_attrs =
@@ -61,7 +61,7 @@ defmodule GroupherServer.Test.CMS.Articles.Kanban do
       assert kanban.state == @article_state.done
     end
 
-    @test "can get paged kanban posts", ~m(user community post_attrs)a do
+    test "can get paged kanban posts", ~m(user community post_attrs)a do
       kanban_attrs =
         post_attrs |> Map.merge(%{cat: @article_cat.feature, state: @article_state.todo})
 
@@ -105,7 +105,7 @@ defmodule GroupherServer.Test.CMS.Articles.Kanban do
              |> length == 2
     end
 
-    @test "can get default empty grouped kanban posts", ~m(community)a do
+    test "can get default empty grouped kanban posts", ~m(community)a do
       {:ok, grouped_kanban_posts} = CMS.grouped_kanban_posts(community.id)
 
       assert grouped_kanban_posts.todo |> is_valid_pagination?(:raw)
@@ -125,7 +125,7 @@ defmodule GroupherServer.Test.CMS.Articles.Kanban do
              |> length == 0
     end
 
-    @test "can get grouped kanban posts", ~m(user community post_attrs)a do
+    test "can get grouped kanban posts", ~m(user community post_attrs)a do
       kanban_attrs =
         post_attrs |> Map.merge(%{cat: @article_cat.feature, state: @article_state.todo})
 
