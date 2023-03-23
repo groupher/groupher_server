@@ -10,6 +10,11 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedPosts do
 
   alias CMS.Model.Post
 
+  alias CMS.Constant
+
+  @article_cat Constant.article_cat()
+  @article_state Constant.article_state()
+
   @page_size get_config(:general, :page_size)
 
   @now Timex.now()
@@ -49,6 +54,8 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedPosts do
       pagedPosts(filter: $filter) {
         entries {
           id
+          cat
+          state
           document {
             bodyHtml
           }
@@ -75,6 +82,18 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedPosts do
       assert results["pageSize"] == 10
       assert results["totalCount"] == @total_count
       assert results["entries"] |> List.first() |> Map.get("articleTags") |> is_list
+    end
+
+    @test "should get valid cat & state", ~m(guest_conn post_last_week)a do
+      variables = %{filter: %{page: 1, size: 20}}
+
+      {:ok, _post} = CMS.set_post_cat(post_last_week, @article_cat.feature)
+      {:ok, _post} = CMS.set_post_state(post_last_week, @article_state.wip)
+
+      results = guest_conn |> query_result(@query, variables, "pagedPosts")
+
+      assert results["entries"] |> Enum.any?(&(&1["cat"] == "FEATURE"))
+      assert results["entries"] |> Enum.any?(&(&1["state"] == "WIP"))
     end
 
     test "should get valid thread document", ~m(guest_conn)a do

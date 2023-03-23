@@ -31,7 +31,6 @@ defmodule GroupherServer.Test.Query.Articles.Kanban do
     }
   }
   """
-
   test "basic graphql query on kanban post with logined user",
        ~m(user_conn community user post_attrs)a do
     kanban_attrs =

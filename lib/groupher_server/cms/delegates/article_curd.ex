@@ -90,6 +90,14 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
     end
   end
 
+  def convert_paged_cat_state_if_need(%{entries: []} = paged_posts), do: paged_posts
+
+  def convert_paged_cat_state_if_need(%{entries: entries} = paged_posts) do
+    cooked_entries = Enum.map(entries, &covert_cat_state_ifneed/1)
+
+    paged_posts |> Map.merge(%{entries: cooked_entries})
+  end
+
   defp covert_cat_state_ifneed(%Post{cat: cat, state: state} = article)
        when is_nil(cat) and is_nil(state) do
     article
@@ -128,6 +136,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
       |> ORM.paginator(~m(page size)a)
       # |> ORM.cursor_paginator()
       |> add_pin_articles_ifneed(info.model, filter)
+      |> convert_paged_cat_state_if_need()
       |> done()
     end
   end
@@ -176,6 +185,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
     Post
     |> QueryBuilder.filter_pack(Map.merge(filter, flags))
     |> ORM.paginator(~m(page size)a)
+    |> convert_paged_cat_state_if_need()
     |> done()
   end
 
