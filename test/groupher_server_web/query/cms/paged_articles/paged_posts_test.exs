@@ -84,7 +84,7 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedPosts do
       assert results["entries"] |> List.first() |> Map.get("articleTags") |> is_list
     end
 
-    @test "should get valid cat & state", ~m(guest_conn post_last_week)a do
+    test "should get valid cat & state", ~m(guest_conn post_last_week)a do
       variables = %{filter: %{page: 1, size: 20}}
 
       {:ok, _post} = CMS.set_post_cat(post_last_week, @article_cat.feature)
