@@ -109,6 +109,25 @@ defmodule GroupherServerWeb.Schema.CMS.Metrics do
     value(:grey)
   end
 
+  enum :article_cat_enum do
+    value(:feature)
+    value(:bug)
+    value(:question)
+    value(:other)
+  end
+
+  enum :article_state_enum do
+    value(:todo)
+    value(:wip)
+    value(:done)
+    value(:resolve)
+    value(:reject_dup)
+    value(:reject_no_plan)
+    value(:reject_no_fix)
+    value(:reject_repro)
+    value(:reject_stale)
+  end
+
   @desc "the filter mode for list comments"
   enum :comments_mode do
     value(:replies)

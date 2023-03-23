@@ -5,10 +5,11 @@ defmodule Helper.QueryBuilder do
 
   import Ecto.Query, warn: false
   alias GroupherServer.CMS
-  alias CMS.Model.Repo, as: CMSRepo
 
-  @audit_illegal CMS.Constant.pending(:illegal)
-  @audit_failed CMS.Constant.pending(:audit_failed)
+  alias CMS.Constant
+
+  @audit_illegal Constant.pending(:illegal)
+  @audit_failed Constant.pending(:audit_failed)
 
   @doc """
   load inner user field
@@ -159,6 +160,25 @@ defmodule Helper.QueryBuilder do
           where: t.id == ^community_id
         )
 
+      {:original_community_id, original_community_id}, queryable ->
+        from(
+          q in queryable,
+          join: t in assoc(q, :original_community),
+          where: t.id == ^original_community_id
+        )
+
+      {:cat, nil}, queryable ->
+        queryable
+
+      {:state, nil}, queryable ->
+        queryable
+
+      {:cat, cat}, queryable ->
+        queryable |> where([p], p.cat == ^cat)
+
+      {:state, state}, queryable ->
+        queryable |> where([p], p.state == ^state)
+
       {:community_raw, community_raw}, queryable ->
         from(
           q in queryable,
@@ -193,27 +213,5 @@ defmodule Helper.QueryBuilder do
   @doc """
   handle spec needs for CMS query filter
   """
-  def domain_query(CMSRepo = queryable, filter) do
-    Enum.reduce(filter, queryable, fn
-      {:sort, :most_github_star}, queryable ->
-        queryable |> order_by(desc: :star_count)
-
-      {:sort, :most_github_fork}, queryable ->
-        queryable |> order_by(desc: :fork_count)
-
-      {:sort, :most_github_watch}, queryable ->
-        queryable |> order_by(desc: :watch_count)
-
-      {:sort, :most_github_pr}, queryable ->
-        queryable |> order_by(desc: :prs_count)
-
-      {:sort, :most_github_issue}, queryable ->
-        queryable |> order_by(desc: :issues_count)
-
-      {_, _}, queryable ->
-        queryable
-    end)
-  end
-
   def domain_query(queryable, _filter), do: queryable
 end

@@ -25,8 +25,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
   alias GroupherServer.{Accounts, CMS, Email, Repo, Statistics}
 
   alias Accounts.Model.User
-  alias CMS.Model.{Author, Community, PinnedArticle, Embeds}
-  alias CMS.Model.Repo, as: CMSRepo
+  alias CMS.Model.{Author, Community, PinnedArticle, Embeds, Post}
   alias CMS.Constant
 
   alias CMS.Delegate.{
@@ -51,6 +50,9 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
   @audit_legal Constant.pending(:legal)
   @audit_illegal Constant.pending(:illegal)
   @audit_failed Constant.pending(:audit_failed)
+
+  @article_cat Constant.article_cat()
+  @article_state Constant.article_state()
 
   @doc """
   read articles for un-logined user
@@ -80,12 +82,45 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
 
         article
         |> Map.merge(viewer_has_states)
+        |> covert_cat_state_ifneed()
         |> done
       end)
       |> Repo.transaction()
       |> result()
     end
   end
+
+  def convert_paged_cat_state_if_need(%{entries: []} = paged_posts), do: paged_posts
+
+  def convert_paged_cat_state_if_need(%{entries: entries} = paged_posts) do
+    cooked_entries = Enum.map(entries, &covert_cat_state_ifneed/1)
+
+    paged_posts |> Map.merge(%{entries: cooked_entries})
+  end
+
+  defp covert_cat_state_ifneed(%Post{cat: cat, state: state} = article)
+       when is_nil(cat) and is_nil(state) do
+    article
+  end
+
+  defp covert_cat_state_ifneed(%Post{cat: cat, state: state} = article) when is_nil(state) do
+    cat_value = Constant.article_cat_value(cat)
+    article |> Map.merge(%{cat: cat_value})
+  end
+
+  defp covert_cat_state_ifneed(%Post{cat: cat, state: state} = article) when is_nil(cat) do
+    state_value = Constant.article_state_value(state)
+    article |> Map.merge(%{state: state_value})
+  end
+
+  defp covert_cat_state_ifneed(%Post{cat: cat, state: state} = article) do
+    cat_value = Constant.article_cat_value(cat)
+    state_value = Constant.article_state_value(state)
+
+    article |> Map.merge(%{cat: cat_value, state: state_value})
+  end
+
+  defp covert_cat_state_ifneed(article), do: article
 
   @doc """
   get paged articles
@@ -101,6 +136,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
       |> ORM.paginator(~m(page size)a)
       # |> ORM.cursor_paginator()
       |> add_pin_articles_ifneed(info.model, filter)
+      |> convert_paged_cat_state_if_need()
       |> done()
     end
   end
@@ -111,6 +147,51 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
       |> mark_viewer_emotion_states(user)
       |> mark_viewer_has_states(user)
       |> done()
+    end
+  end
+
+  @doc """
+  get grouped kanban posts for a community, only for first load of kanban page
+  """
+  def grouped_kanban_posts(community_id) do
+    filter = %{page: 1, size: 20}
+
+    with {:ok, community} <- ORM.find(Community, community_id),
+         {:ok, paged_todo} <-
+           paged_kanban_posts(community, Map.merge(filter, %{state: @article_state.todo})),
+         {:ok, paged_wip} <-
+           paged_kanban_posts(community, Map.merge(filter, %{state: @article_state.wip})),
+         {:ok, paged_done} <-
+           paged_kanban_posts(community, Map.merge(filter, %{state: @article_state.done})) do
+      %{
+        todo: paged_todo,
+        wip: paged_wip,
+        done: paged_done
+      }
+      |> done
+    end
+  end
+
+  def paged_kanban_posts(%Community{} = community, filter) do
+    %{page: page, size: size, state: state} = filter
+
+    flags = %{
+      mark_delete: false,
+      pending: :legal,
+      original_community_id: community.id,
+      state: state
+    }
+
+    Post
+    |> QueryBuilder.filter_pack(Map.merge(filter, flags))
+    |> ORM.paginator(~m(page size)a)
+    |> convert_paged_cat_state_if_need()
+    |> done()
+  end
+
+  def paged_kanban_posts(community_id, filter) do
+    with {:ok, community} <- ORM.find(Community, community_id) do
+      paged_kanban_posts(community, filter)
     end
   end
 
@@ -142,6 +223,18 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
       |> QueryBuilder.filter_pack(Map.merge(filter, flags))
       |> ORM.paginator(~m(page size)a)
       |> done()
+    end
+  end
+
+  def set_post_cat(%Post{} = post, cat) do
+    with {:ok, updated} <- ORM.update(post, %{cat: cat}) do
+      updated |> covert_cat_state_ifneed |> done
+    end
+  end
+
+  def set_post_state(%Post{} = post, state) do
+    with {:ok, updated} <- ORM.update(post, %{state: state}) do
+      updated |> covert_cat_state_ifneed |> done
     end
   end
 
@@ -660,16 +753,6 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
       |> Ecto.Changeset.put_embed(:meta, meta)
       |> Repo.insert()
     end
-  end
-
-  # Github Repo 没有传统的 body, 需要特殊处理
-  # 赋值一个空的 body, 后续在 document 中处理
-  # 注意：digest 那里也要特殊处理
-  defp do_create_article(CMSRepo, attrs, author, community) do
-    body = Map.get(attrs, :body, Converter.Article.default_rich_text())
-    attrs = Map.put(attrs, :body, body)
-
-    do_create_article(CMSRepo, attrs, author, community)
   end
 
   defp do_update_article(article, %{body: _} = attrs) do
