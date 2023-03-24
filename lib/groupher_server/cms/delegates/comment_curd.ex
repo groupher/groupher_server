@@ -40,6 +40,9 @@ defmodule GroupherServer.CMS.Delegate.CommentCURD do
   @audit_illegal Constant.pending(:illegal)
   @audit_failed Constant.pending(:audit_failed)
 
+  @article_cat Constant.article_cat()
+  @article_state Constant.article_state()
+
   def comments_state(thread, article_id) do
     filter = %{page: 1, size: 20}
 
@@ -417,6 +420,8 @@ defmodule GroupherServer.CMS.Delegate.CommentCURD do
   def undo_mark_comment_solution(comment_id, user) do
     with {:ok, comment} <- ORM.find(Comment, comment_id),
          {:ok, post} <- ORM.find(Post, comment.post_id, preload: [author: :user]) do
+      CMS.set_post_state(post, @article_state.default)
+
       do_mark_comment_solution(post, comment, user, false)
     end
   end
@@ -429,7 +434,8 @@ defmodule GroupherServer.CMS.Delegate.CommentCURD do
         ORM.update(comment, %{is_solution: is_solution, is_for_question: true})
       end)
       |> Multi.run(:update_post_state, fn _, _ ->
-        ORM.update(post, %{is_solved: is_solution, solution_digest: comment.body_html})
+        ORM.update(post, %{solution_digest: comment.body_html})
+        CMS.set_post_state(post, @article_state.resolved)
       end)
       |> Multi.run(:sync_embed_replies, fn _, %{mark_solution: comment} ->
         sync_embed_replies(comment)
@@ -445,17 +451,15 @@ defmodule GroupherServer.CMS.Delegate.CommentCURD do
   # @doc """
   # batch update is_question flag for post-only article
   # """
-  # def batch_update_question_flag(%Post{is_question: is_question} = post) do
-  #   from(c in Comment,
-  #     where: c.post_id == ^post.id,
-  #     update: [set: [is_for_question: ^is_question]]
-  #   )
-  #   |> Repo.update_all([])
+  def batch_update_question_flag(%Post{} = post, is_for_question) do
+    from(c in Comment,
+      where: c.post_id == ^post.id,
+      update: [set: [is_for_question: ^is_for_question]]
+    )
+    |> Repo.update_all([])
 
-  #   {:ok, :pass}
-  # end
-
-  # def batch_update_question_flag(_), do: {:ok, :pass}
+    {:ok, :pass}
+  end
 
   def delete_comment(%{is_archived: true}),
     do: raise_error(:archived, "article is archived, can not be edit or delete")
@@ -664,11 +668,17 @@ defmodule GroupherServer.CMS.Delegate.CommentCURD do
     Map.merge(paged_comments, %{entries: entries})
   end
 
-  defp set_question_flag_ifneed(%{is_question: true} = _article, %Comment{} = comment) do
-    ORM.update(comment, %{is_for_question: true})
-  end
+  defp set_question_flag_ifneed(%{cat: cat} = _article, %Comment{} = comment) do
+    question_type = @article_cat.question
 
-  defp set_question_flag_ifneed(_, comment), do: ORM.update(comment, %{is_for_question: false})
+    case cat do
+      ^question_type ->
+        ORM.update(comment, %{is_for_question: true})
+
+      _ ->
+        ORM.update(comment, %{is_for_question: false})
+    end
+  end
 
   # batch update is_solution flag for artilce comment
   defp batch_update_solution_flag(%Post{} = post, is_question) do
