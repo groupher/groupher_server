@@ -16,7 +16,6 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Post do
       arg(:community_id, non_null(:id))
       arg(:thread, :thread, default_value: :post)
       arg(:article_tags, list_of(:id))
-      arg(:is_question, :boolean)
 
       middleware(M.Authorize, :login)
       # middleware(M.PublishThrottle)

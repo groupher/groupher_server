@@ -29,7 +29,7 @@ defmodule GroupherServer.CMS.Constant do
     wip: 3,
     done: 4,
     # for question cat
-    resolve: 5,
+    resolved: 5,
     reject_dup: 6,
     reject_no_plan: 7,
     reject_no_fix: 8,

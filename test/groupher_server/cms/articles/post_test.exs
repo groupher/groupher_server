@@ -168,31 +168,6 @@ defmodule GroupherServer.Test.CMS.Articles.Post do
     end
   end
 
-  describe "[cms post question]" do
-    test "post have default question flags", ~m(user community post_attrs)a do
-      {:ok, post} = CMS.create_article(community, :post, post_attrs, user)
-
-      assert not post.is_question
-      assert not post.is_solved
-    end
-
-    test "can create post with question", ~m(user community post_attrs)a do
-      post_attrs = Map.merge(post_attrs, %{is_question: true})
-      {:ok, post} = CMS.create_article(community, :post, post_attrs, user)
-
-      assert post.is_question
-    end
-
-    test "can update post with question", ~m(user community post_attrs)a do
-      post_attrs = Map.merge(post_attrs, %{is_question: true})
-      {:ok, post} = CMS.create_article(community, :post, post_attrs, user)
-      assert post.is_question
-
-      {:ok, post} = CMS.update_article(post, %{is_question: false})
-      assert not post.is_question
-    end
-  end
-
   describe "[cms post document]" do
     test "will create related document after create", ~m(user community post_attrs)a do
       {:ok, post} = CMS.create_article(community, :post, post_attrs, user)

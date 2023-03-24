@@ -9,6 +9,11 @@ defmodule GroupherServer.Test.CMS.Comments.PostComment do
   alias Accounts.Model.User
   alias CMS.Model.{Comment, PinnedComment, Embeds, Post}
 
+  alias CMS.Constant
+
+  @article_cat Constant.article_cat()
+  @article_state Constant.article_state()
+
   @active_period get_config(:article, :active_period_days)
 
   @delete_hint Comment.delete_hint()
@@ -747,7 +752,11 @@ defmodule GroupherServer.Test.CMS.Comments.PostComment do
     end
 
     test "create comment for question post should have flags", ~m(user community)a do
-      post_attrs = mock_attrs(:post, %{community_id: community.id, is_question: true})
+      post_attrs = mock_attrs(:post, %{community_id: community.id, cat: @article_cat.question})
+
+      {:ok, post} = CMS.create_article(community, :post, post_attrs, user)
+
+      {:ok, post_comment} = CMS.create_comment(:post, post.id, mock_comment(), user)
       {:ok, post} = CMS.create_article(community, :post, post_attrs, user)
 
       {:ok, post_comment} = CMS.create_comment(:post, post.id, mock_comment(), user)
@@ -759,15 +768,22 @@ defmodule GroupherServer.Test.CMS.Comments.PostComment do
          ~m(user community)a do
       post_attrs = mock_attrs(:post, %{community_id: community.id, is_question: true})
       {:ok, post} = CMS.create_article(community, :post, post_attrs, user)
+
       {:ok, comment1} = CMS.create_comment(:post, post.id, mock_comment(), user)
       {:ok, comment2} = CMS.create_comment(:post, post.id, mock_comment(), user)
       {:ok, comment3} = CMS.create_comment(:post, post.id, mock_comment(), user)
+
+      {:ok, _} = CMS.set_post_cat(post, @article_cat.question)
+
+      {:ok, comment1} = ORM.find(Comment, comment1.id)
+      {:ok, comment2} = ORM.find(Comment, comment2.id)
+      {:ok, comment3} = ORM.find(Comment, comment3.id)
 
       assert comment1.is_for_question
       assert comment2.is_for_question
       assert comment3.is_for_question
 
-      {:ok, _} = CMS.update_article(post, %{is_question: false})
+      {:ok, _} = CMS.set_post_cat(post, @article_cat.feature)
 
       {:ok, comment1} = ORM.find(Comment, comment1.id)
       {:ok, comment2} = ORM.find(Comment, comment2.id)
@@ -791,7 +807,8 @@ defmodule GroupherServer.Test.CMS.Comments.PostComment do
       assert comment.is_solution
 
       {:ok, post} = ORM.find(Post, post.id)
-      assert post.is_solved
+
+      assert post.state == @article_state.resolved
       assert post.solution_digest == comment.body_html
     end
 
@@ -823,7 +840,7 @@ defmodule GroupherServer.Test.CMS.Comments.PostComment do
       assert not comment.is_solution
 
       {:ok, post} = ORM.find(Post, post.id)
-      assert not post.is_solved
+      assert post.state == @article_state.default
     end
 
     test "non-post-author can not undo mark a comment as solution", ~m(user community)a do

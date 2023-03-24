@@ -15,7 +15,7 @@ defmodule GroupherServer.CMS.Model.Post do
 
   @required_fields ~w(title digest)a
   @article_cast_fields general_article_cast_fields()
-  @optional_fields ~w(copy_right is_question is_solved solution_digest updated_at inserted_at active_at archived_at cat state)a ++
+  @optional_fields ~w(copy_right solution_digest updated_at inserted_at active_at archived_at cat state)a ++
                      @article_cast_fields
 
   @type t :: %Post{}
@@ -25,8 +25,6 @@ defmodule GroupherServer.CMS.Model.Post do
     field(:cat, :integer)
     field(:state, :integer)
 
-    field(:is_question, :boolean, default: false)
-    field(:is_solved, :boolean, default: false)
     field(:solution_digest, :string)
 
     article_tags_field(:post)
