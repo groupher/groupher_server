@@ -65,8 +65,6 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
     general_article_fields()
     comments_fields()
 
-    field(:is_question, :boolean)
-
     field(:cat, :string)
     field(:state, :string)
 

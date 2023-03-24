@@ -463,13 +463,13 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
     |> Multi.run(:update_document, fn _, %{update_article: update_article} ->
       Document.update(update_article, attrs)
     end)
-    |> Multi.run(:update_comment_question_flag_if_need, fn _, %{update_article: update_article} ->
-      # 如果帖子的类型变了，那么 update 所有的 flag
-      case Map.has_key?(attrs, :is_question) do
-        true -> CommentCURD.batch_update_question_flag(update_article)
-        false -> {:ok, :pass}
-      end
-    end)
+    # |> Multi.run(:update_comment_question_flag_if_need, fn _, %{update_article: update_article} ->
+    #   # 如果帖子的类型变了，那么 update 所有的 flag
+    #   case Map.has_key?(attrs, :is_question) do
+    #     true -> CommentCURD.batch_update_question_flag(update_article)
+    #     false -> {:ok, :pass}
+    #   end
+    # end)
     |> Multi.run(:update_edit_status, fn _, %{update_article: update_article} ->
       ArticleCommunity.update_edit_status(update_article)
     end)

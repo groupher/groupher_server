@@ -442,20 +442,20 @@ defmodule GroupherServer.CMS.Delegate.CommentCURD do
     end
   end
 
-  @doc """
-  batch update is_question flag for post-only article
-  """
-  def batch_update_question_flag(%Post{is_question: is_question} = post) do
-    from(c in Comment,
-      where: c.post_id == ^post.id,
-      update: [set: [is_for_question: ^is_question]]
-    )
-    |> Repo.update_all([])
+  # @doc """
+  # batch update is_question flag for post-only article
+  # """
+  # def batch_update_question_flag(%Post{is_question: is_question} = post) do
+  #   from(c in Comment,
+  #     where: c.post_id == ^post.id,
+  #     update: [set: [is_for_question: ^is_question]]
+  #   )
+  #   |> Repo.update_all([])
 
-    {:ok, :pass}
-  end
+  #   {:ok, :pass}
+  # end
 
-  def batch_update_question_flag(_), do: {:ok, :pass}
+  # def batch_update_question_flag(_), do: {:ok, :pass}
 
   def delete_comment(%{is_archived: true}),
     do: raise_error(:archived, "article is archived, can not be edit or delete")
