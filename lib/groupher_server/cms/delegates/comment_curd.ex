@@ -668,7 +668,7 @@ defmodule GroupherServer.CMS.Delegate.CommentCURD do
     Map.merge(paged_comments, %{entries: entries})
   end
 
-  defp set_question_flag_ifneed(%{cat: cat} = _article, %Comment{} = comment) do
+  defp set_question_flag_ifneed(%Post{cat: cat}, %Comment{} = comment) do
     question_type = @article_cat.question
 
     case cat do
@@ -679,6 +679,8 @@ defmodule GroupherServer.CMS.Delegate.CommentCURD do
         ORM.update(comment, %{is_for_question: false})
     end
   end
+
+  defp set_question_flag_ifneed(_, comment), do: {:ok, comment}
 
   # batch update is_solution flag for artilce comment
   defp batch_update_solution_flag(%Post{} = post, is_question) do

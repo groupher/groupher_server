@@ -751,7 +751,6 @@ defmodule GroupherServer.Test.CMS.Comments.PostComment do
       assert not post_comment.is_solution
     end
 
-    @tag :wip
     test "create comment for question post should have flags", ~m(user community)a do
       post_attrs = mock_attrs(:post, %{community_id: community.id, cat: @article_cat.question})
 
@@ -765,7 +764,6 @@ defmodule GroupherServer.Test.CMS.Comments.PostComment do
       assert post_comment.is_for_question
     end
 
-    @tag :wip
     test "update comment with is_question should batch update exsit comments is_for_question field",
          ~m(user community)a do
       post_attrs = mock_attrs(:post, %{community_id: community.id, is_question: true})
@@ -796,7 +794,6 @@ defmodule GroupherServer.Test.CMS.Comments.PostComment do
       assert not comment3.is_for_question
     end
 
-    @tag :wip
     test "can mark a comment as solution", ~m(user community)a do
       post_attrs = mock_attrs(:post, %{community_id: community.id, is_question: true})
       {:ok, post} = CMS.create_article(community, :post, post_attrs, user)
@@ -829,7 +826,6 @@ defmodule GroupherServer.Test.CMS.Comments.PostComment do
       reason |> is_error?(:require_questioner)
     end
 
-    @tag :wip
     test "can undo mark a comment as solution", ~m(user community)a do
       post_attrs = mock_attrs(:post, %{community_id: community.id, is_question: true})
       {:ok, post} = CMS.create_article(community, :post, post_attrs, user)
