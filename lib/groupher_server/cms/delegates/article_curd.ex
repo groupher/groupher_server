@@ -385,6 +385,12 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
   iex> create_article(community, :post, %{title: ...}, user)
   {:ok, %Post{}}
   """
+  def create_article(%Community{raw: craw, id: id}, thread, attrs, user) when is_nil(craw) do
+    with {:ok, community} <- ORM.find(Community, id) do
+      create_article(community, thread, attrs, user)
+    end
+  end
+
   def create_article(%Community{raw: craw}, thread, attrs, %User{id: uid}) do
     attrs = atom_values_to_upcase(attrs)
 

@@ -27,7 +27,6 @@ defmodule GroupherServer.Test.CMS.Articles.Doc do
   end
 
   describe "[cms doc curd]" do
-    @tag :wip
     test "created doc should have auto_increase inner_id", ~m(user community doc_attrs)a do
       {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)
       assert doc.inner_id == 1
@@ -155,7 +154,7 @@ defmodule GroupherServer.Test.CMS.Articles.Doc do
 
     test "create doc with an non-exsit community fails", ~m(user)a do
       invalid_attrs = mock_attrs(:doc, %{community_id: non_exsit_id()})
-      ivalid_community = %Community{id: non_exsit_id()}
+      ivalid_community = %Community{id: non_exsit_id(), raw: non_exsit_raw()}
 
       assert {:error, _} = CMS.create_article(ivalid_community, :doc, invalid_attrs, user)
     end

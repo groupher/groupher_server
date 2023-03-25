@@ -756,7 +756,7 @@ defmodule GroupherServer.Test.CMS.Comments.PostComment do
 
       {:ok, post} = CMS.create_article(community, :post, post_attrs, user)
 
-      {:ok, post_comment} = CMS.create_comment(:post, post.id, mock_comment(), user)
+      {:ok, _post_comment} = CMS.create_comment(:post, post.id, mock_comment(), user)
       {:ok, post} = CMS.create_article(community, :post, post_attrs, user)
 
       {:ok, post_comment} = CMS.create_comment(:post, post.id, mock_comment(), user)

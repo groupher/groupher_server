@@ -246,7 +246,6 @@ defmodule GroupherServer.Test.CMS.Hooks.CiteChangelog do
       assert result.total_count == 2
 
       result_changelog = result.entries |> List.first()
-      result_comment = result.entries |> Enum.at(2)
       result_blog = result.entries |> List.last()
 
       assert result_changelog.id == changelog.id

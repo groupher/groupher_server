@@ -27,7 +27,6 @@ defmodule GroupherServer.Test.CMS.Articles.Changelog do
   end
 
   describe "[cms changelog curd]" do
-    @tag :wip
     test "created changelog should have auto_increase inner_id",
          ~m(user community changelog_attrs)a do
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
@@ -156,7 +155,7 @@ defmodule GroupherServer.Test.CMS.Articles.Changelog do
 
     test "create changelog with an non-exsit community fails", ~m(user)a do
       invalid_attrs = mock_attrs(:changelog, %{community_id: non_exsit_id()})
-      ivalid_community = %Community{id: non_exsit_id()}
+      ivalid_community = %Community{id: non_exsit_id(), raw: non_exsit_raw()}
 
       assert {:error, _} = CMS.create_article(ivalid_community, :changelog, invalid_attrs, user)
     end
