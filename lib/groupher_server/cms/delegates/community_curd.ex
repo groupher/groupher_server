@@ -247,6 +247,12 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
   @doc """
   update thread / article count in community meta
   """
+  def update_community_count_field(%Community{meta: nil, raw: raw}, thread) do
+    with {:ok, community} = CMS.read_community(raw) do
+      update_community_count_field(community, thread)
+    end
+  end
+
   def update_community_count_field(%Community{} = community, thread) do
     with {:ok, info} <- match(thread) do
       {:ok, thread_article_count} =

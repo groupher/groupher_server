@@ -109,7 +109,6 @@ defmodule GroupherServer.Test.Mutation.Articles.Changelog do
       assert not String.contains?(body_html, "script")
     end
 
-    @tag :wip
     test "create changelog should excape xss attracts 2" do
       {:ok, user} = db_insert(:user)
       user_conn = simu_conn(:user, user)
