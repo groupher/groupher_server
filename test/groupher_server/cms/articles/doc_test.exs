@@ -85,6 +85,14 @@ defmodule GroupherServer.Test.CMS.Articles.Doc do
                |> String.slice(0, @article_digest_length)
     end
 
+    @tag :wip
+    test "created doc should have original_community info", ~m(user community doc_attrs)a do
+      {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)
+
+      assert doc.original_community_raw == community.raw
+      assert doc.original_community_id == community.id
+    end
+
     test "created doc should have a acitve_at field, same with inserted_at",
          ~m(user community doc_attrs)a do
       {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)

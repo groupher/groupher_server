@@ -86,6 +86,15 @@ defmodule GroupherServer.Test.CMS.Articles.Changelog do
                |> String.slice(0, @article_digest_length)
     end
 
+    @tag :wip
+    test "created changelog should have original_community info",
+         ~m(user community changelog_attrs)a do
+      {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
+
+      assert changelog.original_community_raw == community.raw
+      assert changelog.original_community_id == community.id
+    end
+
     test "created changelog should have a acitve_at field, same with inserted_at",
          ~m(user community changelog_attrs)a do
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)

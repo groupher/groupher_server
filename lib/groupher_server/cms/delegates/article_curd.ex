@@ -385,7 +385,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
   iex> create_article(community, :post, %{title: ...}, user)
   {:ok, %Post{}}
   """
-  def create_article(%Community{raw: craw, id: id}, thread, attrs, user) when is_nil(craw) do
+  def create_article(%Community{raw: nil, id: id}, thread, attrs, user) do
     with {:ok, community} <- ORM.find(Community, id) do
       create_article(community, thread, attrs, user)
     end
@@ -755,7 +755,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
          %Author{id: author_id},
          %Community{} = community
        ) do
-    %{id: community_id, meta: community_meta} = community
+    %{id: community_id, meta: community_meta, raw: community_raw} = community
 
     threads_name = model |> module_to_atom |> plural
     inner_id = community_meta |> Map.get(:"#{threads_name}_inner_id_index")
@@ -768,6 +768,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
       |> Ecto.Changeset.put_change(:emotions, @default_emotions)
       |> Ecto.Changeset.put_change(:author_id, author_id)
       |> Ecto.Changeset.put_change(:original_community_id, community_id)
+      |> Ecto.Changeset.put_change(:original_community_raw, community_raw)
       |> Ecto.Changeset.put_embed(:meta, meta)
       |> Repo.insert()
     end

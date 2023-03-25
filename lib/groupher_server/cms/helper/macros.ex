@@ -199,6 +199,7 @@ defmodule GroupherServer.CMS.Helper.Macros do
       embeds_one(:emotions, Embeds.ArticleEmotion, on_replace: :update)
 
       belongs_to(:original_community, Community)
+      field(:original_community_raw, :string)
 
       upvote_and_collect_fields()
       viewer_has_fields()
