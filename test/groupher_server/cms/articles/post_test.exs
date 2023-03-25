@@ -26,6 +26,39 @@ defmodule GroupherServer.Test.CMS.Articles.Post do
   end
 
   describe "[cms post curd]" do
+    @tag :wip
+    test "created post should have auto_increase inner_id", ~m(user community post_attrs)a do
+      {:ok, post} = CMS.create_article(community, :post, post_attrs, user)
+      assert post.inner_id == 1
+
+      {:ok, post} = CMS.create_article(community, :post, post_attrs, user)
+      assert post.inner_id == 2
+
+      {:ok, post} = CMS.create_article(community, :post, post_attrs, user)
+      assert post.inner_id == 3
+
+      blog_attrs = mock_attrs(:blog, %{community_id: community.id})
+      changelog_attrs = mock_attrs(:changelog, %{community_id: community.id})
+
+      {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user)
+      assert blog.inner_id == 1
+
+      {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user)
+      assert blog.inner_id == 2
+
+      {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
+      assert changelog.inner_id == 1
+
+      {:ok, community} = ORM.find(Community, community.id)
+
+      assert community.meta.posts_inner_id_index == 3
+      assert community.meta.blogs_inner_id_index == 2
+      assert community.meta.changelogs_inner_id_index == 1
+      assert community.meta.docs_inner_id_index == 0
+
+      assert community.articles_count == 6
+    end
+
     test "can create post with valid attrs", ~m(user community post_attrs)a do
       assert {:error, _} = ORM.find_by(Author, user_id: user.id)
       {:ok, post} = CMS.create_article(community, :post, post_attrs, user)

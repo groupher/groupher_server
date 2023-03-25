@@ -178,6 +178,7 @@ defmodule GroupherServer.CMS.Helper.Macros do
   """
   defmacro general_article_fields(thread) do
     quote do
+      field(:inner_id, :id)
       field(:title, :string)
       field(:digest, :string)
 

@@ -18,6 +18,7 @@ defmodule GroupherServerWeb.Schema.Helper.Fields do
   defmacro general_article_fields() do
     quote do
       field(:id, :id)
+      field(:inner_id, :id)
       field(:title, :string)
       field(:document, :thread_document, resolve: dataloader(CMS, :document))
       field(:digest, :string)

@@ -10,6 +10,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
     only: [
       done: 1,
       pick_by: 2,
+      plural: 1,
       module_to_atom: 1,
       get_config: 2,
       ensure: 2,
@@ -43,6 +44,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
   @archive_threshold get_config(:article, :archive_threshold)
 
   @default_emotions Embeds.ArticleEmotion.default_emotions()
+  @default_community_meta Embeds.CommunityMeta.default_meta()
   @default_article_meta Embeds.ArticleMeta.default_meta()
   @default_user_meta Accounts.Model.Embeds.UserMeta.default_meta()
   @remove_article_hint "The content does not comply with the community norms"
@@ -383,12 +385,12 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
   iex> create_article(community, :post, %{title: ...}, user)
   {:ok, %Post{}}
   """
-  def create_article(%Community{id: cid}, thread, attrs, %User{id: uid}) do
+  def create_article(%Community{raw: craw}, thread, attrs, %User{id: uid}) do
     attrs = atom_values_to_upcase(attrs)
 
     with {:ok, author} <- ensure_author_exists(%User{id: uid}),
          {:ok, info} <- match(thread),
-         {:ok, community} <- ORM.find(Community, cid) do
+         {:ok, community} <- CMS.read_community(craw) do
       Multi.new()
       |> Multi.run(:create_article, fn _, _ ->
         do_create_article(info.model, attrs, author, community)
@@ -407,6 +409,13 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
       end)
       |> Multi.run(:update_community_article_count, fn _, _ ->
         CommunityCURD.update_community_count_field(community, thread)
+      end)
+      |> Multi.run(:update_community_inner_id, fn _,
+                                                  %{
+                                                    create_article: article,
+                                                    update_community_article_count: community
+                                                  } ->
+        CommunityCURD.update_community_inner_id(community, thread, article)
       end)
       |> Multi.run(:update_user_published_meta, fn _, _ ->
         Accounts.update_published_states(uid, thread)
@@ -734,14 +743,22 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
   end
 
   #  for create artilce step in Multi.new
-  defp do_create_article(model, %{body: _body} = attrs, %Author{id: author_id}, %Community{
-         id: community_id
-       }) do
+  defp do_create_article(
+         model,
+         %{body: _body} = attrs,
+         %Author{id: author_id},
+         %Community{} = community
+       ) do
+    %{id: community_id, meta: community_meta} = community
+
+    threads_name = model |> module_to_atom |> plural
+    inner_id = community_meta |> Map.get(:"#{threads_name}_inner_id_index")
+
     meta = @default_article_meta |> Map.merge(%{thread: module_to_upcase(model)})
 
     with {:ok, attrs} <- add_digest_attrs(attrs) do
       model.__struct__
-      |> model.changeset(attrs)
+      |> model.changeset(attrs |> Map.merge(%{inner_id: inner_id + 1}))
       |> Ecto.Changeset.put_change(:emotions, @default_emotions)
       |> Ecto.Changeset.put_change(:author_id, author_id)
       |> Ecto.Changeset.put_change(:original_community_id, community_id)
