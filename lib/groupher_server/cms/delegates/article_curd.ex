@@ -42,6 +42,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
 
   @active_period get_config(:article, :active_period_days)
   @archive_threshold get_config(:article, :archive_threshold)
+  @article_threads get_config(:article, :threads)
 
   @default_emotions Embeds.ArticleEmotion.default_emotions()
   @default_community_meta Embeds.CommunityMeta.default_meta()
@@ -59,14 +60,15 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
   @doc """
   read articles for un-logined user
   """
-  def read_article(thread, id) do
-    with {:ok, article} <- check_article_pending(thread, id) do
+  def read_article(community_raw, thread, id) when thread in @article_threads do
+    with {:ok, article} <- check_article_pending(community_raw, thread, id) do
       do_read_article(article, thread)
     end
   end
 
-  def read_article(thread, id, %User{id: user_id} = user) do
-    with {:ok, article} <- check_article_pending(thread, id, user) do
+  def read_article(community_raw, thread, id, %User{id: user_id} = user)
+      when thread in @article_threads do
+    with {:ok, article} <- check_article_pending(community_raw, thread, id, user) do
       Multi.new()
       |> Multi.run(:normal_read, fn _, _ -> do_read_article(article, thread) end)
       |> Multi.run(:add_viewed_user, fn _, %{normal_read: article} ->
@@ -658,8 +660,28 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
     |> result()
   end
 
+  defp check_article_pending(community_raw, thread, id, user)
+       when thread in @article_threads do
+    clauses = %{original_community_raw: community_raw, inner_id: id}
+
+    with {:ok, info} <- match(thread),
+         {:ok, article} <- ORM.find_by(info.model, clauses, preload: :author) do
+      check_article_pending(article, user)
+    end
+  end
+
+  defp check_article_pending(community_raw, thread, id)
+       when thread in @article_threads do
+    clauses = %{original_community_raw: community_raw, inner_id: id}
+
+    with {:ok, info} <- match(thread),
+         {:ok, article} <- ORM.find_by(info.model, clauses) do
+      check_article_pending(article)
+    end
+  end
+
   # pending article can be seen is viewer is author
-  defp check_article_pending(thread, id, %User{} = user) when is_atom(thread) do
+  defp check_article_pending(thread, id, %User{} = user) when thread in @article_threads do
     with {:ok, info} <- match(thread),
          {:ok, article} <- ORM.find(info.model, id, preload: :author) do
       check_article_pending(article, user)
@@ -682,7 +704,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
   end
 
   # pending article should not be seen
-  defp check_article_pending(thread, id) do
+  defp check_article_pending(thread, id) when thread in @article_threads do
     with {:ok, info} <- match(thread),
          {:ok, article} <- ORM.find(info.model, id) do
       check_article_pending(article)

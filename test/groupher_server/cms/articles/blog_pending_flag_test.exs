@@ -55,7 +55,7 @@ defmodule GroupherServer.Test.CMS.BlogPendingFlag do
       blog_attrs = mock_attrs(:blog, %{community_id: community.id})
       {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user)
 
-      {:ok, _} = CMS.read_article(:blog, blog.id)
+      {:ok, _} = CMS.read_article(blog.original_community_raw, :blog, blog.inner_id)
 
       {:ok, _} =
         CMS.set_article_illegal(:blog, blog.id, %{
@@ -64,11 +64,14 @@ defmodule GroupherServer.Test.CMS.BlogPendingFlag do
           illegal_words: ["some-word"]
         })
 
-      {:ok, blog_read} = CMS.read_article(:blog, blog.id, user)
+      {:ok, blog_read} = CMS.read_article(blog.original_community_raw, :blog, blog.inner_id, user)
       assert blog_read.id == blog.id
 
       {:ok, user2} = db_insert(:user)
-      {:error, reason} = CMS.read_article(:blog, blog.id, user2)
+
+      {:error, reason} =
+        CMS.read_article(blog.original_community_raw, :blog, blog.inner_id, user2)
+
       assert reason |> is_error?(:pending)
     end
 

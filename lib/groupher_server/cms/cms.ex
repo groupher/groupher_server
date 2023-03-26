@@ -89,8 +89,8 @@ defmodule GroupherServer.CMS do
   defdelegate subscribe_default_community_ifnot(user), to: CommunityOperation
 
   # ArticleCURD
-  defdelegate read_article(thread, id), to: ArticleCURD
-  defdelegate read_article(thread, id, user), to: ArticleCURD
+  defdelegate read_article(community_raw, thread, id), to: ArticleCURD
+  defdelegate read_article(community_raw, thread, id, user), to: ArticleCURD
 
   defdelegate set_article_illegal(thread, id, attrs), to: ArticleCURD
   defdelegate set_article_illegal(article, attrs), to: ArticleCURD

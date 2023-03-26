@@ -55,7 +55,8 @@ defmodule GroupherServer.Test.CMS.ChangelogPendingFlag do
       changelog_attrs = mock_attrs(:changelog, %{community_id: community.id})
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
 
-      {:ok, _} = CMS.read_article(:changelog, changelog.id)
+      {:ok, _} =
+        CMS.read_article(changelog.original_community_raw, :changelog, changelog.inner_id)
 
       {:ok, _} =
         CMS.set_article_illegal(:changelog, changelog.id, %{
@@ -64,11 +65,16 @@ defmodule GroupherServer.Test.CMS.ChangelogPendingFlag do
           illegal_words: ["some-word"]
         })
 
-      {:ok, changelog_read} = CMS.read_article(:changelog, changelog.id, user)
+      {:ok, changelog_read} =
+        CMS.read_article(changelog.original_community_raw, :changelog, changelog.inner_id, user)
+
       assert changelog_read.id == changelog.id
 
       {:ok, user2} = db_insert(:user)
-      {:error, reason} = CMS.read_article(:changelog, changelog.id, user2)
+
+      {:error, reason} =
+        CMS.read_article(changelog.original_community_raw, :changelog, changelog.inner_id, user2)
+
       assert reason |> is_error?(:pending)
     end
 

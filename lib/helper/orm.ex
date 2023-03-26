@@ -89,6 +89,19 @@ defmodule Helper.ORM do
     end
   end
 
+  def find_by(queryable, clauses, preload: preload) do
+    queryable
+    |> preload(^preload)
+    |> Repo.get_by(clauses)
+    |> case do
+      nil ->
+        {:error, not_found_formater(queryable, clauses)}
+
+      result ->
+        {:ok, result}
+    end
+  end
+
   @doc """
   return pageinated Data required by filter
   """

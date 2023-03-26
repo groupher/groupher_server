@@ -85,7 +85,6 @@ defmodule GroupherServer.Test.CMS.Articles.Blog do
                |> String.slice(0, @article_digest_length)
     end
 
-    @tag :wip
     test "created blog should have original_community info",
          ~m(user community blog_attrs)a do
       {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user)
@@ -101,18 +100,41 @@ defmodule GroupherServer.Test.CMS.Articles.Blog do
       assert blog.active_at == blog.inserted_at
     end
 
+    @tag :wip
+    test "should read blog by original community and inner id",
+         ~m(blog_attrs community user)a do
+      {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user)
+
+      {:ok, blog2} = CMS.read_article(blog.original_community_raw, :blog, blog.inner_id)
+
+      assert blog.id == blog2.id
+    end
+
+    @tag :wip
+    test "should read blog by original community and inner id with user",
+         ~m(blog_attrs community user)a do
+      {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user)
+
+      {:ok, blog2} = CMS.read_article(blog.original_community_raw, :blog, blog.inner_id, user)
+
+      assert blog.id == blog2.id
+
+      {:ok, created} = ORM.find(Blog, blog2.id)
+      assert user.id in created.meta.viewed_user_ids
+    end
+
     test "read blog should update views and meta viewed_user_list",
          ~m(blog_attrs community user user2)a do
       {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user)
 
       # same user duplicate case
-      {:ok, _} = CMS.read_article(:blog, blog.id, user)
+      {:ok, _} = CMS.read_article(blog.original_community_raw, :blog, blog.inner_id, user)
       {:ok, created} = ORM.find(Blog, blog.id)
 
       assert created.meta.viewed_user_ids |> length == 1
       assert user.id in created.meta.viewed_user_ids
 
-      {:ok, _} = CMS.read_article(:blog, blog.id, user2)
+      {:ok, _} = CMS.read_article(blog.original_community_raw, :blog, blog.inner_id, user2)
       {:ok, created} = ORM.find(Blog, blog.id)
 
       assert created.meta.viewed_user_ids |> length == 2
@@ -123,19 +145,19 @@ defmodule GroupherServer.Test.CMS.Articles.Blog do
     test "read blog should contains viewer_has_xxx state",
          ~m(blog_attrs community user user2)a do
       {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user)
-      {:ok, blog} = CMS.read_article(:blog, blog.id, user)
+      {:ok, blog} = CMS.read_article(blog.original_community_raw, :blog, blog.inner_id, user)
 
       assert not blog.viewer_has_collected
       assert not blog.viewer_has_upvoted
       assert not blog.viewer_has_reported
 
-      {:ok, blog} = CMS.read_article(:blog, blog.id)
+      {:ok, blog} = CMS.read_article(blog.original_community_raw, :blog, blog.inner_id)
 
       assert not blog.viewer_has_collected
       assert not blog.viewer_has_upvoted
       assert not blog.viewer_has_reported
 
-      {:ok, blog} = CMS.read_article(:blog, blog.id, user2)
+      {:ok, blog} = CMS.read_article(blog.original_community_raw, :blog, blog.inner_id, user2)
 
       assert not blog.viewer_has_collected
       assert not blog.viewer_has_upvoted
@@ -145,7 +167,7 @@ defmodule GroupherServer.Test.CMS.Articles.Blog do
       {:ok, _} = CMS.collect_article(:blog, blog.id, user)
       {:ok, _} = CMS.report_article(:blog, blog.id, "reason", "attr_info", user)
 
-      {:ok, blog} = CMS.read_article(:blog, blog.id, user)
+      {:ok, blog} = CMS.read_article(blog.original_community_raw, :blog, blog.inner_id, user)
 
       assert blog.viewer_has_collected
       assert blog.viewer_has_upvoted
@@ -178,10 +200,19 @@ defmodule GroupherServer.Test.CMS.Articles.Blog do
 
       {:ok, doc_last_year} = db_insert(:blog, %{title: "last year", inserted_at: @last_year})
 
-      {:ok, doc_last_year} = CMS.read_article(:blog, doc_last_year.id)
+      {:ok, doc_last_year} =
+        CMS.read_article(doc_last_year.original_community_raw, :blog, doc_last_year.inner_id)
+
       assert not doc_last_year.meta.can_undo_sink
 
-      {:ok, doc_last_year} = CMS.read_article(:blog, doc_last_year.id, user)
+      {:ok, doc_last_year} =
+        CMS.read_article(
+          doc_last_year.original_community_raw,
+          :blog,
+          doc_last_year.inner_id,
+          user
+        )
+
       assert not doc_last_year.meta.can_undo_sink
     end
 
@@ -216,9 +247,9 @@ defmodule GroupherServer.Test.CMS.Articles.Blog do
   describe "[cms blog document]" do
     test "will create related document after create", ~m(user community blog_attrs)a do
       {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user)
-      {:ok, blog} = CMS.read_article(:blog, blog.id)
+      {:ok, blog} = CMS.read_article(blog.original_community_raw, :blog, blog.inner_id)
       assert not is_nil(blog.document.body_html)
-      {:ok, blog} = CMS.read_article(:blog, blog.id, user)
+      {:ok, blog} = CMS.read_article(blog.original_community_raw, :blog, blog.inner_id, user)
       assert not is_nil(blog.document.body_html)
 
       {:ok, article_doc} = ORM.find_by(ArticleDocument, %{article_id: blog.id, thread: "BLOG"})

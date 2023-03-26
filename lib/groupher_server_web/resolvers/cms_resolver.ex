@@ -81,6 +81,16 @@ defmodule GroupherServerWeb.Resolvers.CMS do
   # #######################
   # community thread (post, job), login user should be logged
   # #######################
+  def read_article(_root, %{community: community, thread: thread, id: id}, %{
+        context: %{cur_user: user}
+      }) do
+    CMS.read_article(community, thread, id, user)
+  end
+
+  def read_article(_root, %{community: community, thread: thread, id: id}, _info) do
+    CMS.read_article(community, thread, id)
+  end
+
   def read_article(_root, %{thread: thread, id: id}, %{context: %{cur_user: user}}) do
     CMS.read_article(thread, id, user)
   end
