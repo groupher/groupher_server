@@ -3,6 +3,7 @@ defmodule GroupherServer.Test.Query.Comments.BlogComment do
 
   use GroupherServer.TestTools
 
+  alias Helper.ORM
   alias GroupherServer.CMS
 
   setup do
@@ -11,7 +12,9 @@ defmodule GroupherServer.Test.Query.Comments.BlogComment do
 
     {:ok, community} = db_insert(:community)
     blog_attrs = mock_attrs(:blog, %{community_id: community.id})
-    {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user)
+
+    {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user2)
+    {:ok, blog} = ORM.find(CMS.Model.Blog, blog.id, preload: [author: :user])
 
     guest_conn = simu_conn(:guest)
     user_conn = simu_conn(:user, user)
@@ -121,7 +124,6 @@ defmodule GroupherServer.Test.Query.Comments.BlogComment do
         }
     }
     """
-
     test "list comments with default replies-mode", ~m(guest_conn blog user user2)a do
       total_count = 10
       page_size = 20

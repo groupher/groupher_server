@@ -13,7 +13,8 @@ defmodule GroupherServer.Test.Query.Comments.PostComment do
     {:ok, community} = db_insert(:community)
 
     post_attrs = mock_attrs(:post, %{community_id: community.id})
-    {:ok, post} = CMS.create_article(community, :post, post_attrs, user)
+    {:ok, post} = CMS.create_article(community, :post, post_attrs, user2)
+    {:ok, post} = ORM.find(CMS.Model.Post, post.id, preload: [author: :user])
 
     guest_conn = simu_conn(:guest)
     user_conn = simu_conn(:user, user)

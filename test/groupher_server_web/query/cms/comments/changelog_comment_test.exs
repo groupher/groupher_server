@@ -3,6 +3,7 @@ defmodule GroupherServer.Test.Query.Comments.ChangelogComment do
 
   use GroupherServer.TestTools
 
+  alias Helper.ORM
   alias GroupherServer.CMS
 
   setup do
@@ -11,7 +12,8 @@ defmodule GroupherServer.Test.Query.Comments.ChangelogComment do
     {:ok, community} = db_insert(:community)
 
     changelog_attrs = mock_attrs(:changelog, %{community_id: community.id})
-    {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
+    {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user2)
+    {:ok, changelog} = ORM.find(CMS.Model.Changelog, changelog.id, preload: [author: :user])
 
     guest_conn = simu_conn(:guest)
     user_conn = simu_conn(:user, user)

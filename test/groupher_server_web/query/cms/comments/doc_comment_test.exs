@@ -3,6 +3,7 @@ defmodule GroupherServer.Test.Query.Comments.DocComment do
 
   use GroupherServer.TestTools
 
+  alias Helper.ORM
   alias GroupherServer.CMS
 
   setup do
@@ -11,7 +12,8 @@ defmodule GroupherServer.Test.Query.Comments.DocComment do
     {:ok, community} = db_insert(:community)
 
     doc_attrs = mock_attrs(:doc, %{community_id: community.id})
-    {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)
+    {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user2)
+    {:ok, doc} = ORM.find(CMS.Model.Doc, doc.id, preload: [author: :user])
 
     guest_conn = simu_conn(:guest)
     user_conn = simu_conn(:user, user)
@@ -103,7 +105,6 @@ defmodule GroupherServer.Test.Query.Comments.DocComment do
       }
     }
     """
-
     test "guest user can get basic archive info", ~m(guest_conn doc user)a do
       thread = :doc
 
