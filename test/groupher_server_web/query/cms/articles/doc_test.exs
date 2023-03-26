@@ -17,10 +17,12 @@ defmodule GroupherServer.Test.Query.Articles.Doc do
   end
 
   @query """
-  query($id: ID!) {
-    doc(id: $id) {
+  query($community: String!, $id: ID!) {
+    doc(community: $community, id: $id) {
       id
       title
+      innerId
+      originalCommunityRaw
       meta {
         isEdited
         isLegal
@@ -37,10 +39,12 @@ defmodule GroupherServer.Test.Query.Articles.Doc do
        ~m(user_conn community user doc_attrs)a do
     {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)
 
-    variables = %{id: doc.id}
+    variables = %{community: doc.original_community_raw, id: doc.inner_id}
     results = user_conn |> query_result(@query, variables, "doc")
 
     assert results["id"] == to_string(doc.id)
+    assert results["originalCommunityRaw"] == doc.original_community_raw
+
     assert is_valid_kv?(results, "title", :string)
 
     assert results["meta"] == %{
@@ -50,12 +54,14 @@ defmodule GroupherServer.Test.Query.Articles.Doc do
              "isLegal" => true
            }
 
-    assert length(Map.keys(results)) == 5
+    assert length(Map.keys(results)) == 7
   end
 
   test "basic graphql query on doc with stranger(unloged user)",
-       ~m(guest_conn doc)a do
-    variables = %{id: doc.id}
+       ~m(guest_conn community doc_attrs user)a do
+    {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)
+
+    variables = %{community: doc.original_community_raw, id: doc.inner_id}
     results = guest_conn |> query_result(@query, variables, "doc")
 
     assert results["id"] == to_string(doc.id)
@@ -64,7 +70,7 @@ defmodule GroupherServer.Test.Query.Articles.Doc do
 
   test "pending state should in meta", ~m(guest_conn user_conn community user doc_attrs)a do
     {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)
-    variables = %{id: doc.id}
+    variables = %{community: doc.original_community_raw, id: doc.inner_id}
     results = user_conn |> query_result(@query, variables, "doc")
 
     assert results |> get_in(["meta", "isLegal"])

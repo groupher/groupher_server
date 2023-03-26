@@ -101,7 +101,6 @@ defmodule GroupherServer.Test.CMS.Articles.Changelog do
       assert changelog.active_at == changelog.inserted_at
     end
 
-    @tag :wip
     test "should read changelog by original community and inner id",
          ~m(changelog_attrs community user)a do
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
@@ -112,7 +111,6 @@ defmodule GroupherServer.Test.CMS.Articles.Changelog do
       assert changelog.id == changelog2.id
     end
 
-    @tag :wip
     test "should read changelog by original community and inner id with user",
          ~m(changelog_attrs community user)a do
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
@@ -204,18 +202,23 @@ defmodule GroupherServer.Test.CMS.Articles.Changelog do
   end
 
   describe "[cms changelog sink/undo_sink]" do
-    test "if a changelog is too old, read changelog should update can_undo_sink flag",
+    test "if a changelog is too old, read changelog should update can_undo_sink flag.",
          ~m(user community changelog_attrs)a do
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
 
       assert changelog.meta.can_undo_sink
 
       {:ok, changelog_last_year} =
-        db_insert(:changelog, %{title: "last year", inserted_at: @last_year})
+        db_insert(:changelog, %{
+          title: "last year",
+          inserted_at: @last_year,
+          inner_id: changelog.inner_id + 1,
+          original_community_raw: changelog.original_community_raw
+        })
 
       {:ok, changelog_last_year} =
         CMS.read_article(
-          changelog_last_year.original_community_row,
+          changelog_last_year.original_community_raw,
           :changelog,
           changelog_last_year.inner_id
         )
@@ -224,7 +227,7 @@ defmodule GroupherServer.Test.CMS.Articles.Changelog do
 
       {:ok, changelog_last_year} =
         CMS.read_article(
-          changelog_last_year.original_community_row,
+          changelog_last_year.original_community_raw,
           :changelog,
           changelog_last_year.inner_id,
           user

@@ -35,7 +35,7 @@ defmodule GroupherServer.Test.CMS.DocPendingFlag do
 
   describe "[pending docs flags]" do
     test "pending doc can not be read", ~m(docs_m)a do
-      {:ok, _} = CMS.read_article(:doc, docs_m.id)
+      {:ok, _} = CMS.read_article(docs_m.original_community_raw, :doc, docs_m.inner_id)
 
       {:ok, _} =
         CMS.set_article_illegal(:doc, docs_m.id, %{
@@ -47,7 +47,7 @@ defmodule GroupherServer.Test.CMS.DocPendingFlag do
       {:ok, docs_m} = ORM.find(Doc, docs_m.id)
       assert docs_m.pending == @audit_illegal
 
-      {:error, reason} = CMS.read_article(:doc, docs_m.id)
+      {:error, reason} = CMS.read_article(docs_m.original_community_raw, :doc, docs_m.inner_id)
       assert reason |> is_error?(:pending)
     end
 
@@ -73,7 +73,7 @@ defmodule GroupherServer.Test.CMS.DocPendingFlag do
     end
 
     test "pending doc can set/unset pending", ~m(docs_m)a do
-      {:ok, _} = CMS.read_article(:doc, docs_m.id)
+      {:ok, _} = CMS.read_article(docs_m.original_community_raw, :doc, docs_m.inner_id)
 
       {:ok, _} =
         CMS.set_article_illegal(:doc, docs_m.id, %{
@@ -90,11 +90,11 @@ defmodule GroupherServer.Test.CMS.DocPendingFlag do
       {:ok, docs_m} = ORM.find(Doc, docs_m.id)
       assert docs_m.pending == @audit_legal
 
-      {:ok, _} = CMS.read_article(:doc, docs_m.id)
+      {:ok, _} = CMS.read_article(docs_m.original_community_raw, :doc, docs_m.inner_id)
     end
 
     test "pending doc's meta should have info", ~m(docs_m)a do
-      {:ok, _} = CMS.read_article(:doc, docs_m.id)
+      {:ok, _} = CMS.read_article(docs_m.original_community_raw, :doc, docs_m.inner_id)
 
       {:ok, _} =
         CMS.set_article_illegal(:doc, docs_m.id, %{

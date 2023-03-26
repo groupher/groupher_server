@@ -55,6 +55,7 @@ defmodule GroupherServerWeb.Schema.Helper.Queries do
         @desc unquote("get #{thread} by id")
         field unquote(thread), non_null(unquote(thread)) do
           arg(:id, non_null(:id))
+          arg(:community, non_null(:string))
           arg(:thread, unquote(:"#{thread}_thread"), default_value: unquote(thread))
 
           resolve(&R.CMS.read_article/3)

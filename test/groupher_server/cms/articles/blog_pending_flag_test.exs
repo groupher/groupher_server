@@ -75,7 +75,6 @@ defmodule GroupherServer.Test.CMS.BlogPendingFlag do
       assert reason |> is_error?(:pending)
     end
 
-    @tag :wip
     test "pending blog can set/unset pending", ~m(blog_m)a do
       {:ok, _} = CMS.read_article(blog_m.original_community_raw, :blog, blog_m.inner_id)
 

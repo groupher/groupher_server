@@ -22,8 +22,8 @@ defmodule GroupherServer.Test.Query.Articles.Kanban do
   end
 
   @query """
-  query($id: ID!) {
-    post(id: $id) {
+  query($community: String!, $id: ID!) {
+    post(community: $community, id: $id) {
       id
       title
       cat
@@ -31,6 +31,7 @@ defmodule GroupherServer.Test.Query.Articles.Kanban do
     }
   }
   """
+
   test "basic graphql query on kanban post with logined user",
        ~m(user_conn community user post_attrs)a do
     kanban_attrs =
@@ -38,7 +39,7 @@ defmodule GroupherServer.Test.Query.Articles.Kanban do
 
     {:ok, post} = CMS.create_article(community, :post, kanban_attrs, user)
 
-    variables = %{id: post.id}
+    variables = %{community: post.original_community_raw, id: post.inner_id}
     result = user_conn |> query_result(@query, variables, "post")
 
     assert result["id"] == to_string(post.id)

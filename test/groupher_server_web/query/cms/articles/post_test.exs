@@ -17,10 +17,12 @@ defmodule GroupherServer.Test.Query.Articles.Post do
   end
 
   @query """
-  query($id: ID!) {
-    post(id: $id) {
+  query($community: String!, $id: ID!) {
+    post(community: $community, id: $id) {
       id
       title
+      innerId
+      originalCommunityRaw
       meta {
         isEdited
         isLegal
@@ -37,10 +39,12 @@ defmodule GroupherServer.Test.Query.Articles.Post do
        ~m(user_conn community user post_attrs)a do
     {:ok, post} = CMS.create_article(community, :post, post_attrs, user)
 
-    variables = %{id: post.id}
+    variables = %{community: post.original_community_raw, id: post.inner_id}
     results = user_conn |> query_result(@query, variables, "post")
 
     assert results["id"] == to_string(post.id)
+    assert results["originalCommunityRaw"] == post.original_community_raw
+
     assert is_valid_kv?(results, "title", :string)
 
     assert results["meta"] == %{
@@ -50,11 +54,14 @@ defmodule GroupherServer.Test.Query.Articles.Post do
              "isLegal" => true
            }
 
-    assert length(Map.keys(results)) == 5
+    assert length(Map.keys(results)) == 7
   end
 
-  test "basic graphql query on post with stranger(unloged user)", ~m(guest_conn post)a do
-    variables = %{id: post.id}
+  test "basic graphql query on post with stranger(unloged user)",
+       ~m(guest_conn community post_attrs user)a do
+    {:ok, post} = CMS.create_article(community, :post, post_attrs, user)
+
+    variables = %{community: post.original_community_raw, id: post.inner_id}
     results = guest_conn |> query_result(@query, variables, "post")
 
     assert results["id"] == to_string(post.id)
@@ -63,7 +70,7 @@ defmodule GroupherServer.Test.Query.Articles.Post do
 
   test "pending state should in meta", ~m(guest_conn user_conn community user post_attrs)a do
     {:ok, post} = CMS.create_article(community, :post, post_attrs, user)
-    variables = %{id: post.id}
+    variables = %{community: post.original_community_raw, id: post.inner_id}
     results = user_conn |> query_result(@query, variables, "post")
 
     assert results |> get_in(["meta", "isLegal"])

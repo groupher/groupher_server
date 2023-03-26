@@ -99,7 +99,6 @@ defmodule GroupherServer.Test.CMS.Articles.Doc do
       assert doc.active_at == doc.inserted_at
     end
 
-    @tag :wip
     test "should read doc by original community and inner id",
          ~m(doc_attrs community user)a do
       {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)
@@ -109,7 +108,6 @@ defmodule GroupherServer.Test.CMS.Articles.Doc do
       assert doc.id == doc2.id
     end
 
-    @tag :wip
     test "should read doc by original community and inner id with user",
          ~m(doc_attrs community user)a do
       {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)
@@ -197,7 +195,13 @@ defmodule GroupherServer.Test.CMS.Articles.Doc do
 
       assert doc.meta.can_undo_sink
 
-      {:ok, doc_last_year} = db_insert(:doc, %{title: "last year", inserted_at: @last_year})
+      {:ok, doc_last_year} =
+        db_insert(:doc, %{
+          title: "last year",
+          inserted_at: @last_year,
+          inner_id: doc.inner_id + 1,
+          original_community_raw: doc.original_community_raw
+        })
 
       {:ok, doc_last_year} =
         CMS.read_article(doc_last_year.original_community_raw, :doc, doc_last_year.inner_id)

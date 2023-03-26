@@ -17,10 +17,12 @@ defmodule GroupherServer.Test.Query.Articles.Blog do
   end
 
   @query """
-  query($id: ID!) {
-    blog(id: $id) {
+  query($community: String!, $id: ID!) {
+    blog(community: $community, id: $id) {
       id
       title
+      innerId
+      originalCommunityRaw
       meta {
         isEdited
         isLegal
@@ -37,10 +39,12 @@ defmodule GroupherServer.Test.Query.Articles.Blog do
        ~m(user_conn community user blog_attrs)a do
     {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user)
 
-    variables = %{id: blog.id}
+    variables = %{community: blog.original_community_raw, id: blog.inner_id}
     results = user_conn |> query_result(@query, variables, "blog")
 
     assert results["id"] == to_string(blog.id)
+    assert results["originalCommunityRaw"] == blog.original_community_raw
+
     assert is_valid_kv?(results, "title", :string)
 
     assert results["meta"] == %{
@@ -50,12 +54,14 @@ defmodule GroupherServer.Test.Query.Articles.Blog do
              "isLegal" => true
            }
 
-    assert length(Map.keys(results)) == 5
+    assert length(Map.keys(results)) == 7
   end
 
   test "basic graphql query on blog with stranger(unloged user)",
-       ~m(guest_conn blog)a do
-    variables = %{id: blog.id}
+       ~m(guest_conn community blog_attrs user)a do
+    {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user)
+
+    variables = %{community: blog.original_community_raw, id: blog.inner_id}
     results = guest_conn |> query_result(@query, variables, "blog")
 
     assert results["id"] == to_string(blog.id)
@@ -64,7 +70,7 @@ defmodule GroupherServer.Test.Query.Articles.Blog do
 
   test "pending state should in meta", ~m(guest_conn user_conn community user blog_attrs)a do
     {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user)
-    variables = %{id: blog.id}
+    variables = %{community: blog.original_community_raw, id: blog.inner_id}
     results = user_conn |> query_result(@query, variables, "blog")
 
     assert results |> get_in(["meta", "isLegal"])
