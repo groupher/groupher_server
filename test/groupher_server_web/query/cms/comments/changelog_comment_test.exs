@@ -6,10 +6,12 @@ defmodule GroupherServer.Test.Query.Comments.ChangelogComment do
   alias GroupherServer.CMS
 
   setup do
-    {:ok, changelog} = db_insert(:changelog)
     {:ok, user} = db_insert(:user)
     {:ok, user2} = db_insert(:user)
     {:ok, community} = db_insert(:community)
+
+    changelog_attrs = mock_attrs(:changelog, %{community_id: community.id})
+    {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
 
     guest_conn = simu_conn(:guest)
     user_conn = simu_conn(:user, user)
@@ -92,8 +94,8 @@ defmodule GroupherServer.Test.Query.Comments.ChangelogComment do
 
   describe "[baisc article changelog comment]" do
     @query """
-    query($id: ID!) {
-      changelog(id: $id) {
+    query($community: String!, $id: ID!) {
+      changelog(community: $community, id: $id) {
         id
         title
         isArchived
@@ -107,15 +109,15 @@ defmodule GroupherServer.Test.Query.Comments.ChangelogComment do
 
       {:ok, _} = CMS.create_comment(thread, changelog.id, mock_comment(), user)
 
-      variables = %{id: changelog.id}
+      variables = %{community: changelog.original_community_raw, id: changelog.inner_id}
       results = guest_conn |> query_result(@query, variables, "changelog")
 
       assert not results["isArchived"]
     end
 
     @query """
-    query($id: ID!) {
-      changelog(id: $id) {
+    query($community: String!, $id: ID!) {
+      changelog(community: $community, id: $id) {
         id
         title
         commentsParticipants {
@@ -140,7 +142,7 @@ defmodule GroupherServer.Test.Query.Comments.ChangelogComment do
 
       {:ok, _} = CMS.create_comment(thread, changelog.id, mock_comment(), user2)
 
-      variables = %{id: changelog.id}
+      variables = %{community: changelog.original_community_raw, id: changelog.inner_id}
       results = guest_conn |> query_result(@query, variables, "changelog")
 
       comments_participants = results["commentsParticipants"]

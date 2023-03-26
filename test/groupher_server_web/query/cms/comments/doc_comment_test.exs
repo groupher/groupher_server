@@ -6,10 +6,12 @@ defmodule GroupherServer.Test.Query.Comments.DocComment do
   alias GroupherServer.CMS
 
   setup do
-    {:ok, doc} = db_insert(:doc)
     {:ok, user} = db_insert(:user)
     {:ok, user2} = db_insert(:user)
     {:ok, community} = db_insert(:community)
+
+    doc_attrs = mock_attrs(:doc, %{community_id: community.id})
+    {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)
 
     guest_conn = simu_conn(:guest)
     user_conn = simu_conn(:user, user)
@@ -92,8 +94,8 @@ defmodule GroupherServer.Test.Query.Comments.DocComment do
 
   describe "[baisc article doc comment]" do
     @query """
-    query($id: ID!) {
-      doc(id: $id) {
+    query($community: String!, $id: ID!) {
+      doc(community: $community, id: $id) {
         id
         title
         isArchived
@@ -107,15 +109,15 @@ defmodule GroupherServer.Test.Query.Comments.DocComment do
 
       {:ok, _} = CMS.create_comment(thread, doc.id, mock_comment(), user)
 
-      variables = %{id: doc.id}
+      variables = %{community: doc.original_community_raw, id: doc.inner_id}
       results = guest_conn |> query_result(@query, variables, "doc")
 
       assert not results["isArchived"]
     end
 
     @query """
-    query($id: ID!) {
-      doc(id: $id) {
+    query($community: String!, $id: ID!) {
+      doc(community: $community, id: $id) {
         id
         title
         commentsParticipants {
@@ -140,7 +142,7 @@ defmodule GroupherServer.Test.Query.Comments.DocComment do
 
       {:ok, _} = CMS.create_comment(thread, doc.id, mock_comment(), user2)
 
-      variables = %{id: doc.id}
+      variables = %{community: doc.original_community_raw, id: doc.inner_id}
       results = guest_conn |> query_result(@query, variables, "doc")
 
       comments_participants = results["commentsParticipants"]
