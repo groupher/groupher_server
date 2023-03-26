@@ -35,7 +35,7 @@ defmodule GroupherServer.Test.CMS.BlogPendingFlag do
 
   describe "[pending blogs flags]" do
     test "pending blog can not be read", ~m(blog_m)a do
-      {:ok, _} = CMS.read_article(:blog, blog_m.id)
+      {:ok, _} = CMS.read_article(blog_m.original_community_raw, :blog, blog_m.inner_id)
 
       {:ok, _} =
         CMS.set_article_illegal(:blog, blog_m.id, %{
@@ -47,7 +47,7 @@ defmodule GroupherServer.Test.CMS.BlogPendingFlag do
       {:ok, blog_m} = ORM.find(Blog, blog_m.id)
       assert blog_m.pending == @audit_illegal
 
-      {:error, reason} = CMS.read_article(:blog, blog_m.id)
+      {:error, reason} = CMS.read_article(blog_m.original_community_raw, :blog, blog_m.inner_id)
       assert reason |> is_error?(:pending)
     end
 
@@ -75,8 +75,9 @@ defmodule GroupherServer.Test.CMS.BlogPendingFlag do
       assert reason |> is_error?(:pending)
     end
 
+    @tag :wip
     test "pending blog can set/unset pending", ~m(blog_m)a do
-      {:ok, _} = CMS.read_article(:blog, blog_m.id)
+      {:ok, _} = CMS.read_article(blog_m.original_community_raw, :blog, blog_m.inner_id)
 
       {:ok, _} =
         CMS.set_article_illegal(:blog, blog_m.id, %{
@@ -93,11 +94,11 @@ defmodule GroupherServer.Test.CMS.BlogPendingFlag do
       {:ok, blog_m} = ORM.find(Blog, blog_m.id)
       assert blog_m.pending == @audit_legal
 
-      {:ok, _} = CMS.read_article(:blog, blog_m.id)
+      {:ok, _} = CMS.read_article(blog_m.original_community_raw, :blog, blog_m.inner_id)
     end
 
     test "pending blog's meta should have info", ~m(blog_m)a do
-      {:ok, _} = CMS.read_article(:blog, blog_m.id)
+      {:ok, _} = CMS.read_article(blog_m.original_community_raw, :blog, blog_m.inner_id)
 
       {:ok, _} =
         CMS.set_article_illegal(:blog, blog_m.id, %{
