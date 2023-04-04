@@ -200,6 +200,11 @@ defmodule GroupherServer.Test.Mutation.CMS.CRUD do
         author {
           id
         }
+        threads {
+          title
+          raw
+          index
+        }
       }
     }
     """
@@ -212,6 +217,23 @@ defmodule GroupherServer.Test.Mutation.CMS.CRUD do
 
       {:ok, found} = Community |> ORM.find(created["id"])
       assert created["id"] == to_string(found.id)
+    end
+
+    @tag :wip
+    test "created community should have default threads" do
+      rule_conn = simu_conn(:user, cms: %{"community.create" => true})
+      variables = mock_attrs(:community)
+
+      created =
+        rule_conn |> mutation_result(@create_community_query, variables, "createCommunity")
+
+      assert created["threads"] == [
+               %{"index" => 0, "raw" => "post", "title" => "post"},
+               %{"index" => 1, "raw" => "kanban", "title" => "kanban"},
+               %{"index" => 2, "raw" => "changelog", "title" => "changelog"},
+               %{"index" => 3, "raw" => "doc", "title" => "doc"},
+               %{"index" => 4, "raw" => "about", "title" => "about"}
+             ]
     end
 
     test "can create community with some title, different raw" do

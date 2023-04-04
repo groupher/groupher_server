@@ -8,6 +8,24 @@ defmodule GroupherServer.CMS.Model.Metrics.Dashboard do
   those cases need to manually add
   """
 
+  def macro_schema(:enable) do
+    [
+      [:post, :boolean, true],
+      [:kanban, :boolean, true],
+      [:changelog, :boolean, true],
+      # help
+      [:help, :boolean, true],
+      [:help_last_update, :boolean, true],
+      [:help_reaction, :boolean, true],
+      # about
+      [:about, :boolean, true],
+      [:about_techstack, :boolean, true],
+      [:about_location, :boolean, true],
+      [:about_links, :boolean, true],
+      [:about_media_report, :boolean, true]
+    ]
+  end
+
   def macro_schema(:base_info) do
     [
       [:favicon, :string, ""],

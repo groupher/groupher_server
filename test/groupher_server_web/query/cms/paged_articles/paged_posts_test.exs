@@ -176,8 +176,8 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedPosts do
       pagedPosts(filter: $filter) {
         entries {
           id
-          inserted_at
-          active_at
+          insertedAt
+          activeAt
           author {
             id
             nickname
@@ -315,7 +315,7 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedPosts do
         entries {
           id
           views
-          inserted_at
+          insertedAt
         }
         totalCount
       }

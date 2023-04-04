@@ -34,6 +34,7 @@ config :groupher_server, :general,
   site_host: "https://groupher.com",
   page_size: 30,
   inner_page_size: 5,
+  community_default_threads: [:post, :kanban, :changelog, :doc, :about],
   # today is not include
   community_contribute_days: 30,
   user_contribute_months: 6,

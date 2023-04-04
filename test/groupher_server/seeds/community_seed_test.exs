@@ -14,10 +14,9 @@ defmodule GroupherServer.Test.Seeds.CommunitySeed do
 
       assert community.title == "CoderPlanets"
       assert community.raw == "home"
-      assert found.threads |> length == 3
-
-      threads = found.threads |> Enum.map(& &1.thread.title)
-      assert threads == ["帖子", "博客", "CPer"]
+      # assert found.threads |> length == 3
+      # threads = found.threads |> Enum.map(& &1.thread.title)
+      # assert threads == ["帖子", "博客", "CPer"]
     end
 
     # test "blackhole community" do

@@ -157,10 +157,10 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
   @doc """
   get grouped kanban posts for a community, only for first load of kanban page
   """
-  def grouped_kanban_posts(community_id) do
+  def grouped_kanban_posts(community_raw) do
     filter = %{page: 1, size: 20}
 
-    with {:ok, community} <- ORM.find(Community, community_id),
+    with {:ok, community} <- ORM.find_by(Community, raw: community_raw),
          {:ok, paged_todo} <-
            paged_kanban_posts(community, Map.merge(filter, %{state: @article_state.todo})),
          {:ok, paged_wip} <-
@@ -174,6 +174,15 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
       }
       |> done
     end
+  end
+
+  def paged_kanban_posts(%Community{} = community, %{state: state} = filter)
+      when is_binary(state) do
+    state_key = state |> String.downcase() |> String.to_atom()
+    state = @article_state |> Map.get(state_key)
+    filter = filter |> Map.merge(%{state: state})
+
+    paged_kanban_posts(community, filter)
   end
 
   def paged_kanban_posts(%Community{} = community, filter) do
@@ -193,8 +202,8 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
     |> done()
   end
 
-  def paged_kanban_posts(community_id, filter) do
-    with {:ok, community} <- ORM.find(Community, community_id) do
+  def paged_kanban_posts(community_raw, filter) do
+    with {:ok, community} <- ORM.find_by(Community, raw: community_raw) do
       paged_kanban_posts(community, filter)
     end
   end

@@ -158,6 +158,21 @@ defmodule GroupherServerWeb.Schema.CMS.Queries do
       resolve(&R.CMS.search_communities/3)
     end
 
+    @desc "kanban posts grouped by todo/wip/done"
+    field :grouped_kanban_posts, :grouped_posts do
+      arg(:community, non_null(:string))
+
+      resolve(&R.CMS.grouped_kanban_posts/3)
+    end
+
+    @desc "kanban posts grouped by todo/wip/done"
+    field :paged_kanban_posts, :paged_posts do
+      arg(:community, non_null(:string))
+      arg(:filter, non_null(:paged_kanban_posts_filter))
+
+      resolve(&R.CMS.paged_kanban_posts/3)
+    end
+
     article_search_queries()
 
     article_reacted_users_query(:upvot, &R.CMS.upvoted_users/3)
