@@ -72,7 +72,7 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedKanbanPosts do
       }
     }
     """
-    @tag :wip
+
     test "should get grouped paged posts", ~m(guest_conn user community post_attrs)a do
       {:ok, post} = CMS.create_article(community, :post, post_attrs, user)
       {:ok, _post} = CMS.set_post_cat(post, @article_cat.feature)
@@ -115,7 +115,7 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedKanbanPosts do
       }
     }
     """
-    @tag :wip
+
     test "can get paged kanban posts", ~m(guest_conn user community post_attrs)a do
       {:ok, post} = CMS.create_article(community, :post, post_attrs, user)
       {:ok, _post} = CMS.set_post_cat(post, @article_cat.feature)

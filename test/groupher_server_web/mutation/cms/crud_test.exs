@@ -219,7 +219,6 @@ defmodule GroupherServer.Test.Mutation.CMS.CRUD do
       assert created["id"] == to_string(found.id)
     end
 
-    @tag :wip
     test "created community should have default threads" do
       rule_conn = simu_conn(:user, cms: %{"community.create" => true})
       variables = mock_attrs(:community)

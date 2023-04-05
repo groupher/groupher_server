@@ -218,7 +218,7 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedPosts do
     test "filter sort should have default :desc_active", ~m(guest_conn)a do
       variables = %{filter: %{}}
       results = guest_conn |> query_result(@query, variables, "pagedPosts")
-      active_timestamps = results["entries"] |> Enum.map(& &1["active_at"])
+      active_timestamps = results["entries"] |> Enum.map(& &1["activeAt"])
 
       {:ok, first_inserted_time, 0} = active_timestamps |> List.first() |> DateTime.from_iso8601()
       {:ok, last_inserted_time, 0} = active_timestamps |> List.last() |> DateTime.from_iso8601()
