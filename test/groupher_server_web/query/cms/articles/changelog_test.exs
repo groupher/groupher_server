@@ -17,10 +17,12 @@ defmodule GroupherServer.Test.Query.Articles.Changelog do
   end
 
   @query """
-  query($id: ID!) {
-    changelog(id: $id) {
+  query($community: String!, $id: ID!) {
+    changelog(community: $community, id: $id) {
       id
       title
+      innerId
+      originalCommunityRaw
       meta {
         isEdited
         isLegal
@@ -37,10 +39,12 @@ defmodule GroupherServer.Test.Query.Articles.Changelog do
        ~m(user_conn community user changelog_attrs)a do
     {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
 
-    variables = %{id: changelog.id}
+    variables = %{community: changelog.original_community_raw, id: changelog.inner_id}
     results = user_conn |> query_result(@query, variables, "changelog")
 
     assert results["id"] == to_string(changelog.id)
+    assert results["originalCommunityRaw"] == changelog.original_community_raw
+
     assert is_valid_kv?(results, "title", :string)
 
     assert results["meta"] == %{
@@ -50,12 +54,14 @@ defmodule GroupherServer.Test.Query.Articles.Changelog do
              "isLegal" => true
            }
 
-    assert length(Map.keys(results)) == 5
+    assert length(Map.keys(results)) == 7
   end
 
   test "basic graphql query on changelog with stranger(unloged user)",
-       ~m(guest_conn changelog)a do
-    variables = %{id: changelog.id}
+       ~m(guest_conn community changelog_attrs user)a do
+    {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
+
+    variables = %{community: changelog.original_community_raw, id: changelog.inner_id}
     results = guest_conn |> query_result(@query, variables, "changelog")
 
     assert results["id"] == to_string(changelog.id)
@@ -64,7 +70,7 @@ defmodule GroupherServer.Test.Query.Articles.Changelog do
 
   test "pending state should in meta", ~m(guest_conn user_conn community user changelog_attrs)a do
     {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
-    variables = %{id: changelog.id}
+    variables = %{community: changelog.original_community_raw, id: changelog.inner_id}
     results = user_conn |> query_result(@query, variables, "changelog")
 
     assert results |> get_in(["meta", "isLegal"])

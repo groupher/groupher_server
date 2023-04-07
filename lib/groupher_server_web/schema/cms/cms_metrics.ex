@@ -44,6 +44,7 @@ defmodule GroupherServerWeb.Schema.CMS.Metrics do
 
   enum :dashboard_section do
     value(:seo)
+    value(:enable)
     value(:layout)
     value(:base_info)
     value(:rss)
@@ -198,6 +199,12 @@ defmodule GroupherServerWeb.Schema.CMS.Metrics do
     pagination_args()
     article_filter_fields()
     field(:sort, :sort_enum)
+  end
+
+  @desc "kanban posts_filter doc"
+  input_object :paged_kanban_posts_filter do
+    pagination_args()
+    field(:state, :string)
   end
 
   @desc "changelogs_filter doc"

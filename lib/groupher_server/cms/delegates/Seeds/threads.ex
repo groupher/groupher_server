@@ -1,21 +1,21 @@
 defmodule GroupherServer.CMS.Delegate.Seeds.Threads do
   def get(:home) do
     [
-      %{
-        title: "帖子",
-        raw: "post",
-        index: 1
-      },
-      %{
-        title: "博客",
-        raw: "blog",
-        index: 3
-      },
-      %{
-        title: "CPer",
-        raw: "cper",
-        index: 5
-      }
+      # %{
+      #   title: "帖子",
+      #   raw: "post",
+      #   index: 1
+      # },
+      # %{
+      #   title: "博客",
+      #   raw: "blog",
+      #   index: 3
+      # },
+      # %{
+      #   title: "CPer",
+      #   raw: "cper",
+      #   index: 5
+      # }
       # %{
       #   title: "设置",
       #   raw: "setting",

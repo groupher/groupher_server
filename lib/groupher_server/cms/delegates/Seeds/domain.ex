@@ -23,6 +23,7 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Domain do
   @oss_endpoint "https://cps-oss.oss-cn-shanghai.aliyuncs.com"
 
   # seed community
+  @spec seed_community(:blackhole | :feedback | :home) :: any
   @doc """
   seed community for home
   """
@@ -31,15 +32,15 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Domain do
          {:ok, bot} <- seed_bot(),
          {:ok, threads} <- seed_threads(:home) do
       args = %{
-        title: "CoderPlanets",
-        desc: "the most sexy community for developers, ever.",
-        logo: "#{@oss_endpoint}/icons/cmd/keyboard_logo.png",
+        title: "Groupher",
+        desc: "让你的产品聆听用户的声音",
+        logo: "https://assets.groupher.com/communities/groupher-alpha.png",
         raw: "home",
         user_id: bot.id
       }
 
-      {:ok, community} = Community |> ORM.create(args)
-      threadify_communities([community], threads.entries)
+      {:ok, community} = CMS.create_community(args)
+      # threadify_communities([community], threads.entries)
       tagfy_threads([community], threads.entries, bot, :home)
 
       {:ok, community}

@@ -15,7 +15,7 @@ defmodule GroupherServer.CMS.Model.Post do
 
   @required_fields ~w(title digest)a
   @article_cast_fields general_article_cast_fields()
-  @optional_fields ~w(copy_right solution_digest updated_at inserted_at active_at archived_at cat state)a ++
+  @optional_fields ~w(copy_right solution_digest updated_at inserted_at active_at archived_at cat state inner_id original_community_raw)a ++
                      @article_cast_fields
 
   @type t :: %Post{}

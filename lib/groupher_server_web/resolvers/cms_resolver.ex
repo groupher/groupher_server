@@ -81,13 +81,23 @@ defmodule GroupherServerWeb.Resolvers.CMS do
   # #######################
   # community thread (post, job), login user should be logged
   # #######################
-  def read_article(_root, %{thread: thread, id: id}, %{context: %{cur_user: user}}) do
-    CMS.read_article(thread, id, user)
+  def read_article(_root, %{community: community, thread: thread, id: id}, %{
+        context: %{cur_user: user}
+      }) do
+    CMS.read_article(community, thread, id, user)
   end
 
-  def read_article(_root, %{thread: thread, id: id}, _info) do
-    CMS.read_article(thread, id)
+  def read_article(_root, %{community: community, thread: thread, id: id}, _info) do
+    CMS.read_article(community, thread, id)
   end
+
+  # def read_article(_root, %{thread: thread, id: id}, %{context: %{cur_user: user}}) do
+  #   CMS.read_article(thread, id, user)
+  # end
+
+  # def read_article(_root, %{thread: thread, id: id}, _info) do
+  #   CMS.read_article(thread, id)
+  # end
 
   def set_post_cat(_root, %{passport_source: post, cat: cat}, _info) do
     CMS.set_post_cat(post, Map.get(@article_cat, cat))
@@ -105,8 +115,12 @@ defmodule GroupherServerWeb.Resolvers.CMS do
     CMS.paged_articles(thread, filter)
   end
 
-  def grouped_kanban_posts(_root, %{community_id: community_id}, _info) do
-    CMS.grouped_kanban_posts(community_id)
+  def grouped_kanban_posts(_root, %{community: community}, _info) do
+    CMS.grouped_kanban_posts(community)
+  end
+
+  def paged_kanban_posts(_root, %{community: community, filter: filter}, _info) do
+    CMS.paged_kanban_posts(community, filter)
   end
 
   def paged_reports(_root, ~m(filter)a, _) do

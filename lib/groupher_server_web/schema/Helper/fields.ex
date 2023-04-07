@@ -18,6 +18,7 @@ defmodule GroupherServerWeb.Schema.Helper.Fields do
   defmacro general_article_fields() do
     quote do
       field(:id, :id)
+      field(:inner_id, :id)
       field(:title, :string)
       field(:document, :thread_document, resolve: dataloader(CMS, :document))
       field(:digest, :string)
@@ -28,6 +29,7 @@ defmodule GroupherServerWeb.Schema.Helper.Fields do
       field(:article_tags, list_of(:article_tag), resolve: dataloader(CMS, :article_tags))
       field(:author, :user, resolve: dataloader(CMS, :author))
       field(:original_community, :community, resolve: dataloader(CMS, :original_community))
+      field(:original_community_raw, :string)
       field(:communities, list_of(:community), resolve: dataloader(CMS, :communities))
 
       field(:meta, :article_meta)

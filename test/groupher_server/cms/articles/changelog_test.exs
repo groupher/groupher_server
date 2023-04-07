@@ -27,6 +27,39 @@ defmodule GroupherServer.Test.CMS.Articles.Changelog do
   end
 
   describe "[cms changelog curd]" do
+    test "created changelog should have auto_increase inner_id",
+         ~m(user community changelog_attrs)a do
+      {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
+      assert changelog.inner_id == 1
+
+      {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
+      assert changelog.inner_id == 2
+
+      {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
+      assert changelog.inner_id == 3
+
+      blog_attrs = mock_attrs(:blog, %{community_id: community.id})
+      changelog_attrs = mock_attrs(:changelog, %{community_id: community.id})
+
+      {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user)
+      assert blog.inner_id == 1
+
+      {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user)
+      assert blog.inner_id == 2
+
+      {:ok, post} = CMS.create_article(community, :post, changelog_attrs, user)
+      assert post.inner_id == 1
+
+      {:ok, community} = ORM.find(Community, community.id)
+
+      assert community.meta.changelogs_inner_id_index == 3
+      assert community.meta.blogs_inner_id_index == 2
+      assert community.meta.posts_inner_id_index == 1
+      assert community.meta.docs_inner_id_index == 0
+
+      assert community.articles_count == 6
+    end
+
     test "can create changelog with valid attrs", ~m(user community changelog_attrs)a do
       assert {:error, _} = ORM.find_by(Author, user_id: user.id)
 
@@ -53,6 +86,14 @@ defmodule GroupherServer.Test.CMS.Articles.Changelog do
                |> String.slice(0, @article_digest_length)
     end
 
+    test "created changelog should have original_community info",
+         ~m(user community changelog_attrs)a do
+      {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
+
+      assert changelog.original_community_raw == community.raw
+      assert changelog.original_community_id == community.id
+    end
+
     test "created changelog should have a acitve_at field, same with inserted_at",
          ~m(user community changelog_attrs)a do
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
@@ -60,18 +101,45 @@ defmodule GroupherServer.Test.CMS.Articles.Changelog do
       assert changelog.active_at == changelog.inserted_at
     end
 
+    test "should read changelog by original community and inner id",
+         ~m(changelog_attrs community user)a do
+      {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
+
+      {:ok, changelog2} =
+        CMS.read_article(changelog.original_community_raw, :changelog, changelog.inner_id)
+
+      assert changelog.id == changelog2.id
+    end
+
+    test "should read changelog by original community and inner id with user",
+         ~m(changelog_attrs community user)a do
+      {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
+
+      {:ok, changelog2} =
+        CMS.read_article(changelog.original_community_raw, :changelog, changelog.inner_id, user)
+
+      assert changelog.id == changelog2.id
+
+      {:ok, created} = ORM.find(Changelog, changelog2.id)
+      assert user.id in created.meta.viewed_user_ids
+    end
+
     test "read changelog should update views and meta viewed_user_list",
          ~m(changelog_attrs community user user2)a do
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
 
       # same user duplicate case
-      {:ok, _} = CMS.read_article(:changelog, changelog.id, user)
+      {:ok, _} =
+        CMS.read_article(changelog.original_community_raw, :changelog, changelog.inner_id, user)
+
       {:ok, created} = ORM.find(Changelog, changelog.id)
 
       assert created.meta.viewed_user_ids |> length == 1
       assert user.id in created.meta.viewed_user_ids
 
-      {:ok, _} = CMS.read_article(:changelog, changelog.id, user2)
+      {:ok, _} =
+        CMS.read_article(changelog.original_community_raw, :changelog, changelog.inner_id, user2)
+
       {:ok, created} = ORM.find(Changelog, changelog.id)
 
       assert created.meta.viewed_user_ids |> length == 2
@@ -82,19 +150,23 @@ defmodule GroupherServer.Test.CMS.Articles.Changelog do
     test "read changelog should contains viewer_has_xxx state",
          ~m(changelog_attrs community user user2)a do
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
-      {:ok, changelog} = CMS.read_article(:changelog, changelog.id, user)
+
+      {:ok, changelog} =
+        CMS.read_article(changelog.original_community_raw, :changelog, changelog.inner_id, user)
 
       assert not changelog.viewer_has_collected
       assert not changelog.viewer_has_upvoted
       assert not changelog.viewer_has_reported
 
-      {:ok, changelog} = CMS.read_article(:changelog, changelog.id)
+      {:ok, changelog} =
+        CMS.read_article(changelog.original_community_raw, :changelog, changelog.inner_id)
 
       assert not changelog.viewer_has_collected
       assert not changelog.viewer_has_upvoted
       assert not changelog.viewer_has_reported
 
-      {:ok, changelog} = CMS.read_article(:changelog, changelog.id, user2)
+      {:ok, changelog} =
+        CMS.read_article(changelog.original_community_raw, :changelog, changelog.inner_id, user2)
 
       assert not changelog.viewer_has_collected
       assert not changelog.viewer_has_upvoted
@@ -104,7 +176,8 @@ defmodule GroupherServer.Test.CMS.Articles.Changelog do
       {:ok, _} = CMS.collect_article(:changelog, changelog.id, user)
       {:ok, _} = CMS.report_article(:changelog, changelog.id, "reason", "attr_info", user)
 
-      {:ok, changelog} = CMS.read_article(:changelog, changelog.id, user)
+      {:ok, changelog} =
+        CMS.read_article(changelog.original_community_raw, :changelog, changelog.inner_id, user)
 
       assert changelog.viewer_has_collected
       assert changelog.viewer_has_upvoted
@@ -122,26 +195,44 @@ defmodule GroupherServer.Test.CMS.Articles.Changelog do
 
     test "create changelog with an non-exsit community fails", ~m(user)a do
       invalid_attrs = mock_attrs(:changelog, %{community_id: non_exsit_id()})
-      ivalid_community = %Community{id: non_exsit_id()}
+      ivalid_community = %Community{id: non_exsit_id(), raw: non_exsit_raw()}
 
       assert {:error, _} = CMS.create_article(ivalid_community, :changelog, invalid_attrs, user)
     end
   end
 
   describe "[cms changelog sink/undo_sink]" do
-    test "if a changelog is too old, read changelog should update can_undo_sink flag",
+    test "if a changelog is too old, read changelog should update can_undo_sink flag.",
          ~m(user community changelog_attrs)a do
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
 
       assert changelog.meta.can_undo_sink
 
       {:ok, changelog_last_year} =
-        db_insert(:changelog, %{title: "last year", inserted_at: @last_year})
+        db_insert(:changelog, %{
+          title: "last year",
+          inserted_at: @last_year,
+          inner_id: changelog.inner_id + 1,
+          original_community_raw: changelog.original_community_raw
+        })
 
-      {:ok, changelog_last_year} = CMS.read_article(:changelog, changelog_last_year.id)
+      {:ok, changelog_last_year} =
+        CMS.read_article(
+          changelog_last_year.original_community_raw,
+          :changelog,
+          changelog_last_year.inner_id
+        )
+
       assert not changelog_last_year.meta.can_undo_sink
 
-      {:ok, changelog_last_year} = CMS.read_article(:changelog, changelog_last_year.id, user)
+      {:ok, changelog_last_year} =
+        CMS.read_article(
+          changelog_last_year.original_community_raw,
+          :changelog,
+          changelog_last_year.inner_id,
+          user
+        )
+
       assert not changelog_last_year.meta.can_undo_sink
     end
 
@@ -177,9 +268,15 @@ defmodule GroupherServer.Test.CMS.Articles.Changelog do
   describe "[cms changelog document]" do
     test "will create related document after create", ~m(user community changelog_attrs)a do
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
-      {:ok, changelog} = CMS.read_article(:changelog, changelog.id)
+
+      {:ok, changelog} =
+        CMS.read_article(changelog.original_community_raw, :changelog, changelog.inner_id)
+
       assert not is_nil(changelog.document.body_html)
-      {:ok, changelog} = CMS.read_article(:changelog, changelog.id, user)
+
+      {:ok, changelog} =
+        CMS.read_article(changelog.original_community_raw, :changelog, changelog.inner_id, user)
+
       assert not is_nil(changelog.document.body_html)
 
       {:ok, article_doc} =

@@ -8,10 +8,13 @@ defmodule GroupherServer.Test.Query.Comments.PostComment do
   alias Helper.ORM
 
   setup do
-    {:ok, post} = db_insert(:post)
     {:ok, user} = db_insert(:user)
     {:ok, user2} = db_insert(:user)
     {:ok, community} = db_insert(:community)
+
+    post_attrs = mock_attrs(:post, %{community_id: community.id})
+    {:ok, post} = CMS.create_article(community, :post, post_attrs, user2)
+    {:ok, post} = ORM.find(CMS.Model.Post, post.id, preload: [author: :user])
 
     guest_conn = simu_conn(:guest)
     user_conn = simu_conn(:user, user)
@@ -92,8 +95,8 @@ defmodule GroupherServer.Test.Query.Comments.PostComment do
 
   describe "[baisc article post comment]" do
     @query """
-    query($id: ID!) {
-      post(id: $id) {
+    query($community: String!, $id: ID!) {
+      post(community: $community, id: $id) {
         id
         title
         isArchived
@@ -101,20 +104,21 @@ defmodule GroupherServer.Test.Query.Comments.PostComment do
       }
     }
     """
+
     test "guest user can get basic archive info", ~m(guest_conn post user)a do
       thread = :post
 
       {:ok, _} = CMS.create_comment(thread, post.id, mock_comment(), user)
 
-      variables = %{id: post.id}
+      variables = %{community: post.original_community_raw, id: post.inner_id}
       results = guest_conn |> query_result(@query, variables, "post")
 
       assert not results["isArchived"]
     end
 
     @query """
-    query($id: ID!) {
-      post(id: $id) {
+    query($community: String!, $id: ID!) {
+      post(community: $community, id: $id) {
         id
         title
         commentsParticipants {
@@ -125,6 +129,7 @@ defmodule GroupherServer.Test.Query.Comments.PostComment do
       }
     }
     """
+
     test "guest user can get comment participants after comment created",
          ~m(guest_conn post user user2)a do
       total_count = 5
@@ -138,7 +143,7 @@ defmodule GroupherServer.Test.Query.Comments.PostComment do
 
       {:ok, _} = CMS.create_comment(thread, post.id, mock_comment(), user2)
 
-      variables = %{id: post.id}
+      variables = %{community: post.original_community_raw, id: post.inner_id}
       results = guest_conn |> query_result(@query, variables, "post")
 
       comments_participants = results["commentsParticipants"]

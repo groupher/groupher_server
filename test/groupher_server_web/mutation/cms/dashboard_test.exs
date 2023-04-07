@@ -45,6 +45,27 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       assert found.dashboard.seo.og_title == "new title"
     end
 
+    @update_enable_query """
+    mutation($id: ID!, $post: Boolean, $changelog: Boolean) {
+      updateDashboardEnable(id: $id, post: $post, changelog: $changelog) {
+        id
+      }
+    }
+    """
+
+    test "update community dashboard enable info", ~m(community)a do
+      rule_conn = simu_conn(:user, cms: %{"community.update" => true})
+      variables = %{id: community.id, post: false, changelog: true}
+
+      updated =
+        rule_conn |> mutation_result(@update_enable_query, variables, "updateDashboardEnable")
+
+      {:ok, found} = Community |> ORM.find(updated["id"], preload: :dashboard)
+
+      assert found.dashboard.enable.post == false
+      assert found.dashboard.enable.changelog == true
+    end
+
     @update_layout_query """
     mutation($id: ID!, $postLayout: String, $broadcastEnable: Boolean, $kanbanBgColors: [String]) {
       updateDashboardLayout(id: $id, postLayout: $postLayout, broadcastEnable: $broadcastEnable, kanbanBgColors: $kanbanBgColors) {

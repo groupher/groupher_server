@@ -3,12 +3,18 @@ defmodule GroupherServer.Test.Query.Comments.BlogComment do
 
   use GroupherServer.TestTools
 
+  alias Helper.ORM
   alias GroupherServer.CMS
 
   setup do
-    {:ok, blog} = db_insert(:blog)
     {:ok, user} = db_insert(:user)
     {:ok, user2} = db_insert(:user)
+
+    {:ok, community} = db_insert(:community)
+    blog_attrs = mock_attrs(:blog, %{community_id: community.id})
+
+    {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user2)
+    {:ok, blog} = ORM.find(CMS.Model.Blog, blog.id, preload: [author: :user])
 
     guest_conn = simu_conn(:guest)
     user_conn = simu_conn(:user, user)
@@ -18,8 +24,8 @@ defmodule GroupherServer.Test.Query.Comments.BlogComment do
 
   describe "[baisc article blog comment]" do
     @query """
-    query($id: ID!) {
-      blog(id: $id) {
+    query($community: String!, $id: ID!) {
+      blog(community: $community, id: $id) {
         id
         title
         commentsParticipants {
@@ -44,7 +50,7 @@ defmodule GroupherServer.Test.Query.Comments.BlogComment do
 
       {:ok, _} = CMS.create_comment(thread, blog.id, mock_comment(), user2)
 
-      variables = %{id: blog.id}
+      variables = %{community: blog.original_community_raw, id: blog.inner_id}
       results = guest_conn |> query_result(@query, variables, "blog")
 
       comments_participants = results["commentsParticipants"]
@@ -118,7 +124,6 @@ defmodule GroupherServer.Test.Query.Comments.BlogComment do
         }
     }
     """
-
     test "list comments with default replies-mode", ~m(guest_conn blog user user2)a do
       total_count = 10
       page_size = 20

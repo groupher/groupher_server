@@ -3,7 +3,10 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
   community curd
   """
   import Ecto.Query, warn: false
-  import Helper.Utils, only: [done: 1, strip_struct: 1, get_config: 2, plural: 1, ensure: 2]
+
+  import Helper.Utils,
+    only: [done: 1, strip_struct: 1, get_config: 2, plural: 1, ensure: 2]
+
   import GroupherServer.CMS.Delegate.ArticleCURD, only: [ensure_author_exists: 1]
   import GroupherServer.CMS.Helper.Matcher
   import ShortMaps
@@ -30,6 +33,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
   @default_meta Embeds.CommunityMeta.default_meta()
   @default_dashboard CommunityDashboard.default()
   @article_threads get_config(:article, :threads)
+  @community_default_threads get_config(:general, :community_default_threads)
 
   @default_user_meta Accounts.Model.Embeds.UserMeta.default_meta()
   @community_normal Constant.pending(:normal)
@@ -62,18 +66,46 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
   @doc """
   create a community
   """
-  def create_community(%{user_id: user_id} = args) do
+  def create_community(args) do
+    with {:ok, community} <- do_create_community(args),
+         {:ok, threads} = create_default_threads_ifneed() do
+      Enum.map(threads, fn thread ->
+        CMS.set_thread(community, thread)
+      end)
+
+      {:ok, community}
+    end
+  end
+
+  defp do_create_community(%{user_id: user_id} = args) do
     with {:ok, author} <- ensure_author_exists(%User{id: user_id}) do
+      default_settings = %{meta: @default_meta, dashboard: @default_dashboard}
+
       args =
         args
-        |> Map.merge(%{
-          user_id: author.user_id,
-          meta: @default_meta,
-          dashboard: @default_dashboard
-        })
+        |> Map.merge(%{user_id: author.user_id})
+        |> Map.merge(default_settings)
 
       Community |> ORM.create(args)
     end
+  end
+
+  def create_default_threads_ifneed() do
+    @community_default_threads
+    |> Enum.with_index()
+    |> Enum.map(fn {thread, index} ->
+      title = thread |> Atom.to_string()
+      raw = title
+
+      case ORM.find_by(Thread, raw: raw) do
+        {:ok, _} -> {:ok, :pass}
+        {:error, _} -> CMS.create_thread(~m(title raw index)a)
+      end
+    end)
+
+    exist_threas = @community_default_threads |> Enum.map(&to_string(&1))
+
+    from(t in Thread, where: t.raw in ^exist_threas) |> Repo.all() |> done
   end
 
   @doc """
@@ -188,19 +220,6 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
   end
 
   @doc """
-  update article_tags_count of a community
-  """
-  def update_community_count_field(%Community{} = community, :article_tags_count) do
-    {:ok, article_tags_count} =
-      from(t in ArticleTag, where: t.community_id == ^community.id)
-      |> ORM.count()
-
-    community
-    |> Ecto.Changeset.change(%{article_tags_count: article_tags_count})
-    |> Repo.update()
-  end
-
-  @doc """
   update subscribers_count of a community
   """
   def update_community_count_field(%Community{} = community, user_id, :subscribers_count, opt) do
@@ -221,6 +240,32 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
     |> ORM.update_embed(:meta, meta, %{subscribers_count: subscribers_count})
   end
 
+  def update_community_inner_id(
+        %Community{meta: community_meta} = community,
+        thread,
+        %{inner_id: inner_id}
+      ) do
+    thread_inner_id_key = :"#{plural(thread)}_inner_id_index"
+
+    meta = community_meta |> Map.put(thread_inner_id_key, inner_id) |> strip_struct
+
+    community
+    |> ORM.update_meta(meta)
+  end
+
+  @doc """
+  update article_tags_count of a community
+  """
+  def update_community_count_field(%Community{} = community, :article_tags_count) do
+    {:ok, article_tags_count} =
+      from(t in ArticleTag, where: t.community_id == ^community.id)
+      |> ORM.count()
+
+    community
+    |> Ecto.Changeset.change(%{article_tags_count: article_tags_count})
+    |> Repo.update()
+  end
+
   def update_community_count_field(communities, thread) when is_list(communities) do
     case Enum.all?(communities, &({:ok, _} = update_community_count_field(&1, thread))) do
       true -> {:ok, :pass}
@@ -231,6 +276,12 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
   @doc """
   update thread / article count in community meta
   """
+  def update_community_count_field(%Community{meta: nil, raw: raw}, thread) do
+    with {:ok, community} = CMS.read_community(raw) do
+      update_community_count_field(community, thread)
+    end
+  end
+
   def update_community_count_field(%Community{} = community, thread) do
     with {:ok, info} <- match(thread) do
       {:ok, thread_article_count} =
@@ -240,8 +291,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
         )
         |> ORM.count()
 
-      community_meta = if is_nil(community.meta), do: @default_meta, else: community.meta
-      meta = Map.put(community_meta, :"#{plural(thread)}_count", thread_article_count)
+      meta = Map.put(community.meta, :"#{plural(thread)}_count", thread_article_count)
 
       community
       |> ORM.update_meta(meta, changes: %{articles_count: recount_articles_count(meta)})

@@ -4,7 +4,7 @@ defmodule GroupherServer.Test.CMS.Community do
 
   alias GroupherServer.Accounts.Model.User
   alias GroupherServer.CMS
-  alias CMS.Model.Community
+  alias CMS.Model.{Community, Thread}
 
   alias Helper.ORM
 
@@ -21,6 +21,20 @@ defmodule GroupherServer.Test.CMS.Community do
     article_tag_attrs = mock_attrs(:article_tag)
 
     {:ok, ~m(user community article_tag_attrs user2)a}
+  end
+
+  describe "[cms community curd]" do
+    test "new created community should have default threads", ~m(user)a do
+      community_attrs = mock_attrs(:community, %{raw: "elixir", user_id: user.id})
+      {:ok, community} = CMS.create_community(community_attrs)
+
+      {:ok, all_threads} = ORM.find_all(Thread, %{page: 1, size: 20})
+      assert all_threads.total_count == 5
+
+      {:ok, community} = ORM.find(Community, community.id, preload: :threads)
+
+      assert community.threads |> length == 5
+    end
   end
 
   describe "[cms community apply]" do

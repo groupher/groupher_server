@@ -125,12 +125,14 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
   object(:dasbboard_rss, do: dashboard_gq_fields(:rss))
   object(:dasbboard_seo, do: dashboard_gq_fields(:seo))
   object(:dasbboard_layout, do: dashboard_gq_fields(:layout))
+  object(:dasbboard_enable, do: dashboard_gq_fields(:enable))
   object(:dasbboard_base_info, do: dashboard_gq_fields(:base_info))
   object(:dasbboard_name_alias, do: dashboard_gq_fields(:name_alias))
 
   object :dashboard do
     field(:seo, :dasbboard_seo)
     field(:layout, :dasbboard_layout)
+    field(:enable, :dasbboard_enable)
     field(:base_info, :dasbboard_base_info)
     field(:rss, :dasbboard_rss)
     field(:name_alias, list_of(:dasbboard_name_alias))
@@ -286,6 +288,12 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
   end
 
   paged_article_objects()
+
+  object :grouped_posts do
+    field(:todo, :paged_posts)
+    field(:wip, :paged_posts)
+    field(:done, :paged_posts)
+  end
 
   object :paged_reports do
     field(:entries, list_of(:abuse_report))

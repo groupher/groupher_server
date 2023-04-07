@@ -27,6 +27,38 @@ defmodule GroupherServer.Test.CMS.Articles.Doc do
   end
 
   describe "[cms doc curd]" do
+    test "created doc should have auto_increase inner_id", ~m(user community doc_attrs)a do
+      {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)
+      assert doc.inner_id == 1
+
+      {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)
+      assert doc.inner_id == 2
+
+      {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)
+      assert doc.inner_id == 3
+
+      blog_attrs = mock_attrs(:blog, %{community_id: community.id})
+      changelog_attrs = mock_attrs(:changelog, %{community_id: community.id})
+
+      {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user)
+      assert blog.inner_id == 1
+
+      {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user)
+      assert blog.inner_id == 2
+
+      {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
+      assert changelog.inner_id == 1
+
+      {:ok, community} = ORM.find(Community, community.id)
+
+      assert community.meta.docs_inner_id_index == 3
+      assert community.meta.blogs_inner_id_index == 2
+      assert community.meta.changelogs_inner_id_index == 1
+      assert community.meta.posts_inner_id_index == 0
+
+      assert community.articles_count == 6
+    end
+
     test "can create doc with valid attrs", ~m(user community doc_attrs)a do
       assert {:error, _} = ORM.find_by(Author, user_id: user.id)
 
@@ -53,6 +85,13 @@ defmodule GroupherServer.Test.CMS.Articles.Doc do
                |> String.slice(0, @article_digest_length)
     end
 
+    test "created doc should have original_community info", ~m(user community doc_attrs)a do
+      {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)
+
+      assert doc.original_community_raw == community.raw
+      assert doc.original_community_id == community.id
+    end
+
     test "created doc should have a acitve_at field, same with inserted_at",
          ~m(user community doc_attrs)a do
       {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)
@@ -60,18 +99,39 @@ defmodule GroupherServer.Test.CMS.Articles.Doc do
       assert doc.active_at == doc.inserted_at
     end
 
+    test "should read doc by original community and inner id",
+         ~m(doc_attrs community user)a do
+      {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)
+
+      {:ok, doc2} = CMS.read_article(doc.original_community_raw, :doc, doc.inner_id)
+
+      assert doc.id == doc2.id
+    end
+
+    test "should read doc by original community and inner id with user",
+         ~m(doc_attrs community user)a do
+      {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)
+
+      {:ok, doc2} = CMS.read_article(doc.original_community_raw, :doc, doc.inner_id, user)
+
+      assert doc.id == doc2.id
+
+      {:ok, created} = ORM.find(Doc, doc2.id)
+      assert user.id in created.meta.viewed_user_ids
+    end
+
     test "read doc should update views and meta viewed_user_list",
          ~m(doc_attrs community user user2)a do
       {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)
 
       # same user duplicate case
-      {:ok, _} = CMS.read_article(:doc, doc.id, user)
+      {:ok, _} = CMS.read_article(doc.original_community_raw, :doc, doc.inner_id, user)
       {:ok, created} = ORM.find(Doc, doc.id)
 
       assert created.meta.viewed_user_ids |> length == 1
       assert user.id in created.meta.viewed_user_ids
 
-      {:ok, _} = CMS.read_article(:doc, doc.id, user2)
+      {:ok, _} = CMS.read_article(doc.original_community_raw, :doc, doc.inner_id, user2)
       {:ok, created} = ORM.find(Doc, doc.id)
 
       assert created.meta.viewed_user_ids |> length == 2
@@ -82,19 +142,19 @@ defmodule GroupherServer.Test.CMS.Articles.Doc do
     test "read doc should contains viewer_has_xxx state",
          ~m(doc_attrs community user user2)a do
       {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)
-      {:ok, doc} = CMS.read_article(:doc, doc.id, user)
+      {:ok, doc} = CMS.read_article(doc.original_community_raw, :doc, doc.inner_id, user)
 
       assert not doc.viewer_has_collected
       assert not doc.viewer_has_upvoted
       assert not doc.viewer_has_reported
 
-      {:ok, doc} = CMS.read_article(:doc, doc.id)
+      {:ok, doc} = CMS.read_article(doc.original_community_raw, :doc, doc.inner_id)
 
       assert not doc.viewer_has_collected
       assert not doc.viewer_has_upvoted
       assert not doc.viewer_has_reported
 
-      {:ok, doc} = CMS.read_article(:doc, doc.id, user2)
+      {:ok, doc} = CMS.read_article(doc.original_community_raw, :doc, doc.inner_id, user2)
 
       assert not doc.viewer_has_collected
       assert not doc.viewer_has_upvoted
@@ -104,7 +164,7 @@ defmodule GroupherServer.Test.CMS.Articles.Doc do
       {:ok, _} = CMS.collect_article(:doc, doc.id, user)
       {:ok, _} = CMS.report_article(:doc, doc.id, "reason", "attr_info", user)
 
-      {:ok, doc} = CMS.read_article(:doc, doc.id, user)
+      {:ok, doc} = CMS.read_article(doc.original_community_raw, :doc, doc.inner_id, user)
 
       assert doc.viewer_has_collected
       assert doc.viewer_has_upvoted
@@ -122,7 +182,7 @@ defmodule GroupherServer.Test.CMS.Articles.Doc do
 
     test "create doc with an non-exsit community fails", ~m(user)a do
       invalid_attrs = mock_attrs(:doc, %{community_id: non_exsit_id()})
-      ivalid_community = %Community{id: non_exsit_id()}
+      ivalid_community = %Community{id: non_exsit_id(), raw: non_exsit_raw()}
 
       assert {:error, _} = CMS.create_article(ivalid_community, :doc, invalid_attrs, user)
     end
@@ -135,12 +195,22 @@ defmodule GroupherServer.Test.CMS.Articles.Doc do
 
       assert doc.meta.can_undo_sink
 
-      {:ok, doc_last_year} = db_insert(:doc, %{title: "last year", inserted_at: @last_year})
+      {:ok, doc_last_year} =
+        db_insert(:doc, %{
+          title: "last year",
+          inserted_at: @last_year,
+          inner_id: doc.inner_id + 1,
+          original_community_raw: doc.original_community_raw
+        })
 
-      {:ok, doc_last_year} = CMS.read_article(:doc, doc_last_year.id)
+      {:ok, doc_last_year} =
+        CMS.read_article(doc_last_year.original_community_raw, :doc, doc_last_year.inner_id)
+
       assert not doc_last_year.meta.can_undo_sink
 
-      {:ok, doc_last_year} = CMS.read_article(:doc, doc_last_year.id, user)
+      {:ok, doc_last_year} =
+        CMS.read_article(doc_last_year.original_community_raw, :doc, doc_last_year.inner_id, user)
+
       assert not doc_last_year.meta.can_undo_sink
     end
 
@@ -175,9 +245,9 @@ defmodule GroupherServer.Test.CMS.Articles.Doc do
   describe "[cms doc document]" do
     test "will create related document after create", ~m(user community doc_attrs)a do
       {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)
-      {:ok, doc} = CMS.read_article(:doc, doc.id)
+      {:ok, doc} = CMS.read_article(doc.original_community_raw, :doc, doc.inner_id)
       assert not is_nil(doc.document.body_html)
-      {:ok, doc} = CMS.read_article(:doc, doc.id, user)
+      {:ok, doc} = CMS.read_article(doc.original_community_raw, :doc, doc.inner_id, user)
       assert not is_nil(doc.document.body_html)
 
       {:ok, article_doc} = ORM.find_by(ArticleDocument, %{article_id: doc.id, thread: "DOC"})

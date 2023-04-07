@@ -35,7 +35,8 @@ defmodule GroupherServer.Test.CMS.ChangelogPendingFlag do
 
   describe "[pending changelogs flags]" do
     test "pending changelog can not be read", ~m(changelog_m)a do
-      {:ok, _} = CMS.read_article(:changelog, changelog_m.id)
+      {:ok, _} =
+        CMS.read_article(changelog_m.original_community_raw, :changelog, changelog_m.inner_id)
 
       {:ok, _} =
         CMS.set_article_illegal(:changelog, changelog_m.id, %{
@@ -47,7 +48,9 @@ defmodule GroupherServer.Test.CMS.ChangelogPendingFlag do
       {:ok, changelog_m} = ORM.find(Changelog, changelog_m.id)
       assert changelog_m.pending == @audit_illegal
 
-      {:error, reason} = CMS.read_article(:changelog, changelog_m.id)
+      {:error, reason} =
+        CMS.read_article(changelog_m.original_community_raw, :changelog, changelog_m.inner_id)
+
       assert reason |> is_error?(:pending)
     end
 
@@ -55,7 +58,8 @@ defmodule GroupherServer.Test.CMS.ChangelogPendingFlag do
       changelog_attrs = mock_attrs(:changelog, %{community_id: community.id})
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
 
-      {:ok, _} = CMS.read_article(:changelog, changelog.id)
+      {:ok, _} =
+        CMS.read_article(changelog.original_community_raw, :changelog, changelog.inner_id)
 
       {:ok, _} =
         CMS.set_article_illegal(:changelog, changelog.id, %{
@@ -64,16 +68,22 @@ defmodule GroupherServer.Test.CMS.ChangelogPendingFlag do
           illegal_words: ["some-word"]
         })
 
-      {:ok, changelog_read} = CMS.read_article(:changelog, changelog.id, user)
+      {:ok, changelog_read} =
+        CMS.read_article(changelog.original_community_raw, :changelog, changelog.inner_id, user)
+
       assert changelog_read.id == changelog.id
 
       {:ok, user2} = db_insert(:user)
-      {:error, reason} = CMS.read_article(:changelog, changelog.id, user2)
+
+      {:error, reason} =
+        CMS.read_article(changelog.original_community_raw, :changelog, changelog.inner_id, user2)
+
       assert reason |> is_error?(:pending)
     end
 
     test "pending changelog can set/unset pending", ~m(changelog_m)a do
-      {:ok, _} = CMS.read_article(:changelog, changelog_m.id)
+      {:ok, _} =
+        CMS.read_article(changelog_m.original_community_raw, :changelog, changelog_m.inner_id)
 
       {:ok, _} =
         CMS.set_article_illegal(:changelog, changelog_m.id, %{
@@ -90,11 +100,13 @@ defmodule GroupherServer.Test.CMS.ChangelogPendingFlag do
       {:ok, changelog_m} = ORM.find(Changelog, changelog_m.id)
       assert changelog_m.pending == @audit_legal
 
-      {:ok, _} = CMS.read_article(:changelog, changelog_m.id)
+      {:ok, _} =
+        CMS.read_article(changelog_m.original_community_raw, :changelog, changelog_m.inner_id)
     end
 
     test "pending changelog's meta should have info", ~m(changelog_m)a do
-      {:ok, _} = CMS.read_article(:changelog, changelog_m.id)
+      {:ok, _} =
+        CMS.read_article(changelog_m.original_community_raw, :changelog, changelog_m.inner_id)
 
       {:ok, _} =
         CMS.set_article_illegal(:changelog, changelog_m.id, %{
