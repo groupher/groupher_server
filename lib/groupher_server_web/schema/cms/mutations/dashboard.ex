@@ -9,7 +9,7 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Dashboard do
   object :cms_dashboard_mutations do
     @desc "update seo in dashboard"
     field :update_dashboard_seo, :community do
-      arg(:id, non_null(:id))
+      arg(:community, non_null(:string))
       arg(:dashboard_section, :dashboard_section, default_value: :seo)
 
       dashboard_args(:seo)
@@ -24,22 +24,22 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Dashboard do
 
     @desc "update enable in dashboard"
     field :update_dashboard_enable, :community do
-      arg(:id, non_null(:id))
+      arg(:community, non_null(:string))
       arg(:dashboard_section, :dashboard_section, default_value: :enable)
 
       dashboard_args(:enable)
 
       middleware(M.Authorize, :login)
-      middleware(M.Passport, claim: "cms->community.update")
+      # middleware(M.Passport, claim: "cms->community.update")
 
       # middleware(M.PublishThrottle)
-      middleware(M.PublishThrottle, interval: 3, hour_limit: 15, day_limit: 30)
+      middleware(M.PublishThrottle, interval: 3, hour_limit: 100, day_limit: 100)
       resolve(&R.CMS.update_dashboard/3)
     end
 
     @desc "update layout in dashboard"
     field :update_dashboard_layout, :community do
-      arg(:id, non_null(:id))
+      arg(:community, non_null(:string))
       arg(:dashboard_section, :dashboard_section, default_value: :layout)
 
       dashboard_args(:layout)
@@ -55,7 +55,7 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Dashboard do
 
     @desc "update rss in dashboard"
     field :update_dashboard_rss, :community do
-      arg(:id, non_null(:id))
+      arg(:community, non_null(:string))
       arg(:dashboard_section, :dashboard_section, default_value: :rss)
 
       dashboard_args(:rss)
@@ -70,7 +70,7 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Dashboard do
 
     @desc "update name alias in dashboard"
     field :update_dashboard_name_alias, :community do
-      arg(:id, non_null(:id))
+      arg(:community, non_null(:string))
       arg(:dashboard_section, :dashboard_section, default_value: :name_alias)
 
       arg(:name_alias, list_of(:dashboard_alias_map))

@@ -27,16 +27,17 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
 
   describe "[mutation cms community]" do
     @update_seo_query """
-    mutation($id: ID!, $ogTitle: String, $ogDescription: String) {
-      updateDashboardSeo(id: $id, ogTitle: $ogTitle, ogDescription: $ogDescription) {
+    mutation($community: String!, $ogTitle: String, $ogDescription: String) {
+      updateDashboardSeo(community: $community, ogTitle: $ogTitle, ogDescription: $ogDescription) {
         id
         title
       }
     }
     """
+    @tag :wip
     test "update community dashboard seo info", ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
-      variables = %{id: community.id, ogTitle: "new title"}
+      variables = %{community: community.raw, ogTitle: "new title"}
 
       updated = rule_conn |> mutation_result(@update_seo_query, variables, "updateDashboardSeo")
 
@@ -46,16 +47,16 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
     end
 
     @update_enable_query """
-    mutation($id: ID!, $post: Boolean, $changelog: Boolean) {
-      updateDashboardEnable(id: $id, post: $post, changelog: $changelog) {
+    mutation($community: String!, $post: Boolean, $changelog: Boolean) {
+      updateDashboardEnable(community: $community, post: $post, changelog: $changelog) {
         id
       }
     }
     """
-
+    @tag :wip
     test "update community dashboard enable info", ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
-      variables = %{id: community.id, post: false, changelog: true}
+      variables = %{community: community.raw, post: false, changelog: true}
 
       updated =
         rule_conn |> mutation_result(@update_enable_query, variables, "updateDashboardEnable")
@@ -67,18 +68,19 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
     end
 
     @update_layout_query """
-    mutation($id: ID!, $postLayout: String, $broadcastEnable: Boolean, $kanbanBgColors: [String]) {
-      updateDashboardLayout(id: $id, postLayout: $postLayout, broadcastEnable: $broadcastEnable, kanbanBgColors: $kanbanBgColors) {
+    mutation($community: Stirng!, $postLayout: String, $broadcastEnable: Boolean, $kanbanBgColors: [String]) {
+      updateDashboardLayout(community: $community, postLayout: $postLayout, broadcastEnable: $broadcastEnable, kanbanBgColors: $kanbanBgColors) {
         id
         title
       }
     }
     """
+    @tag :wip
     test "update community dashboard layout info", ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
 
       variables = %{
-        id: community.id,
+        community: community.raw,
         postLayout: "new layout",
         broadcastEnable: true,
         kanbanBgColors: ["#111", "#222"]
@@ -96,18 +98,19 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
     end
 
     @update_seo_query """
-    mutation($id: ID!, $rssFeedType: String, $rssFeedCount: Int) {
-      updateDashboardRss(id: $id, rssFeedType: $rssFeedType, rssFeedCount: $rssFeedCount) {
+    mutation($community: String!, $rssFeedType: String, $rssFeedCount: Int) {
+      updateDashboardRss(community: $community, rssFeedType: $rssFeedType, rssFeedCount: $rssFeedCount) {
         id
         title
       }
     }
     """
+    @tag :wip
     test "update community dashboard rss info", ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
 
       variables = %{
-        id: community.id,
+        community: community.raw,
         rssFeedType: "digest",
         rssFeedCount: 22
       }
@@ -123,18 +126,19 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
     end
 
     @update_alias_query """
-    mutation($id: ID!, $nameAlias: [dashboardAliasMap]) {
-      updateDashboardNameAlias(id: $id, nameAlias: $nameAlias) {
+    mutation($community: String!, $nameAlias: [dashboardAliasMap]) {
+      updateDashboardNameAlias(community: $community, nameAlias: $nameAlias) {
         id
         title
       }
     }
     """
+    @tag :wip
     test "update community dashboard name alias info", ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
 
       variables = %{
-        id: community.id,
+        community: community.raw,
         nameAlias: [
           %{
             raw: "raw1",

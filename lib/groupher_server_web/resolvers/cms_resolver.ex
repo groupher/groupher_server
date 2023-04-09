@@ -42,17 +42,21 @@ defmodule GroupherServerWeb.Resolvers.CMS do
     CMS.update_community(args.id, args)
   end
 
-  def update_dashboard(_root, %{dashboard_section: :name_alias, id: id} = args, _info) do
-    dashboard_args = Map.drop(args, [:id, :dashboard_section]) |> Map.get(:name_alias)
+  def update_dashboard(
+        _root,
+        %{dashboard_section: :name_alias, community: community} = args,
+        _info
+      ) do
+    dashboard_args = Map.drop(args, [:community, :dashboard_section]) |> Map.get(:name_alias)
 
-    CMS.update_dashboard(id, :name_alias, dashboard_args)
+    CMS.update_dashboard(community, :name_alias, dashboard_args)
   end
 
   ## dashboard actions
-  def update_dashboard(_root, %{dashboard_section: key, id: id} = args, _info) do
-    dashboard_args = Map.drop(args, [:id, :dashboard_section])
+  def update_dashboard(_root, %{dashboard_section: key, community: community} = args, _info) do
+    dashboard_args = Map.drop(args, [:community, :dashboard_section])
 
-    CMS.update_dashboard(id, key, dashboard_args)
+    CMS.update_dashboard(community, key, dashboard_args)
   end
 
   def delete_community(_root, %{id: id}, _info), do: Community |> ORM.find_delete!(id)

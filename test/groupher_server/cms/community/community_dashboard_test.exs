@@ -35,22 +35,24 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert not is_nil(find_community.dashboard)
     end
 
+    @tag :wip
     test "can update base info in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
       {:ok, _} =
-        CMS.update_dashboard(community.id, :base_info, %{homepage: "https://groupher.com"})
+        CMS.update_dashboard(community.raw, :base_info, %{homepage: "https://groupher.com"})
 
       {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
 
       assert find_community.dashboard.base_info.homepage == "https://groupher.com"
     end
 
+    @tag :wip
     test "can update seo in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
       {:ok, _} =
-        CMS.update_dashboard(community.id, :seo, %{
+        CMS.update_dashboard(community.raw, :seo, %{
           og_title: "groupher",
           og_description: "forum sass provider"
         })
@@ -61,11 +63,12 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert find_community.dashboard.seo.og_description == "forum sass provider"
     end
 
+    @tag :wip
     test "can update layout in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
       {:ok, _} =
-        CMS.update_dashboard(community.id, :layout, %{
+        CMS.update_dashboard(community.raw, :layout, %{
           post_layout: "upvote_first",
           changelog_layout: "full"
         })
@@ -76,11 +79,12 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert find_community.dashboard.layout.changelog_layout == "full"
     end
 
+    @tag :wip
     test "can update rss in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
       {:ok, _} =
-        CMS.update_dashboard(community.id, :rss, %{
+        CMS.update_dashboard(community.raw, :rss, %{
           rss_feed_type: "full",
           rss_feed_count: 25
         })
@@ -91,11 +95,12 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert find_community.dashboard.rss.rss_feed_count == 25
     end
 
+    @tag :wip
     test "can update alias in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
       {:ok, _} =
-        CMS.update_dashboard(community.id, :name_alias, [
+        CMS.update_dashboard(community.raw, :name_alias, [
           %{
             raw: "raw",
             name: "name",
@@ -114,11 +119,12 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert first.group == "group"
     end
 
+    @tag :wip
     test "should overwirte all alias in community dashboard everytime", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
       {:ok, _} =
-        CMS.update_dashboard(community.id, :name_alias, [
+        CMS.update_dashboard(community.raw, :name_alias, [
           %{
             raw: "raw",
             name: "name",
@@ -144,7 +150,7 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert second.raw == "raw2"
 
       {:ok, _} =
-        CMS.update_dashboard(community.id, :name_alias, [
+        CMS.update_dashboard(community.raw, :name_alias, [
           %{
             raw: "raw3",
             name: "name3",

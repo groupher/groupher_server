@@ -38,8 +38,8 @@ defmodule GroupherServer.CMS do
   defdelegate paged_communities(filter), to: CommunityCURD
   defdelegate create_community(args), to: CommunityCURD
   defdelegate apply_community(args), to: CommunityCURD
-  defdelegate update_community(id, args), to: CommunityCURD
-  defdelegate update_dashboard(id, key, args), to: CommunityCURD
+  defdelegate update_community(community, args), to: CommunityCURD
+  defdelegate update_dashboard(comunity, key, args), to: CommunityCURD
   defdelegate approve_community_apply(id), to: CommunityCURD
   defdelegate deny_community_apply(id), to: CommunityCURD
   defdelegate is_community_exist?(raw), to: CommunityCURD
