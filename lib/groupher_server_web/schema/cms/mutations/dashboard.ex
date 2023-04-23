@@ -46,10 +46,10 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Dashboard do
       arg(:kanban_bg_colors, list_of(:string))
 
       middleware(M.Authorize, :login)
-      middleware(M.Passport, claim: "cms->community.update")
+      # middleware(M.Passport, claim: "cms->community.update")
 
       # middleware(M.PublishThrottle)
-      middleware(M.PublishThrottle, interval: 3, hour_limit: 15, day_limit: 30)
+      # middleware(M.PublishThrottle, interval: 3, hour_limit: 15, day_limit: 30)
       resolve(&R.CMS.update_dashboard/3)
     end
 

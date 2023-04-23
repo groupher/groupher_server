@@ -34,7 +34,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       }
     }
     """
-    @tag :wip
+
     test "update community dashboard seo info", ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
       variables = %{community: community.raw, ogTitle: "new title"}
@@ -53,7 +53,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       }
     }
     """
-    @tag :wip
+
     test "update community dashboard enable info", ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
       variables = %{community: community.raw, post: false, changelog: true}
@@ -68,14 +68,13 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
     end
 
     @update_layout_query """
-    mutation($community: Stirng!, $postLayout: String, $broadcastEnable: Boolean, $kanbanBgColors: [String]) {
-      updateDashboardLayout(community: $community, postLayout: $postLayout, broadcastEnable: $broadcastEnable, kanbanBgColors: $kanbanBgColors) {
+    mutation($community: Stirng!, $postLayout: String, $kanbanLayout: String, $broadcastEnable: Boolean, $kanbanBgColors: [String]) {
+      updateDashboardLayout(community: $community, postLayout: $postLayout, kanbanLayout: $kanbanLayout, broadcastEnable: $broadcastEnable, kanbanBgColors: $kanbanBgColors) {
         id
         title
       }
     }
     """
-    @tag :wip
     test "update community dashboard layout info", ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
 
@@ -83,6 +82,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
         community: community.raw,
         postLayout: "new layout",
         broadcastEnable: true,
+        kanbanLayout: "full",
         kanbanBgColors: ["#111", "#222"]
       }
 
@@ -93,8 +93,43 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       {:ok, found} = Community |> ORM.find(updated["id"], preload: :dashboard)
 
       assert found.dashboard.layout.post_layout == "new layout"
+      assert found.dashboard.layout.kanban_layout == "full"
       assert found.dashboard.layout.broadcast_enable == true
       assert found.dashboard.layout.kanban_bg_colors == ["#111", "#222"]
+    end
+
+    @tag :wip
+    test "update community dashboard layout should not overwrite existing settings",
+         ~m(community)a do
+      rule_conn = simu_conn(:user, cms: %{"community.update" => true})
+
+      variables = %{
+        community: community.raw,
+        postLayout: "new layout"
+      }
+
+      updated =
+        rule_conn
+        |> mutation_result(@update_layout_query, variables, "updateDashboardLayout")
+
+      {:ok, found} = Community |> ORM.find(updated["id"], preload: :dashboard)
+
+      assert found.dashboard.layout.post_layout == "new layout"
+      assert found.dashboard.layout.kanban_layout == ""
+
+      variables = %{
+        community: community.raw,
+        kanbanLayout: "full"
+      }
+
+      updated =
+        rule_conn
+        |> mutation_result(@update_layout_query, variables, "updateDashboardLayout")
+
+      {:ok, found} = Community |> ORM.find(updated["id"], preload: :dashboard)
+
+      assert found.dashboard.layout.post_layout == "new layout"
+      assert found.dashboard.layout.kanban_layout == "full"
     end
 
     @update_seo_query """
@@ -105,7 +140,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       }
     }
     """
-    @tag :wip
+
     test "update community dashboard rss info", ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
 
@@ -133,7 +168,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       }
     }
     """
-    @tag :wip
+
     test "update community dashboard name alias info", ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
 

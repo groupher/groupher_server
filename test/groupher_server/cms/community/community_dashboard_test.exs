@@ -35,7 +35,6 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert not is_nil(find_community.dashboard)
     end
 
-    @tag :wip
     test "can update base info in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
@@ -47,7 +46,6 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert find_community.dashboard.base_info.homepage == "https://groupher.com"
     end
 
-    @tag :wip
     test "can update seo in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
@@ -63,7 +61,6 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert find_community.dashboard.seo.og_description == "forum sass provider"
     end
 
-    @tag :wip
     test "can update layout in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
@@ -79,7 +76,6 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert find_community.dashboard.layout.changelog_layout == "full"
     end
 
-    @tag :wip
     test "can update rss in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
@@ -95,7 +91,6 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert find_community.dashboard.rss.rss_feed_count == 25
     end
 
-    @tag :wip
     test "can update alias in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
@@ -119,7 +114,6 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert first.group == "group"
     end
 
-    @tag :wip
     test "should overwirte all alias in community dashboard everytime", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
