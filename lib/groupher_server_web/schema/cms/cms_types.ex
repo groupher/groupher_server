@@ -124,7 +124,12 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
 
   object(:dasbboard_rss, do: dashboard_gq_fields(:rss))
   object(:dasbboard_seo, do: dashboard_gq_fields(:seo))
-  object(:dasbboard_layout, do: dashboard_gq_fields(:layout))
+
+  object :dasbboard_layout do
+    dashboard_gq_fields(:layout)
+    field(:kanban_bg_colors, list_of(:string))
+  end
+
   object(:dasbboard_enable, do: dashboard_gq_fields(:enable))
   object(:dasbboard_base_info, do: dashboard_gq_fields(:base_info))
   object(:dasbboard_name_alias, do: dashboard_gq_fields(:name_alias))

@@ -322,6 +322,13 @@ defmodule Helper.ORM do
     |> Repo.update()
   end
 
+  def update_dashboard(%CommunityDashboard{} = community_dashboard, :name_alias, args) do
+    community_dashboard
+    |> Ecto.Changeset.change(%{})
+    |> Ecto.Changeset.put_embed(:name_alias, args)
+    |> Repo.update()
+  end
+
   def update_dashboard(%CommunityDashboard{} = community_dashboard, key, args) do
     merged_args = community_dashboard[key] |> Map.merge(args) |> strip_struct
 
