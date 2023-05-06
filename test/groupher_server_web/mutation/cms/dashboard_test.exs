@@ -98,7 +98,6 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       assert found.dashboard.layout.kanban_bg_colors == ["#111", "#222"]
     end
 
-    @tag :wip
     test "update community dashboard layout should not overwrite existing settings",
          ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
@@ -176,10 +175,10 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
         community: community.raw,
         nameAlias: [
           %{
-            raw: "raw1",
+            raw: "raw",
             name: "name",
             original: "original",
-            group: "group1"
+            group: "group"
           }
         ]
       }
@@ -192,9 +191,9 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
 
       found_alias = found.dashboard.name_alias |> Enum.at(0)
 
-      assert found_alias.raw == "raw1"
+      assert found_alias.raw == "raw"
       assert found_alias.name == "name"
-      assert found_alias.group == "group1"
+      assert found_alias.group == "group"
     end
   end
 end

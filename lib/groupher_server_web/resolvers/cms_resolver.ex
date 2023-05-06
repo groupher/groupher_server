@@ -281,10 +281,10 @@ defmodule GroupherServerWeb.Resolvers.CMS do
   # #######################
   # tags ..
   # #######################
-  def create_article_tag(_root, %{thread: thread, community_id: community_id} = args, %{
+  def create_article_tag(_root, %{thread: thread, community: community} = args, %{
         context: %{cur_user: user}
       }) do
-    CMS.create_article_tag(%Community{id: community_id}, thread, args, user)
+    CMS.create_article_tag(%Community{raw: community}, thread, args, user)
   end
 
   def update_article_tag(_root, %{id: id} = args, _info) do

@@ -161,7 +161,7 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
       arg(:title, non_null(:string))
       arg(:raw, non_null(:string))
       arg(:color, non_null(:rainbow_color))
-      arg(:community_id, non_null(:id))
+      arg(:community, non_null(:string))
       arg(:group, :string)
       arg(:thread, :thread, default_value: :post)
       arg(:extra, list_of(:string))
@@ -177,7 +177,7 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
     @desc "update a tag"
     field :update_article_tag, :article_tag do
       arg(:id, non_null(:id))
-      arg(:community_id, non_null(:id))
+      arg(:community, non_null(:string))
       arg(:title, :string)
       arg(:raw, :string)
       arg(:color, :rainbow_color)
@@ -196,7 +196,7 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
     @desc "delete a tag by thread"
     field :delete_article_tag, :article_tag do
       arg(:id, non_null(:id))
-      arg(:community_id, non_null(:id))
+      arg(:community, non_null(:string))
       arg(:thread, :thread, default_value: :post)
 
       middleware(M.Authorize, :login)
