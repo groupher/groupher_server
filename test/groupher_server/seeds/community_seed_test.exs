@@ -94,11 +94,12 @@ defmodule GroupherServer.Test.Seeds.CommunitySeed do
       # assert threads == ["帖子", "博客", "101", "awesome",  "分布", "设置"]
     end
 
+    @tag :wip
     test "can seed a general framework community" do
       {:ok, community} = CMS.seed_community("react", :framework)
       {:ok, found} = ORM.find(Community, community.id, preload: [threads: :thread])
 
-      filter = %{community_id: community.id, thread: "POST"}
+      filter = %{community: community.raw, thread: "POST"}
       {:ok, tags} = CMS.paged_article_tags(filter)
       tags_titles = tags |> Enum.map(& &1.title)
 

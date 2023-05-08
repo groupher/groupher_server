@@ -158,8 +158,7 @@ defmodule GroupherServerWeb.Schema.CMS.Metrics do
   end
 
   input_object :article_tags_filter do
-    field(:community_id, :id)
-    field(:community_raw, :string)
+    field(:community, :string)
     field(:thread, :thread)
     pagination_args()
   end
