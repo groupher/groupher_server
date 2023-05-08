@@ -94,7 +94,6 @@ defmodule GroupherServer.Test.Seeds.CommunitySeed do
       # assert threads == ["帖子", "博客", "101", "awesome",  "分布", "设置"]
     end
 
-    @tag :wip
     test "can seed a general framework community" do
       {:ok, community} = CMS.seed_community("react", :framework)
       {:ok, found} = ORM.find(Community, community.id, preload: [threads: :thread])

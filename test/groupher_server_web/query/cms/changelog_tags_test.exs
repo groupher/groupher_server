@@ -50,7 +50,6 @@ defmodule GroupherServer.Test.Query.CMS.ChangelogTags do
       assert results["totalCount"] == 1
     end
 
-    @tag :wip
     test "guest user can get all paged tags belongs to a community",
          ~m(guest_conn community article_tag_attrs user)a do
       {:ok, _article_tag} = CMS.create_article_tag(community, :changelog, article_tag_attrs, user)
@@ -62,7 +61,6 @@ defmodule GroupherServer.Test.Query.CMS.ChangelogTags do
       assert results["totalCount"] == 1
     end
 
-    @tag :wip
     test "guest user can get tags by community and thread",
          ~m(guest_conn community  article_tag_attrs user)a do
       {:ok, article_tag} = CMS.create_article_tag(community, :changelog, article_tag_attrs, user)
