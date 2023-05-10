@@ -105,17 +105,18 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.PostTagCURD do
     end
 
     @update_tag_query """
-    mutation($id: ID!, $color: RainbowColor, $title: String, $raw: String, $community: String!, $extra: [String], $icon: String) {
-      updateArticleTag(id: $id, color: $color, title: $title, raw: $raw, community: $community, extra: $extra, icon: $icon) {
+    mutation($id: ID!, $color: RainbowColor, $title: String, $raw: String, $community: String!, $extra: [String], $icon: String, $group: String) {
+      updateArticleTag(id: $id, color: $color, title: $title, raw: $raw, community: $community, extra: $extra, icon: $icon, group: $group) {
         id
         title
         color
+        group
         extra
         icon
       }
     }
     """
-
+    @tag :wip
     test "auth user can update a tag", ~m(article_tag_attrs community user)a do
       {:ok, article_tag} = CMS.create_article_tag(community, :post, article_tag_attrs, user)
 
@@ -125,6 +126,7 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.PostTagCURD do
         title: "new title",
         raw: "new_title",
         community: community.raw,
+        group: "new group",
         extra: ["newMenuID"],
         icon: "icon"
       }
@@ -136,6 +138,7 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.PostTagCURD do
 
       assert updated["color"] == "YELLOW"
       assert updated["title"] == "new title"
+      assert updated["group"] == "new group"
       assert updated["extra"] == ["newMenuID"]
       assert updated["icon"] == "icon"
     end

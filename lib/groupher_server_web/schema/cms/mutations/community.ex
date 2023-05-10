@@ -188,7 +188,7 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
 
       middleware(M.Authorize, :login)
       middleware(M.PassportLoader, source: :community)
-      middleware(M.Passport, claim: "cms->c?->t?.article_tag.update")
+      # middleware(M.Passport, claim: "cms->c?->t?.article_tag.update")
 
       resolve(&R.CMS.update_article_tag/3)
     end

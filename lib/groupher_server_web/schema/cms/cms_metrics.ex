@@ -97,17 +97,18 @@ defmodule GroupherServerWeb.Schema.CMS.Metrics do
   end
 
   enum :rainbow_color do
+    value(:black)
+    value(:pink)
     value(:red)
     value(:orange)
     value(:yellow)
+    value(:brown)
     value(:green)
+    value(:green_light)
     value(:cyan)
+    value(:cyan_light)
     value(:blue)
     value(:purple)
-    value(:dodgerblue)
-    value(:yellowgreen)
-    value(:brown)
-    value(:grey)
   end
 
   enum :article_cat_enum do
