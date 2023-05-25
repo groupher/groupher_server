@@ -11,10 +11,10 @@ IO.inspect user.nickname, label: "@@ got user"
 
 
 article_tag_attrs = %{
-  title: "Android",
-  raw: "android",
+  title: "HM",
+  raw: "hm",
   thread: "POST",
-  color: "RED",
+  color: "YELLOW",
   group: "平台",
   # community: Faker.Pizza.topping(),
   community: community,

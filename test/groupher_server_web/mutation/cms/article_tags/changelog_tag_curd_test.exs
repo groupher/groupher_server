@@ -142,7 +142,7 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.ChangelogTagCURD d
     end
 
     @delete_tag_query """
-    mutation($id: ID!, $community: String!, $thread: Thread,){
+    mutation($id: ID!, $community: String!, $thread: Thread){
       deleteArticleTag(id: $id, community: $community, thread: $thread) {
         id
       }

@@ -200,8 +200,8 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
       arg(:thread, :thread, default_value: :post)
 
       middleware(M.Authorize, :login)
-      middleware(M.PassportLoader, source: :community)
-      middleware(M.Passport, claim: "cms->c?->t?.article_tag.delete")
+      # middleware(M.PassportLoader, source: :community)
+      # middleware(M.Passport, claim: "cms->c?->t?.article_tag.delete")
 
       resolve(&R.CMS.delete_article_tag/3)
     end
