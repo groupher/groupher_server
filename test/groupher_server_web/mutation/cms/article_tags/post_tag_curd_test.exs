@@ -39,7 +39,7 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.PostTagCURD do
       }
     }
     """
-
+    @tag :wip
     test "create tag with valid attrs, has default POST thread and default posts",
          ~m(community)a do
       variables = %{
@@ -54,7 +54,8 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.PostTagCURD do
       passport_rules = %{community.title => %{"post.article_tag.create" => true}}
       rule_conn = simu_conn(:user, cms: passport_rules)
 
-      created = rule_conn |> mutation_result(@create_tag_query, variables, "createArticleTag")
+      created =
+        rule_conn |> mutation_result(@create_tag_query, variables, "createArticleTag", :debug)
 
       belong_community = created["community"]
 

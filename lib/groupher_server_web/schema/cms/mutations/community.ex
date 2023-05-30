@@ -168,8 +168,8 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
       arg(:icon, :string)
 
       middleware(M.Authorize, :login)
-      middleware(M.PassportLoader, source: :community)
-      middleware(M.Passport, claim: "cms->c?->t?.article_tag.create")
+      # middleware(M.PassportLoader, source: :community)
+      # middleware(M.Passport, claim: "cms->c?->t?.article_tag.create")
 
       resolve(&R.CMS.create_article_tag/3)
     end

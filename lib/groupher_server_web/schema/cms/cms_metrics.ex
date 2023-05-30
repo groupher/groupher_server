@@ -37,9 +37,6 @@ defmodule GroupherServerWeb.Schema.CMS.Metrics do
     article_values()
     value(:user)
     # home community
-    value(:tech)
-    value(:city)
-    value(:share)
   end
 
   enum :dashboard_section do
