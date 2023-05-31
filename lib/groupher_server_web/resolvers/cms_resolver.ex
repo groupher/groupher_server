@@ -307,6 +307,12 @@ defmodule GroupherServerWeb.Resolvers.CMS do
     CMS.paged_article_tags(filter)
   end
 
+  def reindex_tags_in_group(_root, ~m(community thread group tags)a, _info) do
+    CMS.reindex_tags_in_group(community, thread, group, tags)
+
+    {:ok, %{done: true}}
+  end
+
   # #######################
   # community subscribe ..
   # #######################

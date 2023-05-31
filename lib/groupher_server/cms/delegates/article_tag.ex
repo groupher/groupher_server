@@ -164,6 +164,34 @@ defmodule GroupherServer.CMS.Delegate.ArticleTag do
     |> done()
   end
 
+  @doc """
+  reindex tags in spec group
+  """
+  def reindex_tags_in_group(community, thread, group, indexed_tags) do
+    with {:ok, group_tags} <- _find_group_tags(community, thread, group) do
+      group_tags
+      |> Enum.each(fn tag ->
+        target = Enum.find(indexed_tags, fn t -> to_string(t.id) === to_string(tag.id) end)
+
+        tag
+        |> Ecto.Changeset.change(%{index: target.index})
+        |> Repo.update()
+      end)
+
+      {:ok, :pass}
+    end
+  end
+
+  defp _find_group_tags(community, thread, group) do
+    filter = %{community: community, thread: thread} |> atom_values_to_upcase
+
+    ArticleTag
+    |> where([t], t.group == ^group)
+    |> QueryBuilder.filter_pack(replace_community_ifneed(filter))
+    |> Repo.all()
+    |> done
+  end
+
   # QueryBuilder.filter_pack for community is assoc in communities
   # if community is has_one logic, need to used this func to make sure
   # the query is only assoc to community

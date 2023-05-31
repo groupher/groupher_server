@@ -39,7 +39,6 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.PostTagCURD do
       }
     }
     """
-    @tag :wip
     test "create tag with valid attrs, has default POST thread and default posts",
          ~m(community)a do
       variables = %{
@@ -117,7 +116,6 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.PostTagCURD do
       }
     }
     """
-    @tag :wip
     test "auth user can update a tag", ~m(article_tag_attrs community user)a do
       {:ok, article_tag} = CMS.create_article_tag(community, :post, article_tag_attrs, user)
 

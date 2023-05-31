@@ -3,7 +3,7 @@ defmodule GroupherServer.Test.CMS.ArticleTag.PostTag do
 
   alias GroupherServer.CMS
   alias CMS.Model.{Community, ArticleTag, Post}
-  alias Helper.{ORM}
+  alias Helper.ORM
 
   setup do
     {:ok, user} = db_insert(:user)
@@ -15,6 +15,54 @@ defmodule GroupherServer.Test.CMS.ArticleTag.PostTag do
     post_attrs = mock_attrs(:post)
 
     {:ok, ~m(user community post post_attrs article_tag_attrs article_tag_attrs2)a}
+  end
+
+  describe "[post tag reindex]" do
+    @tag :wip
+    test "can reindex group of tags", ~m(community article_tag_attrs user)a do
+      attrs = Map.merge(article_tag_attrs, %{group: "group1"})
+      {:ok, article_tag1} = CMS.create_article_tag(community, :post, attrs, user)
+      {:ok, article_tag2} = CMS.create_article_tag(community, :post, attrs, user)
+      {:ok, article_tag3} = CMS.create_article_tag(community, :post, attrs, user)
+      {:ok, article_tag4} = CMS.create_article_tag(community, :post, attrs, user)
+
+      attrs = Map.merge(article_tag_attrs, %{group: "group2"})
+      {:ok, article_tag5} = CMS.create_article_tag(community, :post, attrs, user)
+
+      tags_with_index = [
+        %{
+          id: article_tag1.id,
+          index: 1
+        },
+        %{
+          id: article_tag2.id,
+          index: 2
+        },
+        %{
+          id: article_tag3.id,
+          index: 3
+        },
+        %{
+          id: article_tag4.id,
+          index: 4
+        }
+      ]
+
+      CMS.reindex_tags_in_group(community.raw, :post, "group1", tags_with_index)
+
+      {:ok, article_tag1_after} = ORM.find(ArticleTag, article_tag1.id)
+      {:ok, article_tag2_after} = ORM.find(ArticleTag, article_tag2.id)
+      {:ok, article_tag3_after} = ORM.find(ArticleTag, article_tag3.id)
+      {:ok, article_tag4_after} = ORM.find(ArticleTag, article_tag4.id)
+      {:ok, article_tag5_after} = ORM.find(ArticleTag, article_tag5.id)
+
+      assert article_tag1_after.index === 1
+      assert article_tag2_after.index === 2
+      assert article_tag3_after.index === 3
+      assert article_tag4_after.index === 4
+
+      assert article_tag5_after.index === 0
+    end
   end
 
   describe "[post tag CURD]" do

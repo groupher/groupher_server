@@ -107,6 +107,20 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Operation do
       resolve(&R.CMS.unset_article_tag/3)
     end
 
+    @desc "reindex tags in given group"
+    field :reindex_tags_in_group, :done do
+      arg(:community, non_null(:string))
+      arg(:thread, :thread, default_value: :post)
+      arg(:group, non_null(:string))
+      arg(:tags, list_of(:article_tag_index))
+
+      middleware(M.Authorize, :login)
+      middleware(M.PassportLoader, source: :community)
+      # middleware(M.Passport, claim: "cms->c?->t?.article_tag.update")
+
+      resolve(&R.CMS.reindex_tags_in_group/3)
+    end
+
     @desc "mirror article to other community"
     field :mirror_article, :article do
       arg(:id, non_null(:id))
