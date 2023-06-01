@@ -80,13 +80,16 @@ defmodule GroupherServer.Test.CMS.ArticleTag.PostTag do
       assert article_tag.icon == "icon addr"
     end
 
+    @tag :wip
     test "can update an article tag", ~m(community article_tag_attrs user)a do
       {:ok, article_tag} = CMS.create_article_tag(community, :post, article_tag_attrs, user)
 
-      new_attrs = article_tag_attrs |> Map.merge(%{title: "new title"})
+      new_attrs = article_tag_attrs |> Map.merge(%{title: "new title", layout: "simple"})
 
       {:ok, article_tag} = CMS.update_article_tag(article_tag.id, new_attrs)
+
       assert article_tag.title == "new title"
+      assert article_tag.layout == "simple"
     end
 
     test "create article tag with non-exsit community fails", ~m(article_tag_attrs user)a do
