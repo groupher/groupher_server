@@ -1,4 +1,4 @@
-defmodule GroupherServer.Test.Mutation.ArticleTags.PostReindexTag do
+defmodule GroupherServer.Test.Mutation.ArticleTags.ChangelogReindexTag do
   @moduledoc false
 
   use GroupherServer.TestTools
@@ -8,20 +8,20 @@ defmodule GroupherServer.Test.Mutation.ArticleTags.PostReindexTag do
   alias Helper.ORM
 
   setup do
-    {:ok, post} = db_insert(:post)
+    {:ok, changelog} = db_insert(:changelog)
     {:ok, user} = db_insert(:user)
     {:ok, community} = db_insert(:community)
 
     guest_conn = simu_conn(:guest)
     user_conn = simu_conn(:user)
-    owner_conn = simu_conn(:owner, post)
+    owner_conn = simu_conn(:owner, changelog)
 
     article_tag_attrs = mock_attrs(:article_tag)
 
-    {:ok, ~m(user_conn guest_conn owner_conn community post article_tag_attrs user)a}
+    {:ok, ~m(user_conn guest_conn owner_conn community changelog article_tag_attrs user)a}
   end
 
-  describe "[mutation post tag]" do
+  describe "[mutation changelog tag]" do
     @query """
     mutation($community: String!, $thread: Thread, $group: String!, $tags: [ArticleTagIndex]) {
       reindexTagsInGroup(community: $community, thread: $thread, group: $group, tags: $tags) {
@@ -33,17 +33,17 @@ defmodule GroupherServer.Test.Mutation.ArticleTags.PostReindexTag do
     test "auth user can reindex tags in given group", ~m(community article_tag_attrs user)a do
       attrs = Map.merge(article_tag_attrs, %{group: "group1"})
 
-      {:ok, article_tag1} = CMS.create_article_tag(community, :post, attrs, user)
-      {:ok, article_tag2} = CMS.create_article_tag(community, :post, attrs, user)
-      {:ok, article_tag3} = CMS.create_article_tag(community, :post, attrs, user)
-      {:ok, article_tag4} = CMS.create_article_tag(community, :post, attrs, user)
+      {:ok, article_tag1} = CMS.create_article_tag(community, :changelog, attrs, user)
+      {:ok, article_tag2} = CMS.create_article_tag(community, :changelog, attrs, user)
+      {:ok, article_tag3} = CMS.create_article_tag(community, :changelog, attrs, user)
+      {:ok, article_tag4} = CMS.create_article_tag(community, :changelog, attrs, user)
 
-      passport_rules = %{community.title => %{"post.article_tag.update" => true}}
+      passport_rules = %{community.title => %{"changelog.article_tag.update" => true}}
       rule_conn = simu_conn(:user, cms: passport_rules)
 
       variables = %{
         community: community.raw,
-        thread: "POST",
+        thread: "CHANGELOG",
         group: "group1",
         tags: [
           %{
