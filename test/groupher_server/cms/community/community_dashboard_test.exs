@@ -91,6 +91,7 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert find_community.dashboard.rss.rss_feed_count == 25
     end
 
+    @tag :wip
     test "can update alias in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
@@ -114,6 +115,7 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert first.group == "group"
     end
 
+    @tag :wip
     test "should overwirte all alias in community dashboard everytime", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
@@ -158,6 +160,164 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
 
       third = find_community.dashboard.name_alias |> Enum.at(0)
       assert third.raw == "raw3"
+    end
+
+    @tag :wip
+    test "can update header links in community dashboard", ~m(community_attrs)a do
+      {:ok, community} = CMS.create_community(community_attrs)
+
+      {:ok, _} =
+        CMS.update_dashboard(community.raw, :header_links, [
+          %{
+            title: "title",
+            link: "link",
+            group: "group",
+            index: 1,
+            is_hot: false,
+            is_new: false
+          }
+        ])
+
+      {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
+
+      first = find_community.dashboard.header_links |> Enum.at(0)
+
+      assert first.title == "title"
+      assert first.link == "link"
+      assert first.group == "group"
+    end
+
+    @tag :wip
+    test "should overwirte all header links in community dashboard everytime",
+         ~m(community_attrs)a do
+      {:ok, community} = CMS.create_community(community_attrs)
+
+      {:ok, _} =
+        CMS.update_dashboard(community.raw, :header_links, [
+          %{
+            title: "title",
+            link: "link",
+            group: "group",
+            index: 1,
+            is_hot: false,
+            is_new: false
+          },
+          %{
+            title: "title2",
+            link: "link2",
+            group: "group2",
+            index: 2,
+            is_hot: false,
+            is_new: false
+          }
+        ])
+
+      {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
+
+      assert find_community.dashboard.header_links |> length == 2
+
+      first = find_community.dashboard.header_links |> Enum.at(0)
+      second = find_community.dashboard.header_links |> Enum.at(1)
+
+      assert first.title == "title"
+      assert second.title == "title2"
+
+      {:ok, _} =
+        CMS.update_dashboard(community.raw, :header_links, [
+          %{
+            title: "title3",
+            link: "link3",
+            group: "group3",
+            index: 1,
+            is_hot: false,
+            is_new: false
+          }
+        ])
+
+      {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
+      assert find_community.dashboard.header_links |> length == 1
+
+      third = find_community.dashboard.header_links |> Enum.at(0)
+      assert third.title == "title3"
+    end
+
+    @tag :wip
+    test "can update footer links in community dashboard", ~m(community_attrs)a do
+      {:ok, community} = CMS.create_community(community_attrs)
+
+      {:ok, _} =
+        CMS.update_dashboard(community.raw, :footer_links, [
+          %{
+            title: "title",
+            link: "link",
+            group: "group",
+            index: 1,
+            is_hot: false,
+            is_new: false
+          }
+        ])
+
+      {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
+
+      first = find_community.dashboard.footer_links |> Enum.at(0)
+
+      assert first.title == "title"
+      assert first.link == "link"
+      assert first.group == "group"
+    end
+
+    @tag :wip
+    test "should overwirte all footer links in community dashboard everytime",
+         ~m(community_attrs)a do
+      {:ok, community} = CMS.create_community(community_attrs)
+
+      {:ok, _} =
+        CMS.update_dashboard(community.raw, :footer_links, [
+          %{
+            title: "title",
+            link: "link",
+            group: "group",
+            index: 1,
+            is_hot: false,
+            is_new: false
+          },
+          %{
+            title: "title2",
+            link: "link2",
+            group: "group2",
+            index: 2,
+            is_hot: false,
+            is_new: false
+          }
+        ])
+
+      {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
+
+      assert find_community.dashboard.footer_links |> length == 2
+
+      first = find_community.dashboard.footer_links |> Enum.at(0)
+      second = find_community.dashboard.footer_links |> Enum.at(1)
+
+      assert first.title == "title"
+      assert second.title == "title2"
+
+      {:ok, _} =
+        CMS.update_dashboard(community.raw, :footer_links, [
+          %{
+            title: "title3",
+            link: "link3",
+            group: "group3",
+            index: 1,
+            is_hot: false,
+            is_new: false
+          }
+        ])
+
+      {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
+      assert find_community.dashboard.footer_links |> length == 1
+
+      third = find_community.dashboard.footer_links |> Enum.at(0)
+      assert third.title == "title3"
     end
   end
 end

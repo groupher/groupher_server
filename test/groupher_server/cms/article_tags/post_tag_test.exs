@@ -18,7 +18,6 @@ defmodule GroupherServer.Test.CMS.ArticleTag.PostTag do
   end
 
   describe "[post tag reindex]" do
-    @tag :wip
     test "can reindex group of tags", ~m(community article_tag_attrs user)a do
       attrs = Map.merge(article_tag_attrs, %{group: "group1"})
       {:ok, article_tag1} = CMS.create_article_tag(community, :post, attrs, user)
@@ -80,7 +79,6 @@ defmodule GroupherServer.Test.CMS.ArticleTag.PostTag do
       assert article_tag.icon == "icon addr"
     end
 
-    @tag :wip
     test "can update an article tag", ~m(community article_tag_attrs user)a do
       {:ok, article_tag} = CMS.create_article_tag(community, :post, article_tag_attrs, user)
 

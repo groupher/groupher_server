@@ -98,7 +98,28 @@ defmodule GroupherServer.CMS.Model.Metrics.Dashboard do
       [:name, :string, ""],
       [:original, :string, ""],
       [:group, :string, ""]
-      # TODO: suggestions:
+    ]
+  end
+
+  def macro_schema(:header_link) do
+    [
+      [:title, :string, ""],
+      [:link, :string, ""],
+      [:group, :string, ""],
+      [:index, :integer, 0],
+      [:is_hot, :boolean, false],
+      [:is_new, :boolean, false]
+    ]
+  end
+
+  def macro_schema(:footer_link) do
+    [
+      [:title, :string, ""],
+      [:link, :string, ""],
+      [:group, :string, ""],
+      [:index, :integer, 0],
+      [:is_hot, :boolean, false],
+      [:is_new, :boolean, false]
     ]
   end
 end

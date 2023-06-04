@@ -16,7 +16,7 @@ defmodule GroupherServer.CMS.Model.CommunityDashboard do
   }
 
   @required_fields ~w(community_id)a
-  @optional_fields ~w(base_info seo layout enable rss)a
+  @optional_fields ~w(base_info seo layout enable rss header_links footer_links)a
 
   def default() do
     %{
@@ -25,7 +25,9 @@ defmodule GroupherServer.CMS.Model.CommunityDashboard do
       layout: Embeds.DashboardLayout.default(),
       enable: Embeds.DashboardEnable.default(),
       rss: Embeds.DashboardRSS.default(),
-      name_alias: Embeds.DashboardNameAlias.default()
+      name_alias: Embeds.DashboardNameAlias.default(),
+      header_link: Embeds.DashboardHeaderLink.default(),
+      footer_link: Embeds.DashboardFooterLink.default()
     }
   end
 
@@ -37,6 +39,8 @@ defmodule GroupherServer.CMS.Model.CommunityDashboard do
     embeds_one(:enable, Embeds.DashboardEnable, on_replace: :delete)
     embeds_one(:rss, Embeds.DashboardRSS, on_replace: :delete)
     embeds_many(:name_alias, Embeds.DashboardNameAlias, on_replace: :delete)
+    embeds_many(:header_links, Embeds.DashboardHeaderLink, on_replace: :delete)
+    embeds_many(:footer_links, Embeds.DashboardFooterLink, on_replace: :delete)
 
     # posts_block_list ...
     timestamps(type: :utc_datetime)
@@ -52,6 +56,8 @@ defmodule GroupherServer.CMS.Model.CommunityDashboard do
     |> cast_embed(:enable, with: &Embeds.DashboardEnable.changeset/2)
     |> cast_embed(:rss, with: &Embeds.DashboardRSS.changeset/2)
     |> cast_embed(:name_alias, with: &Embeds.DashboardNameAlias.changeset/2)
+    |> cast_embed(:header_links, with: &Embeds.DashboardHeaderLink.changeset/2)
+    |> cast_embed(:footer_links, with: &Embeds.DashboardFooterLink.changeset/2)
   end
 
   @doc false

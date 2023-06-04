@@ -322,10 +322,11 @@ defmodule Helper.ORM do
     |> Repo.update()
   end
 
-  def update_dashboard(%CommunityDashboard{} = community_dashboard, :name_alias, args) do
+  def update_dashboard(%CommunityDashboard{} = community_dashboard, field, args)
+      when field in [:header_links, :footer_links, :name_alias] do
     community_dashboard
     |> Ecto.Changeset.change(%{})
-    |> Ecto.Changeset.put_embed(:name_alias, args)
+    |> Ecto.Changeset.put_embed(field, args)
     |> Repo.update()
   end
 

@@ -167,7 +167,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       }
     }
     """
-
+    @tag :wip
     test "update community dashboard name alias info", ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
 
@@ -194,6 +194,84 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       assert found_alias.raw == "raw"
       assert found_alias.name == "name"
       assert found_alias.group == "group"
+    end
+
+    @update_header_links_query """
+    mutation($community: String!, $headerLinks: [dashboardLinkMap]) {
+      updateDashboardHeaderLinks(community: $community, headerLinks: $headerLinks) {
+        id
+        title
+      }
+    }
+    """
+    @tag :wip
+    test "update community dashboard header links info", ~m(community)a do
+      rule_conn = simu_conn(:user, cms: %{"community.update" => true})
+
+      variables = %{
+        community: community.raw,
+        headerLinks: [
+          %{
+            title: "title",
+            link: "link",
+            group: "group",
+            index: 1,
+            is_hot: false,
+            is_new: false
+          }
+        ]
+      }
+
+      updated =
+        rule_conn
+        |> mutation_result(@update_header_links_query, variables, "updateDashboardHeaderLinks")
+
+      {:ok, found} = Community |> ORM.find(updated["id"], preload: :dashboard)
+
+      link = found.dashboard.header_links |> Enum.at(0)
+
+      assert link.title == "title"
+      assert link.link == "link"
+      assert link.group == "group"
+    end
+
+    @update_footer_links_query """
+    mutation($community: String!, $footerLinks: [dashboardLinkMap]) {
+      updateDashboardFooterLinks(community: $community, footerLinks: $footerLinks) {
+        id
+        title
+      }
+    }
+    """
+    @tag :wip
+    test "update community dashboard footer links info", ~m(community)a do
+      rule_conn = simu_conn(:user, cms: %{"community.update" => true})
+
+      variables = %{
+        community: community.raw,
+        footerLinks: [
+          %{
+            title: "title",
+            link: "link",
+            group: "group",
+            index: 1,
+            is_hot: false,
+            is_new: false
+          }
+        ]
+      }
+
+      updated =
+        rule_conn
+        |> mutation_result(@update_footer_links_query, variables, "updateDashboardFooterLinks")
+
+      {:ok, found} = Community |> ORM.find(updated["id"], preload: :dashboard)
+
+      link = found.dashboard.footer_links |> Enum.at(0)
+
+      assert link.title == "title"
+      assert link.link == "link"
+      assert link.group == "group"
     end
   end
 end
