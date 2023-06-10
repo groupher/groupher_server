@@ -91,7 +91,6 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert find_community.dashboard.rss.rss_feed_count == 25
     end
 
-    @tag :wip
     test "can update alias in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
@@ -115,7 +114,6 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert first.group == "group"
     end
 
-    @tag :wip
     test "should overwirte all alias in community dashboard everytime", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
@@ -162,7 +160,6 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert third.raw == "raw3"
     end
 
-    @tag :wip
     test "can update header links in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
@@ -172,6 +169,7 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
             title: "title",
             link: "link",
             group: "group",
+            group_index: 1,
             index: 1,
             is_hot: false,
             is_new: false
@@ -185,9 +183,9 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert first.title == "title"
       assert first.link == "link"
       assert first.group == "group"
+      assert first.group_index == 1
     end
 
-    @tag :wip
     test "should overwirte all header links in community dashboard everytime",
          ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
@@ -198,6 +196,7 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
             title: "title",
             link: "link",
             group: "group",
+            group_index: 1,
             index: 1,
             is_hot: false,
             is_new: false
@@ -206,6 +205,7 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
             title: "title2",
             link: "link2",
             group: "group2",
+            group_index: 2,
             index: 2,
             is_hot: false,
             is_new: false
@@ -220,7 +220,9 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       second = find_community.dashboard.header_links |> Enum.at(1)
 
       assert first.title == "title"
+      assert first.group_index == 1
       assert second.title == "title2"
+      assert second.group_index == 2
 
       {:ok, _} =
         CMS.update_dashboard(community.raw, :header_links, [
@@ -241,7 +243,6 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert third.title == "title3"
     end
 
-    @tag :wip
     test "can update footer links in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
@@ -266,7 +267,6 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert first.group == "group"
     end
 
-    @tag :wip
     test "should overwirte all footer links in community dashboard everytime",
          ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
@@ -307,6 +307,7 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
             title: "title3",
             link: "link3",
             group: "group3",
+            group_index: 3,
             index: 1,
             is_hot: false,
             is_new: false
@@ -318,6 +319,7 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
 
       third = find_community.dashboard.footer_links |> Enum.at(0)
       assert third.title == "title3"
+      assert third.group_index == 3
     end
   end
 end

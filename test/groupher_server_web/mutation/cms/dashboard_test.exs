@@ -167,7 +167,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       }
     }
     """
-    @tag :wip
+
     test "update community dashboard name alias info", ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
 
@@ -201,10 +201,15 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       updateDashboardHeaderLinks(community: $community, headerLinks: $headerLinks) {
         id
         title
+        dashboard {
+          headerLinks {
+            groupIndex
+          }
+        }
       }
     }
     """
-    @tag :wip
+
     test "update community dashboard header links info", ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
 
@@ -215,6 +220,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
             title: "title",
             link: "link",
             group: "group",
+            group_index: 1,
             index: 1,
             is_hot: false,
             is_new: false
@@ -224,8 +230,13 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
 
       updated =
         rule_conn
-        |> mutation_result(@update_header_links_query, variables, "updateDashboardHeaderLinks")
+        |> mutation_result(
+          @update_header_links_query,
+          variables,
+          "updateDashboardHeaderLinks"
+        )
 
+      assert updated["dashboard"]["headerLinks"] |> List.first() |> Map.get("groupIndex") == 1
       {:ok, found} = Community |> ORM.find(updated["id"], preload: :dashboard)
 
       link = found.dashboard.header_links |> Enum.at(0)
@@ -233,6 +244,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       assert link.title == "title"
       assert link.link == "link"
       assert link.group == "group"
+      assert link.group_index == 1
     end
 
     @update_footer_links_query """
@@ -240,10 +252,15 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       updateDashboardFooterLinks(community: $community, footerLinks: $footerLinks) {
         id
         title
+        dashboard {
+          footerLinks {
+            groupIndex
+          }
+        }
       }
     }
     """
-    @tag :wip
+
     test "update community dashboard footer links info", ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
 
@@ -254,6 +271,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
             title: "title",
             link: "link",
             group: "group",
+            group_index: 1,
             index: 1,
             is_hot: false,
             is_new: false
@@ -265,6 +283,8 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
         rule_conn
         |> mutation_result(@update_footer_links_query, variables, "updateDashboardFooterLinks")
 
+      assert updated["dashboard"]["footerLinks"] |> List.first() |> Map.get("groupIndex") == 1
+
       {:ok, found} = Community |> ORM.find(updated["id"], preload: :dashboard)
 
       link = found.dashboard.footer_links |> Enum.at(0)
@@ -272,6 +292,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       assert link.title == "title"
       assert link.link == "link"
       assert link.group == "group"
+      assert link.group_index == 1
     end
   end
 end

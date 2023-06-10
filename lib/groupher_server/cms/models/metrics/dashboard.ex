@@ -60,7 +60,8 @@ defmodule GroupherServer.CMS.Model.Metrics.Dashboard do
       [:broadcast_article_bg, :string, ""],
       [:broadcast_article_enable, :boolean, false],
       [:changelog_layout, :string, ""],
-      [:footer_layout, :string, ""]
+      [:footer_layout, :string, ""],
+      [:header_layout, :string, ""]
     ]
   end
 
@@ -106,6 +107,7 @@ defmodule GroupherServer.CMS.Model.Metrics.Dashboard do
       [:title, :string, ""],
       [:link, :string, ""],
       [:group, :string, ""],
+      [:group_index, :integer, 0],
       [:index, :integer, 0],
       [:is_hot, :boolean, false],
       [:is_new, :boolean, false]
@@ -117,6 +119,7 @@ defmodule GroupherServer.CMS.Model.Metrics.Dashboard do
       [:title, :string, ""],
       [:link, :string, ""],
       [:group, :string, ""],
+      [:group_index, :integer, 0],
       [:index, :integer, 0],
       [:is_hot, :boolean, false],
       [:is_new, :boolean, false]
