@@ -112,5 +112,20 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Dashboard do
       # middleware(M.PublishThrottle, interval: 3, hour_limit: 15, day_limit: 30)
       resolve(&R.CMS.update_dashboard/3)
     end
+
+    @desc "update social links in dashboard"
+    field :update_dashboard_social_links, :community do
+      arg(:community, non_null(:string))
+      arg(:dashboard_section, :dashboard_section, default_value: :social_links)
+
+      arg(:social_links, list_of(:dashboard_social_link_map))
+
+      middleware(M.Authorize, :login)
+      # middleware(M.Passport, claim: "cms->community.update")
+
+      # middleware(M.PublishThrottle)
+      # middleware(M.PublishThrottle, interval: 3, hour_limit: 15, day_limit: 30)
+      resolve(&R.CMS.update_dashboard/3)
+    end
   end
 end

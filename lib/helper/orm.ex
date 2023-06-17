@@ -323,7 +323,7 @@ defmodule Helper.ORM do
   end
 
   def update_dashboard(%CommunityDashboard{} = community_dashboard, field, args)
-      when field in [:header_links, :footer_links, :name_alias] do
+      when field in [:header_links, :footer_links, :name_alias, :social_links] do
     community_dashboard
     |> Ecto.Changeset.change(%{})
     |> Ecto.Changeset.put_embed(field, args)

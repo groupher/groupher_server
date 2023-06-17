@@ -321,5 +321,77 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert third.title == "title3"
       assert third.group_index == 3
     end
+
+    @tag :wip
+    test "can update social links in community dashboard", ~m(community_attrs)a do
+      {:ok, community} = CMS.create_community(community_attrs)
+
+      {:ok, _} =
+        CMS.update_dashboard(community.raw, :social_links, [
+          %{
+            title: "title",
+            link: "https://link.com",
+            raw: "link",
+            index: 1
+          }
+        ])
+
+      {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
+
+      first = find_community.dashboard.social_links |> Enum.at(0)
+
+      assert first.title == "title"
+      assert first.link == "https://link.com"
+      assert first.index == 1
+    end
+
+    @tag :wip
+    test "should overwirte all social links in community dashboard everytime",
+         ~m(community_attrs)a do
+      {:ok, community} = CMS.create_community(community_attrs)
+
+      {:ok, _} =
+        CMS.update_dashboard(community.raw, :social_links, [
+          %{
+            title: "title",
+            link: "https://link.com",
+            raw: "link",
+            index: 1
+          },
+          %{
+            title: "title2",
+            link: "https://link.com",
+            raw: "link2",
+            index: 2
+          }
+        ])
+
+      {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
+
+      assert find_community.dashboard.social_links |> length == 2
+
+      first = find_community.dashboard.social_links |> Enum.at(0)
+      second = find_community.dashboard.social_links |> Enum.at(1)
+
+      assert first.title == "title"
+      assert second.title == "title2"
+
+      {:ok, _} =
+        CMS.update_dashboard(community.raw, :social_links, [
+          %{
+            title: "title3",
+            link: "https://link.com",
+            raw: "link2",
+            index: 3
+          }
+        ])
+
+      {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
+      assert find_community.dashboard.social_links |> length == 1
+
+      third = find_community.dashboard.social_links |> Enum.at(0)
+      assert third.title == "title3"
+      assert third.index == 3
+    end
   end
 end

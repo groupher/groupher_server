@@ -68,13 +68,19 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
     end
 
     @update_layout_query """
-    mutation($community: Stirng!, $postLayout: String, $kanbanLayout: String, $broadcastEnable: Boolean, $kanbanBgColors: [String]) {
-      updateDashboardLayout(community: $community, postLayout: $postLayout, kanbanLayout: $kanbanLayout, broadcastEnable: $broadcastEnable, kanbanBgColors: $kanbanBgColors) {
+    mutation($community: Stirng!, $postLayout: String, $kanbanLayout: String, $footerLayout: String, $broadcastEnable: Boolean, $kanbanBgColors: [String]) {
+      updateDashboardLayout(community: $community, postLayout: $postLayout, kanbanLayout: $kanbanLayout, footerLayout: $footerLayout, broadcastEnable: $broadcastEnable, kanbanBgColors: $kanbanBgColors) {
         id
         title
+        dashboard {
+          layout {
+            footerLayout
+          }
+        }
       }
     }
     """
+    @tag :wip
     test "update community dashboard layout info", ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
 
@@ -83,6 +89,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
         postLayout: "new layout",
         broadcastEnable: true,
         kanbanLayout: "full",
+        footerLayout: "simple",
         kanbanBgColors: ["#111", "#222"]
       }
 
@@ -96,6 +103,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       assert found.dashboard.layout.kanban_layout == "full"
       assert found.dashboard.layout.broadcast_enable == true
       assert found.dashboard.layout.kanban_bg_colors == ["#111", "#222"]
+      assert found.dashboard.layout.footer_layout == "simple"
     end
 
     test "update community dashboard layout should not overwrite existing settings",
@@ -260,7 +268,6 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       }
     }
     """
-
     test "update community dashboard footer links info", ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
 
@@ -293,6 +300,58 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       assert link.link == "link"
       assert link.group == "group"
       assert link.group_index == 1
+    end
+
+    @update_social_links_query """
+    mutation($community: String!, $socialLinks: [dashboardSocialLinkMap]) {
+      updateDashboardSocialLinks(community: $community, socialLinks: $socialLinks) {
+        id
+        title
+        dashboard {
+          socialLinks {
+            title
+            link
+            raw
+            index
+          }
+        }
+      }
+    }
+    """
+    @tag :wip
+    test "update community dashboard social links info", ~m(community)a do
+      rule_conn = simu_conn(:user, cms: %{"community.update" => true})
+
+      variables = %{
+        community: community.raw,
+        socialLinks: [
+          %{
+            title: "title",
+            link: "link",
+            raw: "raw",
+            index: 1
+          }
+        ]
+      }
+
+      updated =
+        rule_conn
+        |> mutation_result(
+          @update_social_links_query,
+          variables,
+          "updateDashboardSocialLinks"
+        )
+
+      assert updated["dashboard"]["socialLinks"] |> List.first() |> Map.get("index") == 1
+
+      {:ok, found} = Community |> ORM.find(updated["id"], preload: :dashboard)
+
+      link = found.dashboard.social_links |> Enum.at(0)
+
+      assert link.title == "title"
+      assert link.link == "link"
+      assert link.raw == "raw"
+      assert link.index == 1
     end
   end
 end

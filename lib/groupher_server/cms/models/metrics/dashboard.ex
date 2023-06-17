@@ -125,4 +125,13 @@ defmodule GroupherServer.CMS.Model.Metrics.Dashboard do
       [:is_new, :boolean, false]
     ]
   end
+
+  def macro_schema(:social_link) do
+    [
+      [:title, :string, ""],
+      [:link, :string, ""],
+      [:raw, :string, ""],
+      [:index, :integer, 0]
+    ]
+  end
 end
