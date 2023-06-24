@@ -7,6 +7,21 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Dashboard do
   import GroupherServerWeb.Schema.Helper.Fields, only: [dashboard_args: 1]
 
   object :cms_dashboard_mutations do
+    @desc "update baseinfo in dashboard"
+    field :update_dashboard_base_info, :community do
+      arg(:community, non_null(:string))
+      arg(:dashboard_section, :dashboard_section, default_value: :base_info)
+
+      dashboard_args(:base_info)
+
+      middleware(M.Authorize, :login)
+      # middleware(M.Passport, claim: "cms->community.update")
+
+      # middleware(M.PublishThrottle)
+      # middleware(M.PublishThrottle, interval: 3, hour_limit: 15, day_limit: 30)
+      resolve(&R.CMS.update_dashboard/3)
+    end
+
     @desc "update seo in dashboard"
     field :update_dashboard_seo, :community do
       arg(:community, non_null(:string))

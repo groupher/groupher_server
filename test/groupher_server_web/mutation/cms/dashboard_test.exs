@@ -26,6 +26,44 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
   end
 
   describe "[mutation cms community]" do
+    @update_info_query """
+    mutation($community: String!, $homepage: String, $title: String, $raw: String, $desc: String, $logo: String, $favicon: String) {
+      updateDashboardBaseInfo(community: $community, homepage: $homepage, title: $title, raw: $raw, desc: $desc, logo: $logo, favicon: $favicon) {
+        id
+        title
+
+        dashboard {
+          baseInfo {
+            title
+          }
+        }
+      }
+    }
+    """
+    @tag :wip
+    test "update community dashboard base info", ~m(community)a do
+      rule_conn = simu_conn(:user, cms: %{"community.update" => true})
+
+      variables = %{
+        community: community.raw,
+        title: "groupher",
+        raw: "groupher",
+        homepage: "https://groupher.com",
+        desc: "great community",
+        logo: "logo",
+        favicon: "favicon"
+      }
+
+      updated =
+        rule_conn
+        |> mutation_result(@update_info_query, variables, "updateDashboardBaseInfo")
+
+      {:ok, found} = Community |> ORM.find(updated["id"], preload: :dashboard)
+
+      assert found.dashboard.base_info.title == "groupher"
+      assert found.dashboard.base_info.raw == "groupher"
+    end
+
     @update_seo_query """
     mutation($community: String!, $ogTitle: String, $ogDescription: String) {
       updateDashboardSeo(community: $community, ogTitle: $ogTitle, ogDescription: $ogDescription) {
@@ -34,7 +72,6 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       }
     }
     """
-
     test "update community dashboard seo info", ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
       variables = %{community: community.raw, ogTitle: "new title"}
@@ -309,10 +346,8 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
         title
         dashboard {
           socialLinks {
-            title
+            type
             link
-            raw
-            index
           }
         }
       }
@@ -326,10 +361,8 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
         community: community.raw,
         socialLinks: [
           %{
-            title: "title",
-            link: "link",
-            raw: "raw",
-            index: 1
+            type: "twitter",
+            link: "link"
           }
         ]
       }
@@ -342,16 +375,14 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
           "updateDashboardSocialLinks"
         )
 
-      assert updated["dashboard"]["socialLinks"] |> List.first() |> Map.get("index") == 1
+      assert updated["dashboard"]["socialLinks"] |> List.first() |> Map.get("type") == "twitter"
 
       {:ok, found} = Community |> ORM.find(updated["id"], preload: :dashboard)
 
       link = found.dashboard.social_links |> Enum.at(0)
 
-      assert link.title == "title"
+      assert link.type == "twitter"
       assert link.link == "link"
-      assert link.raw == "raw"
-      assert link.index == 1
     end
   end
 end

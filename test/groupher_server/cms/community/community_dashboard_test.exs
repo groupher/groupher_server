@@ -35,15 +35,20 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert not is_nil(find_community.dashboard)
     end
 
+    @tag :wip
     test "can update base info in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
       {:ok, _} =
-        CMS.update_dashboard(community.raw, :base_info, %{homepage: "https://groupher.com"})
+        CMS.update_dashboard(community.raw, :base_info, %{
+          homepage: "https://groupher.com",
+          raw: "groupher"
+        })
 
       {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
 
       assert find_community.dashboard.base_info.homepage == "https://groupher.com"
+      assert find_community.dashboard.base_info.raw == "groupher"
     end
 
     test "can update seo in community dashboard", ~m(community_attrs)a do
@@ -329,10 +334,8 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       {:ok, _} =
         CMS.update_dashboard(community.raw, :social_links, [
           %{
-            title: "title",
-            link: "https://link.com",
-            raw: "link",
-            index: 1
+            type: "twitter",
+            link: "https://link.com"
           }
         ])
 
@@ -340,9 +343,8 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
 
       first = find_community.dashboard.social_links |> Enum.at(0)
 
-      assert first.title == "title"
+      assert first.type == "twitter"
       assert first.link == "https://link.com"
-      assert first.index == 1
     end
 
     @tag :wip
@@ -353,16 +355,12 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       {:ok, _} =
         CMS.update_dashboard(community.raw, :social_links, [
           %{
-            title: "title",
-            link: "https://link.com",
-            raw: "link",
-            index: 1
+            type: "twitter",
+            link: "https://link.com"
           },
           %{
-            title: "title2",
-            link: "https://link.com",
-            raw: "link2",
-            index: 2
+            type: "zhihu",
+            link: "https://zhihu.com"
           }
         ])
 
@@ -373,16 +371,14 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       first = find_community.dashboard.social_links |> Enum.at(0)
       second = find_community.dashboard.social_links |> Enum.at(1)
 
-      assert first.title == "title"
-      assert second.title == "title2"
+      assert first.type == "twitter"
+      assert second.type == "zhihu"
 
       {:ok, _} =
         CMS.update_dashboard(community.raw, :social_links, [
           %{
-            title: "title3",
-            link: "https://link.com",
-            raw: "link2",
-            index: 3
+            type: "wechat",
+            link: "https://wechat.com"
           }
         ])
 
@@ -390,8 +386,8 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert find_community.dashboard.social_links |> length == 1
 
       third = find_community.dashboard.social_links |> Enum.at(0)
-      assert third.title == "title3"
-      assert third.index == 3
+      assert third.type == "wechat"
+      assert third.link == "https://wechat.com"
     end
   end
 end

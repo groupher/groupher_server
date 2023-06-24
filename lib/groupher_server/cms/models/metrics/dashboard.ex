@@ -13,10 +13,10 @@ defmodule GroupherServer.CMS.Model.Metrics.Dashboard do
       [:post, :boolean, true],
       [:kanban, :boolean, true],
       [:changelog, :boolean, true],
-      # help
-      [:help, :boolean, true],
-      [:help_last_update, :boolean, true],
-      [:help_reaction, :boolean, true],
+      # doc
+      [:doc, :boolean, true],
+      [:doc_last_update, :boolean, true],
+      [:doc_reaction, :boolean, true],
       # about
       [:about, :boolean, true],
       [:about_techstack, :boolean, true],
@@ -31,6 +31,8 @@ defmodule GroupherServer.CMS.Model.Metrics.Dashboard do
       [:favicon, :string, ""],
       [:title, :string, ""],
       [:logo, :string, ""],
+      [:raw, :string, ""],
+      [:desc, :string, ""],
       [:homepage, :string, ""],
       [:city, :string, ""],
       [:techstack, :string, ""]
@@ -46,8 +48,8 @@ defmodule GroupherServer.CMS.Model.Metrics.Dashboard do
       [:primary_color, :string, ""],
       [:post_layout, :string, ""],
       [:kanban_layout, :string, ""],
-      [:help_layout, :string, ""],
-      [:help_faq_layout, :string, ""],
+      [:doc_layout, :string, ""],
+      [:doc_faq_layout, :string, ""],
       [:avatar_layout, :string, ""],
       [:brand_layout, :string, ""],
       [:banner_layout, :string, ""],
@@ -128,10 +130,8 @@ defmodule GroupherServer.CMS.Model.Metrics.Dashboard do
 
   def macro_schema(:social_link) do
     [
-      [:title, :string, ""],
-      [:link, :string, ""],
-      [:raw, :string, ""],
-      [:index, :integer, 0]
+      [:type, :string, ""],
+      [:link, :string, ""]
     ]
   end
 end
