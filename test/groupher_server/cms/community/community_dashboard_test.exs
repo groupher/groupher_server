@@ -39,18 +39,22 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       {:ok, community} = CMS.create_community(community_attrs)
 
       {:ok, _} =
-        CMS.update_dashboard(community.id, :base_info, %{homepage: "https://groupher.com"})
+        CMS.update_dashboard(community.raw, :base_info, %{
+          homepage: "https://groupher.com",
+          raw: "groupher"
+        })
 
       {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
 
       assert find_community.dashboard.base_info.homepage == "https://groupher.com"
+      assert find_community.dashboard.base_info.raw == "groupher"
     end
 
     test "can update seo in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
       {:ok, _} =
-        CMS.update_dashboard(community.id, :seo, %{
+        CMS.update_dashboard(community.raw, :seo, %{
           og_title: "groupher",
           og_description: "forum sass provider"
         })
@@ -65,7 +69,7 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       {:ok, community} = CMS.create_community(community_attrs)
 
       {:ok, _} =
-        CMS.update_dashboard(community.id, :layout, %{
+        CMS.update_dashboard(community.raw, :layout, %{
           post_layout: "upvote_first",
           changelog_layout: "full"
         })
@@ -80,7 +84,7 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       {:ok, community} = CMS.create_community(community_attrs)
 
       {:ok, _} =
-        CMS.update_dashboard(community.id, :rss, %{
+        CMS.update_dashboard(community.raw, :rss, %{
           rss_feed_type: "full",
           rss_feed_count: 25
         })
@@ -95,7 +99,7 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       {:ok, community} = CMS.create_community(community_attrs)
 
       {:ok, _} =
-        CMS.update_dashboard(community.id, :name_alias, [
+        CMS.update_dashboard(community.raw, :name_alias, [
           %{
             raw: "raw",
             name: "name",
@@ -118,7 +122,7 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       {:ok, community} = CMS.create_community(community_attrs)
 
       {:ok, _} =
-        CMS.update_dashboard(community.id, :name_alias, [
+        CMS.update_dashboard(community.raw, :name_alias, [
           %{
             raw: "raw",
             name: "name",
@@ -144,7 +148,7 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert second.raw == "raw2"
 
       {:ok, _} =
-        CMS.update_dashboard(community.id, :name_alias, [
+        CMS.update_dashboard(community.raw, :name_alias, [
           %{
             raw: "raw3",
             name: "name3",
@@ -158,6 +162,229 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
 
       third = find_community.dashboard.name_alias |> Enum.at(0)
       assert third.raw == "raw3"
+    end
+
+    test "can update header links in community dashboard", ~m(community_attrs)a do
+      {:ok, community} = CMS.create_community(community_attrs)
+
+      {:ok, _} =
+        CMS.update_dashboard(community.raw, :header_links, [
+          %{
+            title: "title",
+            link: "link",
+            group: "group",
+            group_index: 1,
+            index: 1,
+            is_hot: false,
+            is_new: false
+          }
+        ])
+
+      {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
+
+      first = find_community.dashboard.header_links |> Enum.at(0)
+
+      assert first.title == "title"
+      assert first.link == "link"
+      assert first.group == "group"
+      assert first.group_index == 1
+    end
+
+    test "should overwirte all header links in community dashboard everytime",
+         ~m(community_attrs)a do
+      {:ok, community} = CMS.create_community(community_attrs)
+
+      {:ok, _} =
+        CMS.update_dashboard(community.raw, :header_links, [
+          %{
+            title: "title",
+            link: "link",
+            group: "group",
+            group_index: 1,
+            index: 1,
+            is_hot: false,
+            is_new: false
+          },
+          %{
+            title: "title2",
+            link: "link2",
+            group: "group2",
+            group_index: 2,
+            index: 2,
+            is_hot: false,
+            is_new: false
+          }
+        ])
+
+      {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
+
+      assert find_community.dashboard.header_links |> length == 2
+
+      first = find_community.dashboard.header_links |> Enum.at(0)
+      second = find_community.dashboard.header_links |> Enum.at(1)
+
+      assert first.title == "title"
+      assert first.group_index == 1
+      assert second.title == "title2"
+      assert second.group_index == 2
+
+      {:ok, _} =
+        CMS.update_dashboard(community.raw, :header_links, [
+          %{
+            title: "title3",
+            link: "link3",
+            group: "group3",
+            index: 1,
+            is_hot: false,
+            is_new: false
+          }
+        ])
+
+      {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
+      assert find_community.dashboard.header_links |> length == 1
+
+      third = find_community.dashboard.header_links |> Enum.at(0)
+      assert third.title == "title3"
+    end
+
+    test "can update footer links in community dashboard", ~m(community_attrs)a do
+      {:ok, community} = CMS.create_community(community_attrs)
+
+      {:ok, _} =
+        CMS.update_dashboard(community.raw, :footer_links, [
+          %{
+            title: "title",
+            link: "link",
+            group: "group",
+            index: 1,
+            is_hot: false,
+            is_new: false
+          }
+        ])
+
+      {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
+
+      first = find_community.dashboard.footer_links |> Enum.at(0)
+
+      assert first.title == "title"
+      assert first.link == "link"
+      assert first.group == "group"
+    end
+
+    test "should overwirte all footer links in community dashboard everytime",
+         ~m(community_attrs)a do
+      {:ok, community} = CMS.create_community(community_attrs)
+
+      {:ok, _} =
+        CMS.update_dashboard(community.raw, :footer_links, [
+          %{
+            title: "title",
+            link: "link",
+            group: "group",
+            index: 1,
+            is_hot: false,
+            is_new: false
+          },
+          %{
+            title: "title2",
+            link: "link2",
+            group: "group2",
+            index: 2,
+            is_hot: false,
+            is_new: false
+          }
+        ])
+
+      {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
+
+      assert find_community.dashboard.footer_links |> length == 2
+
+      first = find_community.dashboard.footer_links |> Enum.at(0)
+      second = find_community.dashboard.footer_links |> Enum.at(1)
+
+      assert first.title == "title"
+      assert second.title == "title2"
+
+      {:ok, _} =
+        CMS.update_dashboard(community.raw, :footer_links, [
+          %{
+            title: "title3",
+            link: "link3",
+            group: "group3",
+            group_index: 3,
+            index: 1,
+            is_hot: false,
+            is_new: false
+          }
+        ])
+
+      {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
+      assert find_community.dashboard.footer_links |> length == 1
+
+      third = find_community.dashboard.footer_links |> Enum.at(0)
+      assert third.title == "title3"
+      assert third.group_index == 3
+    end
+
+    test "can update social links in community dashboard", ~m(community_attrs)a do
+      {:ok, community} = CMS.create_community(community_attrs)
+
+      {:ok, _} =
+        CMS.update_dashboard(community.raw, :social_links, [
+          %{
+            type: "twitter",
+            link: "https://link.com"
+          }
+        ])
+
+      {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
+
+      first = find_community.dashboard.social_links |> Enum.at(0)
+
+      assert first.type == "twitter"
+      assert first.link == "https://link.com"
+    end
+
+    test "should overwirte all social links in community dashboard everytime",
+         ~m(community_attrs)a do
+      {:ok, community} = CMS.create_community(community_attrs)
+
+      {:ok, _} =
+        CMS.update_dashboard(community.raw, :social_links, [
+          %{
+            type: "twitter",
+            link: "https://link.com"
+          },
+          %{
+            type: "zhihu",
+            link: "https://zhihu.com"
+          }
+        ])
+
+      {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
+
+      assert find_community.dashboard.social_links |> length == 2
+
+      first = find_community.dashboard.social_links |> Enum.at(0)
+      second = find_community.dashboard.social_links |> Enum.at(1)
+
+      assert first.type == "twitter"
+      assert second.type == "zhihu"
+
+      {:ok, _} =
+        CMS.update_dashboard(community.raw, :social_links, [
+          %{
+            type: "wechat",
+            link: "https://wechat.com"
+          }
+        ])
+
+      {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
+      assert find_community.dashboard.social_links |> length == 1
+
+      third = find_community.dashboard.social_links |> Enum.at(0)
+      assert third.type == "wechat"
+      assert third.link == "https://wechat.com"
     end
   end
 end

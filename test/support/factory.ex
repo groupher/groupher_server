@@ -235,6 +235,7 @@ defmodule GroupherServer.Support.Factory do
       thread: "POST",
       color: "YELLOW",
       group: "cool",
+      index: 0,
       # community: Faker.Pizza.topping(),
       community: mock(:community),
       author: mock(:author),

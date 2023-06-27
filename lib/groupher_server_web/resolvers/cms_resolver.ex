@@ -42,17 +42,14 @@ defmodule GroupherServerWeb.Resolvers.CMS do
     CMS.update_community(args.id, args)
   end
 
-  def update_dashboard(_root, %{dashboard_section: :name_alias, id: id} = args, _info) do
-    dashboard_args = Map.drop(args, [:id, :dashboard_section]) |> Map.get(:name_alias)
+  def update_dashboard(_root, %{dashboard_section: key, community: community} = args, _info) do
+    dashboard_args =
+      case key in [:header_links, :footer_links, :name_alias, :social_links] do
+        true -> Map.drop(args, [:community, :dashboard_section]) |> Map.get(key)
+        false -> Map.drop(args, [:community, :dashboard_section])
+      end
 
-    CMS.update_dashboard(id, :name_alias, dashboard_args)
-  end
-
-  ## dashboard actions
-  def update_dashboard(_root, %{dashboard_section: key, id: id} = args, _info) do
-    dashboard_args = Map.drop(args, [:id, :dashboard_section])
-
-    CMS.update_dashboard(id, key, dashboard_args)
+    CMS.update_dashboard(community, key, dashboard_args)
   end
 
   def delete_community(_root, %{id: id}, _info), do: Community |> ORM.find_delete!(id)
@@ -277,10 +274,10 @@ defmodule GroupherServerWeb.Resolvers.CMS do
   # #######################
   # tags ..
   # #######################
-  def create_article_tag(_root, %{thread: thread, community_id: community_id} = args, %{
+  def create_article_tag(_root, %{thread: thread, community: community} = args, %{
         context: %{cur_user: user}
       }) do
-    CMS.create_article_tag(%Community{id: community_id}, thread, args, user)
+    CMS.create_article_tag(%Community{raw: community}, thread, args, user)
   end
 
   def update_article_tag(_root, %{id: id} = args, _info) do
@@ -301,6 +298,12 @@ defmodule GroupherServerWeb.Resolvers.CMS do
 
   def paged_article_tags(_root, %{filter: filter}, _info) do
     CMS.paged_article_tags(filter)
+  end
+
+  def reindex_tags_in_group(_root, ~m(community thread group tags)a, _info) do
+    CMS.reindex_tags_in_group(community, thread, group, tags)
+
+    {:ok, %{done: true}}
   end
 
   # #######################

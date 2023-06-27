@@ -169,7 +169,7 @@ defmodule GroupherServerWeb.Middleware.Passport do
     result =
       communities
       |> Enum.filter(fn community ->
-        path = claim |> String.replace("c?", community.title) |> String.split("->")
+        path = claim |> String.replace("c?", community.raw) |> String.split("->")
         get_in(cur_passport, path) == true
       end)
       |> length

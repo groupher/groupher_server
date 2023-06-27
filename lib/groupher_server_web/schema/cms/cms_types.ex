@@ -124,10 +124,17 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
 
   object(:dasbboard_rss, do: dashboard_gq_fields(:rss))
   object(:dasbboard_seo, do: dashboard_gq_fields(:seo))
-  object(:dasbboard_layout, do: dashboard_gq_fields(:layout))
+
+  object :dasbboard_layout do
+    dashboard_gq_fields(:layout)
+    field(:kanban_bg_colors, list_of(:string))
+  end
+
   object(:dasbboard_enable, do: dashboard_gq_fields(:enable))
   object(:dasbboard_base_info, do: dashboard_gq_fields(:base_info))
   object(:dasbboard_name_alias, do: dashboard_gq_fields(:name_alias))
+  object(:dasbboard_link, do: dashboard_gq_fields(:header_link))
+  object(:dasbboard_social_link, do: dashboard_gq_fields(:social_link))
 
   object :dashboard do
     field(:seo, :dasbboard_seo)
@@ -136,6 +143,9 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
     field(:base_info, :dasbboard_base_info)
     field(:rss, :dasbboard_rss)
     field(:name_alias, list_of(:dasbboard_name_alias))
+    field(:header_links, list_of(:dasbboard_link))
+    field(:footer_links, list_of(:dasbboard_link))
+    field(:social_links, list_of(:dasbboard_social_link))
   end
 
   object :community do
@@ -192,6 +202,7 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
     field(:group, :string)
     field(:extra, list_of(:string))
     field(:icon, :string)
+    field(:index, :integer)
 
     field(:author, :user, resolve: dataloader(CMS, :author))
     field(:community, :community, resolve: dataloader(CMS, :community))

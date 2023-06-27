@@ -322,10 +322,20 @@ defmodule Helper.ORM do
     |> Repo.update()
   end
 
-  def update_dashboard(%CommunityDashboard{} = community_dashboard, key, args) do
+  def update_dashboard(%CommunityDashboard{} = community_dashboard, field, args)
+      when field in [:header_links, :footer_links, :name_alias, :social_links] do
     community_dashboard
     |> Ecto.Changeset.change(%{})
-    |> Ecto.Changeset.put_embed(key, args)
+    |> Ecto.Changeset.put_embed(field, args)
+    |> Repo.update()
+  end
+
+  def update_dashboard(%CommunityDashboard{} = community_dashboard, key, args) do
+    merged_args = community_dashboard[key] |> Map.merge(args) |> strip_struct
+
+    community_dashboard
+    |> Ecto.Changeset.change()
+    |> Ecto.Changeset.put_embed(key, merged_args)
     |> Repo.update()
   end
 

@@ -27,7 +27,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleTag do
   """
   def create_article_tag(%Community{} = community, thread, attrs, %User{id: user_id}) do
     with {:ok, author} <- ensure_author_exists(%User{id: user_id}),
-         {:ok, community} <- ORM.find(Community, community.id) do
+         {:ok, community} <- ORM.find_by(Community, raw: community.raw) do
       Multi.new()
       |> Multi.run(:create_article_tag, fn _, _ ->
         update_attrs = %{author_id: author.id, community_id: community.id, thread: thread}
@@ -151,7 +151,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleTag do
   """
   def paged_article_tags(%{page: page, size: size} = filter) do
     ArticleTag
-    |> QueryBuilder.filter_pack(filter)
+    |> QueryBuilder.filter_pack(replace_community_ifneed(filter))
     |> ORM.paginator(~m(page size)a)
     |> done()
   end
@@ -159,9 +159,54 @@ defmodule GroupherServer.CMS.Delegate.ArticleTag do
   # if no page info given, load 100 tags by default
   def paged_article_tags(filter) do
     ArticleTag
-    |> QueryBuilder.filter_pack(filter)
+    |> QueryBuilder.filter_pack(replace_community_ifneed(filter))
     |> ORM.paginator(%{page: 1, size: 100})
     |> done()
+  end
+
+  @doc """
+  reindex tags in spec group
+  """
+  def reindex_tags_in_group(community, thread, group, indexed_tags) do
+    with {:ok, group_tags} <- _find_group_tags(community, thread, group) do
+      group_tags
+      |> Enum.each(fn tag ->
+        target = Enum.find(indexed_tags, fn t -> to_string(t.id) === to_string(tag.id) end)
+
+        tag
+        |> Ecto.Changeset.change(%{index: target.index})
+        |> Repo.update()
+      end)
+
+      {:ok, :pass}
+    end
+  end
+
+  defp _find_group_tags(community, thread, group) do
+    filter = %{community: community, thread: thread} |> atom_values_to_upcase
+
+    ArticleTag
+    |> where([t], t.group == ^group)
+    |> QueryBuilder.filter_pack(replace_community_ifneed(filter))
+    |> Repo.all()
+    |> done
+  end
+
+  # QueryBuilder.filter_pack for community is assoc in communities
+  # if community is has_one logic, need to used this func to make sure
+  # the query is only assoc to community
+  defp replace_community_ifneed(filter) when is_map(filter) do
+    filter
+    |> Enum.map(fn {k, v} ->
+      new_key =
+        case k do
+          :community -> :community_raw
+          _ -> k
+        end
+
+      {new_key, v}
+    end)
+    |> Map.new()
   end
 
   defp result({:ok, %{create_article_tag: result}}), do: {:ok, result}

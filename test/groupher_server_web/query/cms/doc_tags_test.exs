@@ -53,32 +53,18 @@ defmodule GroupherServer.Test.Query.CMS.DocTags do
          ~m(guest_conn community article_tag_attrs user)a do
       {:ok, _article_tag} = CMS.create_article_tag(community, :doc, article_tag_attrs, user)
 
-      variables = %{filter: %{communityId: community.id}}
-      results = guest_conn |> query_result(@query, variables, "pagedArticleTags")
-
-      assert results |> is_valid_pagination?
-      assert results["totalCount"] == 1
-
-      variables = %{filter: %{communityRaw: community.raw}}
+      variables = %{filter: %{community: community.raw}}
       results = guest_conn |> query_result(@query, variables, "pagedArticleTags")
 
       assert results |> is_valid_pagination?
       assert results["totalCount"] == 1
     end
 
-    test "guest user can get tags by communityId and thread",
+    test "guest user can get tags by community and thread",
          ~m(guest_conn community article_tag_attrs user)a do
       {:ok, article_tag} = CMS.create_article_tag(community, :doc, article_tag_attrs, user)
 
-      variables = %{filter: %{communityId: community.id, thread: "DOC"}}
-      results = guest_conn |> query_result(@query, variables, "pagedArticleTags")
-
-      assert results["totalCount"] == 1
-
-      tag = results["entries"] |> List.first()
-      assert tag["id"] == to_string(article_tag.id)
-
-      variables = %{filter: %{communityRaw: community.raw, thread: "DOC"}}
+      variables = %{filter: %{community: community.raw, thread: "DOC"}}
       results = guest_conn |> query_result(@query, variables, "pagedArticleTags")
 
       assert results["totalCount"] == 1

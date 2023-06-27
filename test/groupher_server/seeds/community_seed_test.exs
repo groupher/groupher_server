@@ -98,7 +98,7 @@ defmodule GroupherServer.Test.Seeds.CommunitySeed do
       {:ok, community} = CMS.seed_community("react", :framework)
       {:ok, found} = ORM.find(Community, community.id, preload: [threads: :thread])
 
-      filter = %{community_id: community.id, thread: "POST"}
+      filter = %{community: community.raw, thread: "POST"}
       {:ok, tags} = CMS.paged_article_tags(filter)
       tags_titles = tags |> Enum.map(& &1.title)
 

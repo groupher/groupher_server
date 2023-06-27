@@ -15,6 +15,20 @@ defmodule GroupherServerWeb.Middleware.PassportLoader do
 
   def call(%{errors: errors} = resolution, _) when length(errors) > 0, do: resolution
 
+  def call(
+        %{context: %{cur_user: _}, arguments: %{community: community_raw} = arguments} =
+          resolution,
+        source: :community
+      ) do
+    case ORM.find_by(Community, raw: community_raw) do
+      {:ok, community} ->
+        %{resolution | arguments: Map.put(arguments, :passport_communities, [community])}
+
+      {:error, err_msg} ->
+        resolution |> handle_absinthe_error(err_msg, ecode(:passport))
+    end
+  end
+
   @doc "load community"
   def call(%{context: %{cur_user: _}, arguments: arguments} = resolution, source: :community) do
     case ORM.find(Community, arguments.community_id) do

@@ -37,9 +37,6 @@ defmodule GroupherServerWeb.Schema.CMS.Metrics do
     article_values()
     value(:user)
     # home community
-    value(:tech)
-    value(:city)
-    value(:share)
   end
 
   enum :dashboard_section do
@@ -49,6 +46,9 @@ defmodule GroupherServerWeb.Schema.CMS.Metrics do
     value(:base_info)
     value(:rss)
     value(:name_alias)
+    value(:header_links)
+    value(:footer_links)
+    value(:social_links)
     ## ...
   end
 
@@ -97,17 +97,18 @@ defmodule GroupherServerWeb.Schema.CMS.Metrics do
   end
 
   enum :rainbow_color do
+    value(:black)
+    value(:pink)
     value(:red)
     value(:orange)
     value(:yellow)
+    value(:brown)
     value(:green)
+    value(:green_light)
     value(:cyan)
+    value(:cyan_light)
     value(:blue)
     value(:purple)
-    value(:dodgerblue)
-    value(:yellowgreen)
-    value(:brown)
-    value(:grey)
   end
 
   enum :article_cat_enum do
@@ -158,10 +159,15 @@ defmodule GroupherServerWeb.Schema.CMS.Metrics do
   end
 
   input_object :article_tags_filter do
-    field(:community_id, :id)
-    field(:community_raw, :string)
+    field(:community, :string)
     field(:thread, :thread)
     pagination_args()
+  end
+
+  # for reindex usage
+  input_object :article_tag_index do
+    field(:id, :id)
+    field(:index, :integer)
   end
 
   input_object :paged_filter do
@@ -286,5 +292,13 @@ defmodule GroupherServerWeb.Schema.CMS.Metrics do
 
   input_object :dashboard_alias_map do
     dashboard_gq_fields(:name_alias)
+  end
+
+  input_object :dashboard_link_map do
+    dashboard_gq_fields(:header_link)
+  end
+
+  input_object :dashboard_social_link_map do
+    dashboard_gq_fields(:social_link)
   end
 end
