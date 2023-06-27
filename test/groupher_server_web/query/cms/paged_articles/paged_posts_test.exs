@@ -287,7 +287,7 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedPosts do
       assert not the_post["viewerHasCollected"]
       assert not the_post["viewerHasReported"]
 
-      {:ok, _} = CMS.read_article(post.original_community_raw, :post, post.inner_id, user)
+      {:ok, _} = CMS.read_article(post.original_community_slug, :post, post.inner_id, user)
       {:ok, _} = CMS.upvote_article(:post, post.id, user)
       {:ok, _} = CMS.collect_article(:post, post.id, user)
       {:ok, _} = CMS.report_article(:post, post.id, "reason", "attr_info", user)

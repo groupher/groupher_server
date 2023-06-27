@@ -142,11 +142,11 @@ defmodule Helper.QueryBuilder do
           group_by: q.id
         )
 
-      {:category, catetory_raw}, queryable ->
+      {:category, catetory_slug}, queryable ->
         from(
           q in queryable,
           join: t in assoc(q, :categories),
-          where: t.slug == ^catetory_raw
+          where: t.slug == ^catetory_slug
         )
 
       {:thread, thread}, queryable ->
@@ -179,18 +179,18 @@ defmodule Helper.QueryBuilder do
       {:state, state}, queryable ->
         queryable |> where([p], p.state == ^state)
 
-      {:community_raw, community_raw}, queryable ->
+      {:community_slug, community_slug}, queryable ->
         from(
           q in queryable,
           join: t in assoc(q, :community),
-          where: t.slug == ^community_raw
+          where: t.slug == ^community_slug
         )
 
-      {:community, community_raw}, queryable ->
+      {:community, community_slug}, queryable ->
         from(
           q in queryable,
           join: t in assoc(q, :communities),
-          where: t.slug == ^community_raw
+          where: t.slug == ^community_slug
         )
 
       {:first, first}, queryable ->

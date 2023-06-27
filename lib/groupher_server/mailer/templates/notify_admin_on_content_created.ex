@@ -11,7 +11,7 @@ defmodule GroupherServer.Email.Templates.NotifyAdminOnContentCreated do
         title: title,
         digest: digest,
         id: id,
-        community_raw: community_raw,
+        community_slug: community_slug,
         type: type
       }) do
     """
@@ -245,7 +245,7 @@ defmodule GroupherServer.Email.Templates.NotifyAdminOnContentCreated do
                             </tr>
                             <tr>
                               <td align="center" style="font-size:0px;padding:10px 25px;padding-top:10px;word-break:break-word;">
-                                <div style="font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:16px;font-weight:400;line-height:24px;text-align:center;color:#637381;"> <a class="text-link" href="https://coderplanets.com/#{community_raw}/#{type}/#{id}" style="color: #5e6ebf;">文章地址 -></a> </div>
+                                <div style="font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:16px;font-weight:400;line-height:24px;text-align:center;color:#637381;"> <a class="text-link" href="https://coderplanets.com/#{community_slug}/#{type}/#{id}" style="color: #5e6ebf;">文章地址 -></a> </div>
                               </td>
                             </tr>
                           </table>

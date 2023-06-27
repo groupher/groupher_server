@@ -272,7 +272,7 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedChangelogs do
       assert not the_changelog["viewerHasReported"]
 
       {:ok, _} =
-        CMS.read_article(changelog.original_community_raw, :changelog, changelog.inner_id, user)
+        CMS.read_article(changelog.original_community_slug, :changelog, changelog.inner_id, user)
 
       {:ok, _} = CMS.upvote_article(:changelog, changelog.id, user)
       {:ok, _} = CMS.collect_article(:changelog, changelog.id, user)

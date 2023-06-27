@@ -50,7 +50,7 @@ defmodule GroupherServer.Test.Query.Comments.BlogComment do
 
       {:ok, _} = CMS.create_comment(thread, blog.id, mock_comment(), user2)
 
-      variables = %{community: blog.original_community_raw, id: blog.inner_id}
+      variables = %{community: blog.original_community_slug, id: blog.inner_id}
       results = guest_conn |> query_result(@query, variables, "blog")
 
       comments_participants = results["commentsParticipants"]

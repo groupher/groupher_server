@@ -200,7 +200,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleTag do
     |> Enum.map(fn {k, v} ->
       new_key =
         case k do
-          :community -> :community_raw
+          :community -> :community_slug
           _ -> k
         end
 

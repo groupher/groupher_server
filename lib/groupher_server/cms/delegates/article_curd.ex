@@ -60,15 +60,15 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
   @doc """
   read articles for un-logined user
   """
-  def read_article(community_raw, thread, id) when thread in @article_threads do
-    with {:ok, article} <- check_article_pending(community_raw, thread, id) do
+  def read_article(community_slug, thread, id) when thread in @article_threads do
+    with {:ok, article} <- check_article_pending(community_slug, thread, id) do
       do_read_article(article, thread)
     end
   end
 
-  def read_article(community_raw, thread, id, %User{id: user_id} = user)
+  def read_article(community_slug, thread, id, %User{id: user_id} = user)
       when thread in @article_threads do
-    with {:ok, article} <- check_article_pending(community_raw, thread, id, user) do
+    with {:ok, article} <- check_article_pending(community_slug, thread, id, user) do
       Multi.new()
       |> Multi.run(:normal_read, fn _, _ -> do_read_article(article, thread) end)
       |> Multi.run(:add_viewed_user, fn _, %{normal_read: article} ->
@@ -466,7 +466,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
         title: article.title,
         digest: Map.get(article, :digest, article.title),
         author_name: article.author.user.nickname,
-        community_raw: article.original_community.slug,
+        community_slug: article.original_community.slug,
         type:
           result.__struct__ |> to_string |> String.split(".") |> List.last() |> String.downcase()
       }
@@ -669,9 +669,9 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
     |> result()
   end
 
-  defp check_article_pending(community_raw, thread, id, user)
+  defp check_article_pending(community_slug, thread, id, user)
        when thread in @article_threads do
-    clauses = %{original_community_raw: community_raw, inner_id: id}
+    clauses = %{original_community_slug: community_slug, inner_id: id}
 
     with {:ok, info} <- match(thread),
          {:ok, article} <- ORM.find_by(info.model, clauses, preload: :author) do
@@ -679,9 +679,9 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
     end
   end
 
-  defp check_article_pending(community_raw, thread, id)
+  defp check_article_pending(community_slug, thread, id)
        when thread in @article_threads do
-    clauses = %{original_community_raw: community_raw, inner_id: id}
+    clauses = %{original_community_slug: community_slug, inner_id: id}
 
     with {:ok, info} <- match(thread),
          {:ok, article} <- ORM.find_by(info.model, clauses) do
@@ -786,7 +786,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
          %Author{id: author_id},
          %Community{} = community
        ) do
-    %{id: community_id, meta: community_meta, slug: community_raw} = community
+    %{id: community_id, meta: community_meta, slug: community_slug} = community
 
     threads_name = model |> module_to_atom |> plural
     inner_id = community_meta |> Map.get(:"#{threads_name}_inner_id_index")
@@ -799,7 +799,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
       |> Ecto.Changeset.put_change(:emotions, @default_emotions)
       |> Ecto.Changeset.put_change(:author_id, author_id)
       |> Ecto.Changeset.put_change(:original_community_id, community_id)
-      |> Ecto.Changeset.put_change(:original_community_raw, community_raw)
+      |> Ecto.Changeset.put_change(:original_community_slug, community_slug)
       |> Ecto.Changeset.put_embed(:meta, meta)
       |> Repo.insert()
     end

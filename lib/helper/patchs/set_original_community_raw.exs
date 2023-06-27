@@ -7,7 +7,7 @@ alias GroupherServer.CMS.Model.Post
 
 {:ok, all_posts} =
   Post
-  |> where([p], is_nil(p.original_community_raw))
+  |> where([p], is_nil(p.original_community_slug))
   |> ORM.find_all(%{page: 1, size: 100})
 
 Enum.each(all_posts.entries, fn post ->
@@ -16,8 +16,8 @@ Enum.each(all_posts.entries, fn post ->
   IO.inspect(post.title, label: "post")
   IO.inspect(post.original_community.slug, label: "community")
 
-  case post.original_community_raw do
-    nil -> ORM.update(post, %{original_community_raw: post.original_community.slug})
+  case post.original_community_slug do
+    nil -> ORM.update(post, %{original_community_slug: post.original_community.slug})
     _ -> {:ok, :pass}
   end
 

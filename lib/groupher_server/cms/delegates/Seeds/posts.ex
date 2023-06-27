@@ -19,8 +19,8 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Posts do
   seed communities pragraming languages
   """
   # type: city, pl, framework, ...
-  def seed_posts(community_raw, thread) do
-    with {:ok, community} <- ORM.find_by(Community, slug: community_raw),
+  def seed_posts(community_slug, thread) do
+    with {:ok, community} <- ORM.find_by(Community, slug: community_slug),
          {:ok, user} <- ORM.find(User, 1) do
       attrs = mock_attrs(thread, %{community_id: community.id})
       CMS.create_article(community, thread, attrs, user)

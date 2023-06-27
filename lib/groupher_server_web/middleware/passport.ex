@@ -142,13 +142,13 @@ defmodule GroupherServerWeb.Middleware.Passport do
     cur_passport = resolution.context.cur_user.cur_passport
 
     # community_title = resolution.arguments.passport_communities |> List.first() |> Map.get(:title)
-    community_raw = resolution.arguments.passport_communities |> List.first() |> Map.get(:slug)
+    community_slug = resolution.arguments.passport_communities |> List.first() |> Map.get(:slug)
     thread = resolution.arguments.thread |> to_string
 
     path =
       claim
       # |> String.replace("c?", community_title)
-      |> String.replace("c?", community_raw)
+      |> String.replace("c?", community_slug)
       |> String.replace("t?", thread)
       |> String.split("->")
 

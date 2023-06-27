@@ -22,7 +22,7 @@ defmodule GroupherServer.Test.Query.Articles.Post do
       id
       title
       innerId
-      originalCommunityRaw
+      originalCommunitySlug
       meta {
         isEdited
         isLegal
@@ -39,11 +39,11 @@ defmodule GroupherServer.Test.Query.Articles.Post do
        ~m(user_conn community user post_attrs)a do
     {:ok, post} = CMS.create_article(community, :post, post_attrs, user)
 
-    variables = %{community: post.original_community_raw, id: post.inner_id}
+    variables = %{community: post.original_community_slug, id: post.inner_id}
     results = user_conn |> query_result(@query, variables, "post")
 
     assert results["id"] == to_string(post.id)
-    assert results["originalCommunityRaw"] == post.original_community_raw
+    assert results["originalCommunitySlug"] == post.original_community_slug
 
     assert is_valid_kv?(results, "title", :string)
 
@@ -61,7 +61,7 @@ defmodule GroupherServer.Test.Query.Articles.Post do
        ~m(guest_conn community post_attrs user)a do
     {:ok, post} = CMS.create_article(community, :post, post_attrs, user)
 
-    variables = %{community: post.original_community_raw, id: post.inner_id}
+    variables = %{community: post.original_community_slug, id: post.inner_id}
     results = guest_conn |> query_result(@query, variables, "post")
 
     assert results["id"] == to_string(post.id)
@@ -70,7 +70,7 @@ defmodule GroupherServer.Test.Query.Articles.Post do
 
   test "pending state should in meta", ~m(guest_conn user_conn community user post_attrs)a do
     {:ok, post} = CMS.create_article(community, :post, post_attrs, user)
-    variables = %{community: post.original_community_raw, id: post.inner_id}
+    variables = %{community: post.original_community_slug, id: post.inner_id}
     results = user_conn |> query_result(@query, variables, "post")
 
     assert results |> get_in(["meta", "isLegal"])
