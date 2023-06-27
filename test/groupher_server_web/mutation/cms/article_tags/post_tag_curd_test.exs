@@ -53,8 +53,7 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.PostTagCURD do
       passport_rules = %{community.title => %{"post.article_tag.create" => true}}
       rule_conn = simu_conn(:user, cms: passport_rules)
 
-      created =
-        rule_conn |> mutation_result(@create_tag_query, variables, "createArticleTag", :debug)
+      created = rule_conn |> mutation_result(@create_tag_query, variables, "createArticleTag")
 
       belong_community = created["community"]
 
