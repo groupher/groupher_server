@@ -141,13 +141,12 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.BlogTagCURD do
     end
 
     @delete_tag_query """
-    mutation($id: ID!, $community: String!){
+    mutation($id: ID!, $community: String!, $thread: Thread){
       deleteArticleTag(id: $id, community: $community, thread: $thread) {
         id
       }
     }
     """
-
     test "auth user can delete tag", ~m(article_tag_attrs community user)a do
       {:ok, article_tag} = CMS.create_article_tag(community, :blog, article_tag_attrs, user)
 
