@@ -29,7 +29,7 @@ defmodule GroupherServer.Test.Mutation.Sink.DocSink do
 
     test "login user can sink a doc", ~m(community doc)a do
       variables = %{id: doc.id, communityId: community.id}
-      passport_rules = %{community.raw => %{"doc.sink" => true}}
+      passport_rules = %{community.slug => %{"doc.sink" => true}}
       rule_conn = simu_conn(:user, cms: passport_rules)
 
       result = rule_conn |> mutation_result(@query, variables, "sinkDoc")
@@ -57,7 +57,7 @@ defmodule GroupherServer.Test.Mutation.Sink.DocSink do
     test "login user can undo sink to a doc", ~m(community doc)a do
       variables = %{id: doc.id, communityId: community.id}
 
-      passport_rules = %{community.raw => %{"doc.undo_sink" => true}}
+      passport_rules = %{community.slug => %{"doc.undo_sink" => true}}
       rule_conn = simu_conn(:user, cms: passport_rules)
 
       {:ok, _} = CMS.sink_article(:doc, doc.id)

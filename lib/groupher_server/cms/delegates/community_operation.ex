@@ -150,7 +150,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
   """
   def unsubscribe_community(%Community{id: community_id}, %User{id: user_id}) do
     with {:ok, community} <- ORM.find(Community, community_id),
-         true <- community.raw !== "home" do
+         true <- community.slug !== "home" do
       Multi.new()
       |> Multi.run(:unsubscribed_community, fn _, _ ->
         ORM.findby_delete!(CommunitySubscriber, %{community_id: community.id, user_id: user_id})
@@ -178,7 +178,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
         remote_ip
       ) do
     with {:ok, community} <- ORM.find(Community, community_id),
-         true <- community.raw !== "home" do
+         true <- community.slug !== "home" do
       Multi.new()
       |> Multi.run(:unsubscribed_community, fn _, _ ->
         ORM.findby_delete!(CommunitySubscriber, %{community_id: community.id, user_id: user_id})
@@ -209,7 +209,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
         _remote_ip
       ) do
     with {:ok, community} <- ORM.find(Community, community_id),
-         true <- community.raw !== "home" do
+         true <- community.slug !== "home" do
       Multi.new()
       |> Multi.run(:unsubscribed_community, fn _, _ ->
         ORM.findby_delete!(CommunitySubscriber, %{community_id: community.id, user_id: user_id})
@@ -236,7 +236,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
   """
   # 这里只有一种情况，就是第一次没有解析到 remote_ip, 那么就直接订阅社区, 但不更新自己以及社区的地理信息
   def subscribe_default_community_ifnot(%User{} = user) do
-    with {:ok, community} <- ORM.find_by(Community, raw: "home"),
+    with {:ok, community} <- ORM.find_by(Community, slug: "home"),
          {:error, _} <-
            ORM.find_by(CommunitySubscriber, %{community_id: community.id, user_id: user.id}) do
       subscribe_community(community, user)
@@ -248,7 +248,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
   # 2. 之前已经订阅过，但是之前的 remote_ip 为空
   # 3. 有 remote_ip 但是 geo_city 信息没有解析到
   def subscribe_default_community_ifnot(%User{geo_city: nil} = user, remote_ip) do
-    with {:ok, community} <- ORM.find_by(Community, raw: "home") do
+    with {:ok, community} <- ORM.find_by(Community, slug: "home") do
       case ORM.find_by(CommunitySubscriber, %{community_id: community.id, user_id: user.id}) do
         {:error, _} ->
           # 之前没有订阅过且第一次就解析到了 remote_ip
@@ -263,7 +263,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
 
   # 用户的 geo_city 和 remote_ip 都有了，如果没订阅 home 直接就更新 community geo 即可
   def subscribe_default_community_ifnot(%User{geo_city: city} = user, _remote_ip) do
-    with {:ok, community} <- ORM.find_by(Community, raw: "home") do
+    with {:ok, community} <- ORM.find_by(Community, slug: "home") do
       case ORM.find_by(CommunitySubscriber, %{community_id: community.id, user_id: user.id}) do
         {:error, _} -> update_community_geo_map(community.id, city, :inc)
         # 手续齐全且之前也订阅了

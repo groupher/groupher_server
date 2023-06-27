@@ -228,7 +228,7 @@ defmodule GroupherServer.Test.Mutation.Comments.BlogComment do
 
     test "can lock a blog's comment", ~m(community blog)a do
       variables = %{id: blog.id, communityId: community.id}
-      passport_rules = %{community.raw => %{"blog.lock_comment" => true}}
+      passport_rules = %{community.slug => %{"blog.lock_comment" => true}}
       rule_conn = simu_conn(:user, cms: passport_rules)
 
       result = rule_conn |> mutation_result(@query, variables, "lockBlogComment")
@@ -258,7 +258,7 @@ defmodule GroupherServer.Test.Mutation.Comments.BlogComment do
       assert blog.meta.is_comment_locked
 
       variables = %{id: blog.id, communityId: community.id}
-      passport_rules = %{community.raw => %{"blog.undo_lock_comment" => true}}
+      passport_rules = %{community.slug => %{"blog.undo_lock_comment" => true}}
       rule_conn = simu_conn(:user, cms: passport_rules)
 
       result = rule_conn |> mutation_result(@query, variables, "undoLockBlogComment")

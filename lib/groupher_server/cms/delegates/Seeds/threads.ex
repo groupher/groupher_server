@@ -3,22 +3,22 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Threads do
     [
       # %{
       #   title: "帖子",
-      #   raw: "post",
+      #   slug: "post",
       #   index: 1
       # },
       # %{
       #   title: "博客",
-      #   raw: "blog",
+      #   slug: "blog",
       #   index: 3
       # },
       # %{
       #   title: "CPer",
-      #   raw: "cper",
+      #   slug: "cper",
       #   index: 5
       # }
       # %{
       #   title: "设置",
-      #   raw: "setting",
+      #   slug: "setting",
       #   index: 6
       # }
     ]
@@ -28,17 +28,17 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Threads do
     [
       %{
         title: "帖子",
-        raw: "post",
+        slug: "post",
         index: 1
       },
       %{
         title: "账户",
-        raw: "account",
+        slug: "account",
         index: 2
       },
       %{
         title: "博客",
-        raw: "blog",
+        slug: "blog",
         index: 5
       }
     ]
@@ -48,17 +48,17 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Threads do
     [
       %{
         title: "帖子",
-        raw: "post",
+        slug: "post",
         index: 1
       },
       %{
         title: "看板",
-        raw: "kanban",
+        slug: "kanban",
         index: 2
       },
       %{
         title: "分布",
-        raw: "map",
+        slug: "map",
         index: 3
       }
     ]
@@ -68,17 +68,17 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Threads do
     [
       %{
         title: "帖子",
-        raw: "post",
+        slug: "post",
         index: 1
       },
       %{
         title: "访谈",
-        raw: "interview",
+        slug: "interview",
         index: 3
       }
       # %{
       #   title: "101",
-      #   raw: "101",
+      #   slug: "101",
       #   index: 4
       # },
     ]
@@ -88,7 +88,7 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Threads do
     [
       %{
         title: "帖子",
-        raw: "post",
+        slug: "post",
         index: 1
       }
     ]
@@ -98,7 +98,7 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Threads do
     [
       %{
         title: "帖子",
-        raw: "post",
+        slug: "post",
         index: 1
       }
     ]
@@ -111,34 +111,19 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Threads do
     [
       %{
         title: "帖子",
-        raw: "post",
+        slug: "post",
         index: 1
       },
       %{
         title: "博客",
-        raw: "blog",
+        slug: "blog",
         index: 3
       },
-      # %{
-      #   title: "101",
-      #   raw: "tut",
-      #   index: 4
-      # },
-      # %{
-      #   title: "awesome",
-      #   raw: "awesome",
-      #   index: 5
-      # },
       %{
         title: "分布",
-        raw: "map",
+        slug: "map",
         index: 8
       }
-      # %{
-      #   title: "设置",
-      #   raw: "setting",
-      #   index: 8
-      # }
     ]
   end
 
@@ -146,12 +131,12 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Threads do
     [
       %{
         title: "帖子",
-        raw: "post",
+        slug: "post",
         index: 1
       },
       %{
         title: "团队",
-        raw: "team",
+        slug: "team",
         index: 2
       }
     ]

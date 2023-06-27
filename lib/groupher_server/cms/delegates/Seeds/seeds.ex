@@ -46,11 +46,11 @@ defmodule GroupherServer.CMS.Delegate.Seeds do
   def seed_community(:feedback), do: Domain.seed_community(:feedback)
 
   # type: city, pl, framework, ...
-  def seed_community(raw, type) when type in @community_types do
+  def seed_community(slug, type) when type in @community_types do
     with {:ok, threads} <- seed_threads(type),
          {:ok, bot} <- seed_bot(),
          {:ok, categories} <- seed_categories_ifneed(bot),
-         {:ok, community} <- insert_community(bot, raw, type) do
+         {:ok, community} <- insert_community(bot, slug, type) do
       threadify_communities([community], threads.entries)
       tagfy_threads([community], threads.entries, bot, type)
       categorify_communities([community], categories, type)
@@ -59,16 +59,16 @@ defmodule GroupherServer.CMS.Delegate.Seeds do
     end
   end
 
-  def seed_community(_raw, _type), do: "undown community type"
+  def seed_community(_slug, _type), do: "undown community type"
 
   @doc """
   set list of communities to a spec category
   """
   def seed_set_category(communities_names, cat_name) when is_list(communities_names) do
-    {:ok, category} = ORM.find_by(Category, %{raw: cat_name})
+    {:ok, category} = ORM.find_by(Category, %{slug: cat_name})
 
     Enum.each(communities_names, fn name ->
-      {:ok, community} = ORM.find_by(Community, %{raw: name})
+      {:ok, community} = ORM.find_by(Community, %{slug: name})
 
       {:ok, _} = CMS.set_category(%Community{id: community.id}, %Category{id: category.id})
     end)
@@ -150,8 +150,8 @@ defmodule GroupherServer.CMS.Delegate.Seeds do
     #
   end
 
-  def clean_up_community(raw) do
-    with {:ok, community} <- ORM.findby_delete(Community, %{raw: to_string(raw)}) do
+  def clean_up_community(slug) do
+    with {:ok, community} <- ORM.findby_delete(Community, %{slug: to_string(slug)}) do
       clean_up_articles(community, :post)
     end
   end

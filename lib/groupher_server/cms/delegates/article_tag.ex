@@ -27,7 +27,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleTag do
   """
   def create_article_tag(%Community{} = community, thread, attrs, %User{id: user_id}) do
     with {:ok, author} <- ensure_author_exists(%User{id: user_id}),
-         {:ok, community} <- ORM.find_by(Community, raw: community.raw) do
+         {:ok, community} <- ORM.find_by(Community, slug: community.slug) do
       Multi.new()
       |> Multi.run(:create_article_tag, fn _, _ ->
         update_attrs = %{author_id: author.id, community_id: community.id, thread: thread}

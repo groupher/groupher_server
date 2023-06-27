@@ -28,8 +28,8 @@ defmodule GroupherServer.Test.Mutation.CMS.CRUD do
 
   describe "mutation cms category" do
     @create_category_query """
-    mutation($title: String!, $raw: String!) {
-      createCategory(title: $title, raw: $raw) {
+    mutation($title: String!, $slug: String!) {
+      createCategory(title: $title, slug: $slug) {
         id
         title
         author {
@@ -192,8 +192,8 @@ defmodule GroupherServer.Test.Mutation.CMS.CRUD do
 
   describe "[mutation cms community]" do
     @create_community_query """
-    mutation($title: String!, $desc: String!, $logo: String!, $raw: String!) {
-      createCommunity(title: $title, desc: $desc, logo: $logo, raw: $raw) {
+    mutation($title: String!, $desc: String!, $logo: String!, $slug: String!) {
+      createCommunity(title: $title, desc: $desc, logo: $logo, slug: $slug) {
         id
         title
         desc
@@ -202,7 +202,7 @@ defmodule GroupherServer.Test.Mutation.CMS.CRUD do
         }
         threads {
           title
-          raw
+          slug
           index
         }
       }
@@ -227,31 +227,31 @@ defmodule GroupherServer.Test.Mutation.CMS.CRUD do
         rule_conn |> mutation_result(@create_community_query, variables, "createCommunity")
 
       assert created["threads"] == [
-               %{"index" => 0, "raw" => "post", "title" => "post"},
-               %{"index" => 1, "raw" => "kanban", "title" => "kanban"},
-               %{"index" => 2, "raw" => "changelog", "title" => "changelog"},
-               %{"index" => 3, "raw" => "doc", "title" => "doc"},
-               %{"index" => 4, "raw" => "about", "title" => "about"}
+               %{"index" => 0, "slug" => "post", "title" => "post"},
+               %{"index" => 1, "slug" => "kanban", "title" => "kanban"},
+               %{"index" => 2, "slug" => "changelog", "title" => "changelog"},
+               %{"index" => 3, "slug" => "doc", "title" => "doc"},
+               %{"index" => 4, "slug" => "about", "title" => "about"}
              ]
     end
 
-    test "can create community with some title, different raw" do
+    test "can create community with some title, different slug" do
       rule_conn = simu_conn(:user, cms: %{"community.create" => true})
-      variables = mock_attrs(:community, %{title: "elixir", raw: "elixir1"})
+      variables = mock_attrs(:community, %{title: "elixir", slug: "elixir1"})
       rule_conn |> mutation_result(@create_community_query, variables, "createCommunity")
-      variables = mock_attrs(:community, %{title: "elixir", raw: "elixir2"})
+      variables = mock_attrs(:community, %{title: "elixir", slug: "elixir2"})
       rule_conn |> mutation_result(@create_community_query, variables, "createCommunity")
 
-      {:ok, community} = Community |> ORM.find_by(%{raw: "elixir1"})
+      {:ok, community} = Community |> ORM.find_by(%{slug: "elixir1"})
       assert community.title == "elixir"
 
-      {:ok, community} = Community |> ORM.find_by(%{raw: "elixir2"})
+      {:ok, community} = Community |> ORM.find_by(%{slug: "elixir2"})
       assert community.title == "elixir"
     end
 
-    test "can not create community with some raw" do
+    test "can not create community with some slug" do
       rule_conn = simu_conn(:user, cms: %{"community.create" => true})
-      variables = mock_attrs(:community, %{title: "elixir1", raw: "elixir"})
+      variables = mock_attrs(:community, %{title: "elixir1", slug: "elixir"})
 
       first =
         rule_conn
@@ -259,7 +259,7 @@ defmodule GroupherServer.Test.Mutation.CMS.CRUD do
 
       assert not is_nil(first)
 
-      variables = mock_attrs(:community, %{title: "elixir2", raw: "elixir"})
+      variables = mock_attrs(:community, %{title: "elixir2", slug: "elixir"})
 
       last =
         rule_conn
@@ -319,7 +319,11 @@ defmodule GroupherServer.Test.Mutation.CMS.CRUD do
 
     test "create duplicated community fails", %{community: community} do
       variables =
-        mock_attrs(:community, %{raw: community.raw, title: community.title, desc: community.desc})
+        mock_attrs(:community, %{
+          slug: community.slug,
+          title: community.title,
+          desc: community.desc
+        })
 
       rule_conn = simu_conn(:user, cms: %{"community.create" => true})
 
@@ -367,8 +371,8 @@ defmodule GroupherServer.Test.Mutation.CMS.CRUD do
 
   describe "[mutation cms thread]" do
     @query """
-    mutation($title: String!, $raw: String!){
-      createThread(title: $title, raw: $raw) {
+    mutation($title: String!, $slug: String!){
+      createThread(title: $title, slug: $slug) {
         title
       }
     }
@@ -376,8 +380,8 @@ defmodule GroupherServer.Test.Mutation.CMS.CRUD do
 
     test "auth user can create thread", ~m(user)a do
       title = "post"
-      raw = "POST"
-      variables = ~m(title raw)a
+      slug = "POST"
+      variables = ~m(title slug)a
 
       passport_rules = %{"thread.create" => true}
       rule_conn = simu_conn(:user, user, cms: passport_rules)
@@ -389,8 +393,8 @@ defmodule GroupherServer.Test.Mutation.CMS.CRUD do
 
     test "unauth user create thread fails", ~m(user_conn guest_conn)a do
       title = "psot"
-      raw = "POST"
-      variables = ~m(title raw)a
+      slug = "POST"
+      variables = ~m(title slug)a
       rule_conn = simu_conn(:user, cms: %{"what.ever" => true})
 
       assert user_conn |> mutation_get_error?(@query, variables, ecode(:passport))
@@ -410,8 +414,8 @@ defmodule GroupherServer.Test.Mutation.CMS.CRUD do
     """
     test "auth user can add thread to community", ~m(user community)a do
       title = "psot"
-      raw = title
-      {:ok, thread} = CMS.create_thread(~m(title raw)a)
+      slug = title
+      {:ok, thread} = CMS.create_thread(~m(title slug)a)
       variables = %{threadId: thread.id, communityId: community.id}
 
       passport_rules = %{community.title => %{"thread.set" => true}}
@@ -749,8 +753,8 @@ defmodule GroupherServer.Test.Mutation.CMS.CRUD do
 
   describe "mutation cms community apply" do
     @apply_community_query """
-    mutation($title: String!, $desc: String!, $logo: String!, $raw: String!, $applyMsg: String, $applyCategory: String) {
-      applyCommunity(title: $title, desc: $desc, logo: $logo, raw: $raw, applyMsg: $applyMsg, applyCategory: $applyCategory) {
+    mutation($title: String!, $desc: String!, $logo: String!, $slug: String!, $applyMsg: String, $applyCategory: String) {
+      applyCommunity(title: $title, desc: $desc, logo: $logo, slug: $slug, applyMsg: $applyMsg, applyCategory: $applyCategory) {
         id
         pending
 

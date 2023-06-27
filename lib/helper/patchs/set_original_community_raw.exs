@@ -14,10 +14,10 @@ Enum.each(all_posts.entries, fn post ->
   post = Repo.preload(post, :original_community)
 
   IO.inspect(post.title, label: "post")
-  IO.inspect(post.original_community.raw, label: "community")
+  IO.inspect(post.original_community.slug, label: "community")
 
   case post.original_community_raw do
-    nil -> ORM.update(post, %{original_community_raw: post.original_community.raw})
+    nil -> ORM.update(post, %{original_community_raw: post.original_community.slug})
     _ -> {:ok, :pass}
   end
 

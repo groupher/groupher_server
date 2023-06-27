@@ -18,7 +18,7 @@ defmodule GroupherServer.Test.AssertHelper do
   used for non exsit id
   """
   def non_exsit_id, do: 15_982_398_614
-  def non_exsit_raw, do: "no-exist"
+  def non_exsit_slug, do: "no-exist"
   def non_exsit_login, do: "15_982_398_614"
   # def page_size, do: @page_size
 

@@ -24,71 +24,71 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Tags do
     [
       %{
         title: "求助",
-        raw: "help",
+        slug: "help",
         group: "技术与人文"
       },
       %{
-        raw: "tech",
+        slug: "tech",
         title: "技术",
         group: "技术与人文"
       },
       %{
-        raw: "maker",
+        slug: "maker",
         title: "创作者",
         group: "技术与人文"
       },
       %{
-        raw: "geek",
+        slug: "geek",
         title: "极客",
         group: "技术与人文"
       },
       %{
-        raw: "IxD",
+        slug: "IxD",
         title: "交互设计",
         group: "技术与人文"
       },
       %{
-        raw: "DF",
+        slug: "DF",
         title: "黑暗森林",
         group: "技术与人文"
       },
       %{
-        raw: "thoughts",
+        slug: "thoughts",
         title: "迷思",
         group: "技术与人文"
       },
       %{
-        raw: "city",
+        slug: "city",
         title: "城市",
         group: "生活与职场"
       },
       %{
-        raw: "pantry",
+        slug: "pantry",
         title: "茶水间",
         group: "生活与职场"
       },
       %{
-        raw: "afterwork",
+        slug: "afterwork",
         title: "下班后",
         group: "生活与职场"
       },
       %{
-        raw: "WTF",
+        slug: "WTF",
         title: "吐槽",
         group: "其他"
       },
       %{
-        raw: "REC",
+        slug: "REC",
         title: "推荐",
         group: "其他"
       },
       %{
-        raw: "idea",
+        slug: "idea",
         title: "脑洞",
         group: "其他"
       },
       %{
-        raw: "feedback",
+        slug: "feedback",
         title: "站务",
         group: "其他"
       }
@@ -100,43 +100,43 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Tags do
     [
       %{
         title: "前端",
-        raw: "web"
+        slug: "web"
       },
       %{
         title: "后端开发",
-        raw: "backend"
+        slug: "backend"
       },
       %{
         title: "apple",
-        raw: "apple"
+        slug: "apple"
       },
       %{
         title: "Android",
-        raw: "android"
+        slug: "android"
       },
       %{
         title: "设计",
-        raw: "design"
+        slug: "design"
       },
       %{
         title: "架构",
-        raw: "arch"
+        slug: "arch"
       },
       %{
         title: "人工智能",
-        raw: "ai"
+        slug: "ai"
       },
       %{
         title: "运营",
-        raw: "growth"
+        slug: "growth"
       },
       %{
         title: "生活",
-        raw: "life"
+        slug: "life"
       },
       %{
         title: "其他",
-        raw: "others"
+        slug: "others"
       }
     ]
     |> Enum.map(fn attr -> Map.merge(%{thread: :blog, color: random_color()}, attr) end)
@@ -149,31 +149,31 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Tags do
     [
       %{
         title: "传单",
-        raw: "flyers"
+        slug: "flyers"
       },
       %{
         title: "标题党",
-        raw: "clickbait"
+        slug: "clickbait"
       },
       %{
         title: "封闭平台",
-        raw: "ugly"
+        slug: "ugly"
       },
       %{
         title: "盗版 & 侵权",
-        raw: "pirate"
+        slug: "pirate"
       },
       %{
         title: "水贴",
-        raw: "cheat"
+        slug: "cheat"
       },
       %{
         title: "无法无天",
-        raw: "law"
+        slug: "law"
       },
       %{
         title: "其他",
-        raw: "others"
+        slug: "others"
       }
     ]
     |> Enum.map(fn attr -> Map.merge(%{thread: :post, color: random_color()}, attr) end)
@@ -183,19 +183,19 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Tags do
     [
       %{
         title: "发传单",
-        raw: "flyers"
+        slug: "flyers"
       },
       %{
         title: "负能量",
-        raw: "negative"
+        slug: "negative"
       },
       %{
         title: "滥用权限",
-        raw: "ugly"
+        slug: "ugly"
       },
       %{
         title: "无法无天",
-        raw: "law"
+        slug: "law"
       }
     ]
     |> Enum.map(fn attr -> Map.merge(%{thread: :account, color: random_color()}, attr) end)
@@ -208,47 +208,47 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Tags do
     [
       %{
         title: "Bug",
-        raw: "bug",
+        slug: "bug",
         group: "产品"
       },
       %{
         title: "功能建议",
-        raw: "demand",
+        slug: "demand",
         group: "产品"
       },
       %{
         title: "内容审核",
-        raw: "audit",
+        slug: "audit",
         group: "产品"
       },
       %{
         title: "编辑器",
-        raw: "editor",
+        slug: "editor",
         group: "产品"
       },
       %{
         title: "界面交互",
-        raw: "UI/UX",
+        slug: "UI/UX",
         group: "产品"
       },
       %{
         title: "社区治理",
-        raw: "manage",
+        slug: "manage",
         group: "产品"
       },
       %{
         title: "规章指南",
-        raw: "intro",
+        slug: "intro",
         group: "其他"
       },
       %{
         title: "周报",
-        raw: "devlog",
+        slug: "devlog",
         group: "其他"
       },
       %{
         title: "其他",
-        raw: "others",
+        slug: "others",
         group: "其他"
       }
     ]
@@ -261,19 +261,19 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Tags do
     [
       %{
         title: "发传单",
-        raw: "flyers"
+        slug: "flyers"
       },
       %{
         title: "负能量",
-        raw: "negative"
+        slug: "negative"
       },
       %{
         title: "滥用权限",
-        raw: "ugly"
+        slug: "ugly"
       },
       %{
         title: "无法无天",
-        raw: "law"
+        slug: "law"
       }
     ]
     |> Enum.map(fn attr -> Map.merge(%{thread: :account, color: random_color()}, attr) end)
@@ -286,35 +286,35 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Tags do
     [
       %{
         title: "打听",
-        raw: "ask"
+        slug: "ask"
       },
       %{
         title: "讨论",
-        raw: "hangout"
+        slug: "hangout"
       },
       %{
         title: "下班后",
-        raw: "afterwork"
+        slug: "afterwork"
       },
       %{
         title: "推荐",
-        raw: "REC"
+        slug: "REC"
       },
       %{
         title: "二手",
-        raw: "trade"
+        slug: "trade"
       },
       %{
         title: "吐槽",
-        raw: "WTF"
+        slug: "WTF"
       },
       %{
         title: "求/转/合租",
-        raw: "rent"
+        slug: "rent"
       },
       %{
         title: "奇奇怪怪",
-        raw: "others"
+        slug: "others"
       }
     ]
     |> Enum.map(fn attr -> Map.merge(%{thread: :post, color: random_color()}, attr) end)
@@ -329,32 +329,32 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Tags do
     [
       %{
         title: "求助",
-        raw: "help",
+        slug: "help",
         group: "技术与工程"
       },
       %{
         title: "分享推荐",
-        raw: "REC",
+        slug: "REC",
         group: "技术与工程"
       },
       %{
         title: "讨论",
-        raw: "discuss",
+        slug: "discuss",
         group: "技术与工程"
       },
       %{
         title: "学习资源",
-        raw: "tuts",
+        slug: "tuts",
         group: "技术与工程"
       },
       %{
         title: "杂谈",
-        raw: "others",
+        slug: "others",
         group: "其他"
       },
       %{
         title: "社区事务",
-        raw: "routine",
+        slug: "routine",
         group: "其他"
       }
     ]
@@ -363,39 +363,38 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Tags do
 
   def get(_, :blog, :pl) do
     get(:ignore, :blog, :framework)
-    # get(:ignore, :blog, :framework) |> Enum.reject(&(&1.raw in ["arch", "eco"]))
   end
 
   def get(_, :blog, :framework) do
     [
       %{
         title: "踩坑",
-        raw: "trap",
+        slug: "trap",
         group: "工程"
       },
       %{
         title: "技巧",
-        raw: "tips",
+        slug: "tips",
         group: "工程"
       },
       %{
         title: "重构",
-        raw: "clean-code",
+        slug: "clean-code",
         group: "工程"
       },
       %{
         title: "教程",
-        raw: "tuts",
+        slug: "tuts",
         group: "其他"
       },
       %{
         title: "生态链",
-        raw: "eco",
+        slug: "eco",
         group: "其他"
       },
       %{
         title: "杂谈",
-        raw: "others",
+        slug: "others",
         group: "其他"
       }
     ]
@@ -410,19 +409,19 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Tags do
     [
       %{
         title: "速查表",
-        raw: "cheatsheet"
+        slug: "cheatsheet"
       },
       %{
         title: "Tips",
-        raw: "tips"
+        slug: "tips"
       },
       %{
         title: "工具链",
-        raw: "tooling"
+        slug: "tooling"
       },
       %{
         title: "工具链",
-        raw: "tooling"
+        slug: "tooling"
       }
     ]
     |> Enum.map(fn attr -> Map.merge(%{thread: :tut, color: random_color()}, attr) end)
@@ -434,38 +433,38 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Tags do
   ## 语言与框架 end
 
   @doc "post thread of BLACK community"
-  def get(%Community{raw: "blackhole"}, :post) do
+  def get(%Community{slug: "blackhole"}, :post) do
     [
       %{
         title: "传单",
-        raw: "flyer"
+        slug: "flyer"
       },
       %{
         title: "标题党",
-        raw: "clickbait"
+        slug: "clickbait"
       },
       %{
         title: "封闭平台",
-        raw: "ugly"
+        slug: "ugly"
       },
       %{
-        raw: "pirated",
+        slug: "pirated",
         title: "盗版 & 侵权"
       },
       %{
-        raw: "copycat",
+        slug: "copycat",
         title: "水贴"
       },
       %{
-        raw: "no-good",
+        slug: "no-good",
         title: "坏问题"
       },
       %{
-        raw: "illegal",
+        slug: "illegal",
         title: "无法无天"
       },
       %{
-        raw: "others",
+        slug: "others",
         title: "其他"
       }
     ]
@@ -473,61 +472,61 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Tags do
   end
 
   @doc "post thread of MACKERS community"
-  def get(%Community{raw: "makers"}, :post) do
+  def get(%Community{slug: "makers"}, :post) do
     [
       %{
         title: "求教",
-        raw: "ask",
+        slug: "ask",
         group: "讨论"
       },
       %{
         title: "推荐",
-        raw: "REC",
+        slug: "REC",
         group: "讨论"
       },
       %{
         title: "生活",
-        raw: "life",
+        slug: "life",
         group: "讨论"
       },
       %{
         title: "脑洞",
-        raw: "idea",
+        slug: "idea",
         group: "讨论"
       },
       %{
         title: "打招呼",
-        raw: "say-hey",
+        slug: "say-hey",
         group: "讨论"
       },
       %{
         title: "技术选型",
-        raw: "arch",
+        slug: "arch",
         group: "产品打磨"
       },
       %{
         title: "即时分享",
-        raw: "share",
+        slug: "share",
         group: "产品打磨"
       },
       %{
         title: "App 上架",
-        raw: "app",
+        slug: "app",
         group: "合规问题"
       },
       %{
         title: "合规 & 资质",
-        raw: "law",
+        slug: "law",
         group: "合规问题"
       },
       %{
         title: "域名",
-        raw: "domain",
+        slug: "domain",
         group: "其他"
       },
       %{
         title: "吐槽",
-        raw: "WTF",
+        slug: "WTF",
         group: "其他"
       }
     ]
@@ -535,27 +534,27 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Tags do
   end
 
   @doc "post thread of ADWALL community"
-  def get(%Community{raw: "adwall"}, :post) do
+  def get(%Community{slug: "adwall"}, :post) do
     [
       %{
         title: "产品推广",
-        raw: "advertise"
+        slug: "advertise"
       },
       %{
         title: "推荐 & 抽奖",
-        raw: "discount"
+        slug: "discount"
       },
       %{
         title: "培训 & 课程",
-        raw: "class"
+        slug: "class"
       },
       %{
         title: "资料",
-        raw: "collect"
+        slug: "collect"
       },
       %{
         title: "奇奇怪怪",
-        raw: "others"
+        slug: "others"
       }
     ]
     |> Enum.map(fn attr -> Map.merge(%{thread: :post, color: random_color()}, attr) end)

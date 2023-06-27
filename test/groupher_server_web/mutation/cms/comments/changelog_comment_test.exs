@@ -231,7 +231,7 @@ defmodule GroupherServer.Test.Mutation.Comments.ChangelogComment do
 
     test "can lock a changelog's comment", ~m(community changelog)a do
       variables = %{id: changelog.id, communityId: community.id}
-      passport_rules = %{community.raw => %{"changelog.lock_comment" => true}}
+      passport_rules = %{community.slug => %{"changelog.lock_comment" => true}}
       rule_conn = simu_conn(:user, cms: passport_rules)
 
       result = rule_conn |> mutation_result(@query, variables, "lockChangelogComment")
@@ -261,7 +261,7 @@ defmodule GroupherServer.Test.Mutation.Comments.ChangelogComment do
       assert changelog.meta.is_comment_locked
 
       variables = %{id: changelog.id, communityId: community.id}
-      passport_rules = %{community.raw => %{"changelog.undo_lock_comment" => true}}
+      passport_rules = %{community.slug => %{"changelog.undo_lock_comment" => true}}
       rule_conn = simu_conn(:user, cms: passport_rules)
 
       result = rule_conn |> mutation_result(@query, variables, "undoLockChangelogComment")

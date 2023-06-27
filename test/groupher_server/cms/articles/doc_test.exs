@@ -88,7 +88,7 @@ defmodule GroupherServer.Test.CMS.Articles.Doc do
     test "created doc should have original_community info", ~m(user community doc_attrs)a do
       {:ok, doc} = CMS.create_article(community, :doc, doc_attrs, user)
 
-      assert doc.original_community_raw == community.raw
+      assert doc.original_community_raw == community.slug
       assert doc.original_community_id == community.id
     end
 
@@ -182,7 +182,7 @@ defmodule GroupherServer.Test.CMS.Articles.Doc do
 
     test "create doc with an non-exsit community fails", ~m(user)a do
       invalid_attrs = mock_attrs(:doc, %{community_id: non_exsit_id()})
-      ivalid_community = %Community{id: non_exsit_id(), raw: non_exsit_raw()}
+      ivalid_community = %Community{id: non_exsit_id(), slug: non_exsit_slug()}
 
       assert {:error, _} = CMS.create_article(ivalid_community, :doc, invalid_attrs, user)
     end

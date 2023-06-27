@@ -62,7 +62,7 @@ defmodule GroupherServer.Test.CMS.Search do
   describe "[cms search community with category]" do
     test "community with category can be searched" do
       {:ok, community} = db_insert(:community, %{title: "cool-pl"})
-      {:ok, category} = db_insert(:category, %{raw: "pl"})
+      {:ok, category} = db_insert(:category, %{slug: "pl"})
 
       {:ok, _} = CMS.set_category(community, category)
 

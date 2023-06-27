@@ -130,14 +130,14 @@ defmodule Helper.QueryBuilder do
         from(
           q in queryable,
           join: t in assoc(q, :article_tags),
-          where: t.raw == ^tag_name
+          where: t.slug == ^tag_name
         )
 
       {:article_tags, tag_name_list}, queryable ->
         from(
           q in queryable,
           join: t in assoc(q, :article_tags),
-          where: t.raw in ^tag_name_list,
+          where: t.slug in ^tag_name_list,
           distinct: q.id,
           group_by: q.id
         )
@@ -146,7 +146,7 @@ defmodule Helper.QueryBuilder do
         from(
           q in queryable,
           join: t in assoc(q, :categories),
-          where: t.raw == ^catetory_raw
+          where: t.slug == ^catetory_raw
         )
 
       {:thread, thread}, queryable ->
@@ -183,14 +183,14 @@ defmodule Helper.QueryBuilder do
         from(
           q in queryable,
           join: t in assoc(q, :community),
-          where: t.raw == ^community_raw
+          where: t.slug == ^community_raw
         )
 
       {:community, community_raw}, queryable ->
         from(
           q in queryable,
           join: t in assoc(q, :communities),
-          where: t.raw == ^community_raw
+          where: t.slug == ^community_raw
         )
 
       {:first, first}, queryable ->

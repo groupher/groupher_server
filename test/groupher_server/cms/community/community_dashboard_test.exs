@@ -28,7 +28,7 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
     end
 
     test "read a exist community should have default dashboard field", ~m(community)a do
-      {:ok, community} = CMS.read_community(community.raw)
+      {:ok, community} = CMS.read_community(community.slug)
 
       {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
 
@@ -39,22 +39,22 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       {:ok, community} = CMS.create_community(community_attrs)
 
       {:ok, _} =
-        CMS.update_dashboard(community.raw, :base_info, %{
+        CMS.update_dashboard(community.slug, :base_info, %{
           homepage: "https://groupher.com",
-          raw: "groupher"
+          slug: "groupher"
         })
 
       {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
 
       assert find_community.dashboard.base_info.homepage == "https://groupher.com"
-      assert find_community.dashboard.base_info.raw == "groupher"
+      assert find_community.dashboard.base_info.slug == "groupher"
     end
 
     test "can update seo in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
       {:ok, _} =
-        CMS.update_dashboard(community.raw, :seo, %{
+        CMS.update_dashboard(community.slug, :seo, %{
           og_title: "groupher",
           og_description: "forum sass provider"
         })
@@ -69,7 +69,7 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       {:ok, community} = CMS.create_community(community_attrs)
 
       {:ok, _} =
-        CMS.update_dashboard(community.raw, :layout, %{
+        CMS.update_dashboard(community.slug, :layout, %{
           post_layout: "upvote_first",
           changelog_layout: "full"
         })
@@ -84,7 +84,7 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       {:ok, community} = CMS.create_community(community_attrs)
 
       {:ok, _} =
-        CMS.update_dashboard(community.raw, :rss, %{
+        CMS.update_dashboard(community.slug, :rss, %{
           rss_feed_type: "full",
           rss_feed_count: 25
         })
@@ -99,9 +99,9 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       {:ok, community} = CMS.create_community(community_attrs)
 
       {:ok, _} =
-        CMS.update_dashboard(community.raw, :name_alias, [
+        CMS.update_dashboard(community.slug, :name_alias, [
           %{
-            raw: "raw",
+            slug: "slug",
             name: "name",
             original: "original",
             group: "group"
@@ -112,7 +112,7 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
 
       first = find_community.dashboard.name_alias |> Enum.at(0)
 
-      assert first.raw == "raw"
+      assert first.slug == "slug"
       assert first.name == "name"
       assert first.original == "original"
       assert first.group == "group"
@@ -122,15 +122,15 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       {:ok, community} = CMS.create_community(community_attrs)
 
       {:ok, _} =
-        CMS.update_dashboard(community.raw, :name_alias, [
+        CMS.update_dashboard(community.slug, :name_alias, [
           %{
-            raw: "raw",
+            slug: "slug",
             name: "name",
             original: "original",
             group: "group"
           },
           %{
-            raw: "raw2",
+            slug: "raw2",
             name: "name2",
             original: "original2",
             group: "group2"
@@ -144,13 +144,13 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       first = find_community.dashboard.name_alias |> Enum.at(0)
       second = find_community.dashboard.name_alias |> Enum.at(1)
 
-      assert first.raw == "raw"
-      assert second.raw == "raw2"
+      assert first.slug == "slug"
+      assert second.slug == "raw2"
 
       {:ok, _} =
-        CMS.update_dashboard(community.raw, :name_alias, [
+        CMS.update_dashboard(community.slug, :name_alias, [
           %{
-            raw: "raw3",
+            slug: "raw3",
             name: "name3",
             original: "original3",
             group: "group3"
@@ -161,14 +161,14 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert find_community.dashboard.name_alias |> length == 1
 
       third = find_community.dashboard.name_alias |> Enum.at(0)
-      assert third.raw == "raw3"
+      assert third.slug == "raw3"
     end
 
     test "can update header links in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
       {:ok, _} =
-        CMS.update_dashboard(community.raw, :header_links, [
+        CMS.update_dashboard(community.slug, :header_links, [
           %{
             title: "title",
             link: "link",
@@ -195,7 +195,7 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       {:ok, community} = CMS.create_community(community_attrs)
 
       {:ok, _} =
-        CMS.update_dashboard(community.raw, :header_links, [
+        CMS.update_dashboard(community.slug, :header_links, [
           %{
             title: "title",
             link: "link",
@@ -229,7 +229,7 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert second.group_index == 2
 
       {:ok, _} =
-        CMS.update_dashboard(community.raw, :header_links, [
+        CMS.update_dashboard(community.slug, :header_links, [
           %{
             title: "title3",
             link: "link3",
@@ -251,7 +251,7 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       {:ok, community} = CMS.create_community(community_attrs)
 
       {:ok, _} =
-        CMS.update_dashboard(community.raw, :footer_links, [
+        CMS.update_dashboard(community.slug, :footer_links, [
           %{
             title: "title",
             link: "link",
@@ -276,7 +276,7 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       {:ok, community} = CMS.create_community(community_attrs)
 
       {:ok, _} =
-        CMS.update_dashboard(community.raw, :footer_links, [
+        CMS.update_dashboard(community.slug, :footer_links, [
           %{
             title: "title",
             link: "link",
@@ -306,7 +306,7 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert second.title == "title2"
 
       {:ok, _} =
-        CMS.update_dashboard(community.raw, :footer_links, [
+        CMS.update_dashboard(community.slug, :footer_links, [
           %{
             title: "title3",
             link: "link3",
@@ -330,7 +330,7 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       {:ok, community} = CMS.create_community(community_attrs)
 
       {:ok, _} =
-        CMS.update_dashboard(community.raw, :social_links, [
+        CMS.update_dashboard(community.slug, :social_links, [
           %{
             type: "twitter",
             link: "https://link.com"
@@ -350,7 +350,7 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       {:ok, community} = CMS.create_community(community_attrs)
 
       {:ok, _} =
-        CMS.update_dashboard(community.raw, :social_links, [
+        CMS.update_dashboard(community.slug, :social_links, [
           %{
             type: "twitter",
             link: "https://link.com"
@@ -372,7 +372,7 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert second.type == "zhihu"
 
       {:ok, _} =
-        CMS.update_dashboard(community.raw, :social_links, [
+        CMS.update_dashboard(community.slug, :social_links, [
           %{
             type: "wechat",
             link: "https://wechat.com"

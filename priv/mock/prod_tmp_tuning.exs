@@ -13,7 +13,7 @@ alias Converter.Article
 alias CMS.Delegate.{Document, Seeds}
 alias Seeds.Prod.Turning
 
-# {:ok, community} = ORM.find_by(Community, %{raw: "home"})
+# {:ok, community} = ORM.find_by(Community, %{slug: "home"})
 # {:ok, user} = ORM.find_by(User, %{login: "hello you"})
 
 {:ok, _} = CMS.move_article(:post, 242, 105)
@@ -167,7 +167,7 @@ alias Seeds.Prod.Turning
 # markdown to editor-json
 
 # 设置某一个志愿者
-# {:ok, home_community} = ORM.find_by(Community, %{raw: "home"})
+# {:ok, home_community} = ORM.find_by(Community, %{slug: "home"})
 # {:ok, me} = ORM.find_by(User, %{login: "mydearxym"})
 # {:ok, _community} = CMS.set_editor(home_community, "volunteer", me)
 

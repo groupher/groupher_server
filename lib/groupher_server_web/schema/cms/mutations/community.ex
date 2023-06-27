@@ -9,7 +9,7 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
     field :create_community, :community do
       arg(:title, non_null(:string))
       arg(:desc, non_null(:string))
-      arg(:raw, non_null(:string))
+      arg(:slug, non_null(:string))
       arg(:logo, non_null(:string))
 
       middleware(M.Authorize, :login)
@@ -24,7 +24,7 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
       arg(:id, non_null(:id))
       arg(:title, :string)
       arg(:desc, :string)
-      arg(:raw, :string)
+      arg(:slug, :string)
       arg(:logo, :string)
 
       middleware(M.Authorize, :login)
@@ -46,7 +46,7 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
     field :apply_community, :community do
       arg(:title, non_null(:string))
       arg(:desc, non_null(:string))
-      arg(:raw, non_null(:string))
+      arg(:slug, non_null(:string))
       arg(:logo, non_null(:string))
       arg(:apply_msg, :string)
       arg(:apply_category, :string)
@@ -76,7 +76,7 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
     @desc "create category"
     field :create_category, :category do
       arg(:title, non_null(:string))
-      arg(:raw, non_null(:string))
+      arg(:slug, non_null(:string))
 
       middleware(M.Authorize, :login)
       middleware(M.Passport, claim: "cms->category.create")
@@ -108,7 +108,7 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
     @desc "create independent thread"
     field :create_thread, :thread_item do
       arg(:title, non_null(:string))
-      arg(:raw, non_null(:string))
+      arg(:slug, non_null(:string))
       arg(:index, :integer, default_value: 0)
 
       middleware(M.Authorize, :login)
@@ -159,7 +159,7 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
     @desc "create a tag"
     field :create_article_tag, :article_tag do
       arg(:title, non_null(:string))
-      arg(:raw, non_null(:string))
+      arg(:slug, non_null(:string))
       arg(:color, non_null(:rainbow_color))
       arg(:community, non_null(:string))
       arg(:group, :string)
@@ -179,7 +179,7 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
       arg(:id, non_null(:id))
       arg(:community, non_null(:string))
       arg(:title, :string)
-      arg(:raw, :string)
+      arg(:slug, :string)
       arg(:color, :rainbow_color)
       arg(:group, :string)
       arg(:thread, :thread, default_value: :post)

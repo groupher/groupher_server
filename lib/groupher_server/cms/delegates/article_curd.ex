@@ -157,10 +157,10 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
   @doc """
   get grouped kanban posts for a community, only for first load of kanban page
   """
-  def grouped_kanban_posts(community_raw) do
+  def grouped_kanban_posts(community_slug) do
     filter = %{page: 1, size: 20}
 
-    with {:ok, community} <- ORM.find_by(Community, raw: community_raw),
+    with {:ok, community} <- ORM.find_by(Community, slug: community_slug),
          {:ok, paged_todo} <-
            paged_kanban_posts(community, Map.merge(filter, %{state: @article_state.todo})),
          {:ok, paged_wip} <-
@@ -202,8 +202,8 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
     |> done()
   end
 
-  def paged_kanban_posts(community_raw, filter) do
-    with {:ok, community} <- ORM.find_by(Community, raw: community_raw) do
+  def paged_kanban_posts(community_slug, filter) do
+    with {:ok, community} <- ORM.find_by(Community, slug: community_slug) do
       paged_kanban_posts(community, filter)
     end
   end
@@ -396,18 +396,18 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
   iex> create_article(community, :post, %{title: ...}, user)
   {:ok, %Post{}}
   """
-  def create_article(%Community{raw: nil, id: id}, thread, attrs, user) do
+  def create_article(%Community{slug: nil, id: id}, thread, attrs, user) do
     with {:ok, community} <- ORM.find(Community, id) do
       create_article(community, thread, attrs, user)
     end
   end
 
-  def create_article(%Community{raw: craw}, thread, attrs, %User{id: uid}) do
+  def create_article(%Community{slug: cslug}, thread, attrs, %User{id: uid}) do
     attrs = atom_values_to_upcase(attrs)
 
     with {:ok, author} <- ensure_author_exists(%User{id: uid}),
          {:ok, info} <- match(thread),
-         {:ok, community} <- CMS.read_community(craw) do
+         {:ok, community} <- CMS.read_community(cslug) do
       Multi.new()
       |> Multi.run(:create_article, fn _, _ ->
         do_create_article(info.model, attrs, author, community)
@@ -466,7 +466,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
         title: article.title,
         digest: Map.get(article, :digest, article.title),
         author_name: article.author.user.nickname,
-        community_raw: article.original_community.raw,
+        community_raw: article.original_community.slug,
         type:
           result.__struct__ |> to_string |> String.split(".") |> List.last() |> String.downcase()
       }
@@ -735,7 +735,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
            PinnedArticle
            |> join(:inner, [p], c in assoc(p, :community))
            |> join(:inner, [p], article in assoc(p, ^thread))
-           |> where([p, c, article], c.raw == ^community)
+           |> where([p, c, article], c.slug == ^community)
            |> select([p, c, article], article)
            # 10 pinned articles per community/thread, at most
            |> ORM.find_all(%{page: 1, size: 10}) do
@@ -786,7 +786,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
          %Author{id: author_id},
          %Community{} = community
        ) do
-    %{id: community_id, meta: community_meta, raw: community_raw} = community
+    %{id: community_id, meta: community_meta, slug: community_raw} = community
 
     threads_name = model |> module_to_atom |> plural
     inner_id = community_meta |> Map.get(:"#{threads_name}_inner_id_index")

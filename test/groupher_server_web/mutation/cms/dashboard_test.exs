@@ -27,8 +27,8 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
 
   describe "[mutation cms community]" do
     @update_info_query """
-    mutation($community: String!, $homepage: String, $title: String, $raw: String, $desc: String, $logo: String, $favicon: String) {
-      updateDashboardBaseInfo(community: $community, homepage: $homepage, title: $title, raw: $raw, desc: $desc, logo: $logo, favicon: $favicon) {
+    mutation($community: String!, $homepage: String, $title: String, $slug: String, $desc: String, $logo: String, $favicon: String) {
+      updateDashboardBaseInfo(community: $community, homepage: $homepage, title: $title, slug: $slug, desc: $desc, logo: $logo, favicon: $favicon) {
         id
         title
 
@@ -44,9 +44,9 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
 
       variables = %{
-        community: community.raw,
+        community: community.slug,
         title: "groupher",
-        raw: "groupher",
+        slug: "groupher",
         homepage: "https://groupher.com",
         desc: "great community",
         logo: "logo",
@@ -60,7 +60,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       {:ok, found} = Community |> ORM.find(updated["id"], preload: :dashboard)
 
       assert found.dashboard.base_info.title == "groupher"
-      assert found.dashboard.base_info.raw == "groupher"
+      assert found.dashboard.base_info.slug == "groupher"
     end
 
     @update_seo_query """
@@ -73,7 +73,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
     """
     test "update community dashboard seo info", ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
-      variables = %{community: community.raw, ogTitle: "new title"}
+      variables = %{community: community.slug, ogTitle: "new title"}
 
       updated = rule_conn |> mutation_result(@update_seo_query, variables, "updateDashboardSeo")
 
@@ -92,7 +92,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
 
     test "update community dashboard enable info", ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
-      variables = %{community: community.raw, post: false, changelog: true}
+      variables = %{community: community.slug, post: false, changelog: true}
 
       updated =
         rule_conn |> mutation_result(@update_enable_query, variables, "updateDashboardEnable")
@@ -120,7 +120,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
 
       variables = %{
-        community: community.raw,
+        community: community.slug,
         postLayout: "new layout",
         broadcastEnable: true,
         kanbanLayout: "full",
@@ -146,7 +146,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
 
       variables = %{
-        community: community.raw,
+        community: community.slug,
         postLayout: "new layout"
       }
 
@@ -160,7 +160,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       assert found.dashboard.layout.kanban_layout == ""
 
       variables = %{
-        community: community.raw,
+        community: community.slug,
         kanbanLayout: "full"
       }
 
@@ -187,7 +187,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
 
       variables = %{
-        community: community.raw,
+        community: community.slug,
         rssFeedType: "digest",
         rssFeedCount: 22
       }
@@ -215,10 +215,10 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
 
       variables = %{
-        community: community.raw,
+        community: community.slug,
         nameAlias: [
           %{
-            raw: "raw",
+            slug: "slug",
             name: "name",
             original: "original",
             group: "group"
@@ -234,7 +234,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
 
       found_alias = found.dashboard.name_alias |> Enum.at(0)
 
-      assert found_alias.raw == "raw"
+      assert found_alias.slug == "slug"
       assert found_alias.name == "name"
       assert found_alias.group == "group"
     end
@@ -257,7 +257,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
 
       variables = %{
-        community: community.raw,
+        community: community.slug,
         headerLinks: [
           %{
             title: "title",
@@ -307,7 +307,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
 
       variables = %{
-        community: community.raw,
+        community: community.slug,
         footerLinks: [
           %{
             title: "title",
@@ -356,7 +356,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
 
       variables = %{
-        community: community.raw,
+        community: community.slug,
         socialLinks: [
           %{
             type: "twitter",

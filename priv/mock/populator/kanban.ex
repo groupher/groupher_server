@@ -5,11 +5,11 @@ defmodule GroupherServer.Mock.CMS.Kanban do
 
   alias Helper.ORM
 
-  # {:ok, community} = ORM.find_by(Community, %{raw: "home"})
+  # {:ok, community} = ORM.find_by(Community, %{slug: "home"})
   # IO.inspect community
 
   def find_community do
-    # {:ok, community} = ORM.find_by(Community, %{raw: "home"})
+    # {:ok, community} = ORM.find_by(Community, %{slug: "home"})
   end
 
   # post_attrs = mock_attrs(:post, %{community_id: community.id})

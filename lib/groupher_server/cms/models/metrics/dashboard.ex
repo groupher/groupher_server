@@ -31,7 +31,7 @@ defmodule GroupherServer.CMS.Model.Metrics.Dashboard do
       [:favicon, :string, ""],
       [:title, :string, ""],
       [:logo, :string, ""],
-      [:raw, :string, ""],
+      [:slug, :string, ""],
       [:desc, :string, ""],
       [:homepage, :string, ""],
       [:city, :string, ""],
@@ -97,7 +97,7 @@ defmodule GroupherServer.CMS.Model.Metrics.Dashboard do
 
   def macro_schema(:name_alias) do
     [
-      [:raw, :string, ""],
+      [:slug, :string, ""],
       [:name, :string, ""],
       [:original, :string, ""],
       [:group, :string, ""]

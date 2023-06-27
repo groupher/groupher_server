@@ -28,14 +28,14 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Domain do
   seed community for home
   """
   def seed_community(:home) do
-    with {:error, _} <- ORM.find_by(Community, %{raw: "home"}),
+    with {:error, _} <- ORM.find_by(Community, %{slug: "home"}),
          {:ok, bot} <- seed_bot(),
          {:ok, threads} <- seed_threads(:home) do
       args = %{
         title: "Groupher",
         desc: "让你的产品聆听用户的声音",
         logo: "https://assets.groupher.com/communities/groupher-alpha.png",
-        raw: "home",
+        slug: "home",
         user_id: bot.id
       }
 
@@ -52,7 +52,7 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Domain do
   seed community for blackhole
   """
   def seed_community(:blackhole) do
-    with {:error, _} <- ORM.find_by(Community, %{raw: "blackhole"}),
+    with {:error, _} <- ORM.find_by(Community, %{slug: "blackhole"}),
          {:ok, bot} <- seed_bot(),
          {:ok, threads} <- seed_threads(:blackhole),
          {:ok, categories} <- seed_categories_ifneed(bot) do
@@ -60,7 +60,7 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Domain do
         title: "黑洞",
         desc: "这里收录不适合出现在本站的内容。",
         logo: "#{@oss_endpoint}/icons/cmd/keyboard_logo.png",
-        raw: "blackhole",
+        slug: "blackhole",
         user_id: bot.id
       }
 
@@ -77,7 +77,7 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Domain do
   seed community for feedback
   """
   def seed_community(:feedback) do
-    with {:error, _} <- ORM.find_by(Community, %{raw: "feedback"}),
+    with {:error, _} <- ORM.find_by(Community, %{slug: "feedback"}),
          {:ok, bot} <- seed_bot(),
          {:ok, threads} <- seed_threads(:feedback),
          {:ok, categories} <- seed_categories_ifneed(bot) do
@@ -85,7 +85,7 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Domain do
         title: "反馈与建议",
         desc: "关于本站的建议和反馈请发布在这里，谢谢。",
         logo: "#{@oss_endpoint}/icons/cmd/keyboard_logo.png",
-        raw: "feedback",
+        slug: "feedback",
         user_id: bot.id
       }
 

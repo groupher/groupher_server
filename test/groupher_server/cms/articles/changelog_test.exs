@@ -90,7 +90,7 @@ defmodule GroupherServer.Test.CMS.Articles.Changelog do
          ~m(user community changelog_attrs)a do
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
 
-      assert changelog.original_community_raw == community.raw
+      assert changelog.original_community_raw == community.slug
       assert changelog.original_community_id == community.id
     end
 
@@ -195,7 +195,7 @@ defmodule GroupherServer.Test.CMS.Articles.Changelog do
 
     test "create changelog with an non-exsit community fails", ~m(user)a do
       invalid_attrs = mock_attrs(:changelog, %{community_id: non_exsit_id()})
-      ivalid_community = %Community{id: non_exsit_id(), raw: non_exsit_raw()}
+      ivalid_community = %Community{id: non_exsit_id(), slug: non_exsit_slug()}
 
       assert {:error, _} = CMS.create_article(ivalid_community, :changelog, invalid_attrs, user)
     end

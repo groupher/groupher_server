@@ -17,12 +17,12 @@ defmodule GroupherServerWeb.Resolvers.CMS do
   # #######################
   # community ..
   # #######################
-  def community(_root, %{raw: raw}, %{context: %{cur_user: user}}) do
-    CMS.read_community(raw, user)
+  def community(_root, %{slug: slug}, %{context: %{cur_user: user}}) do
+    CMS.read_community(slug, user)
   end
 
-  def community(_root, %{raw: raw}, _info) do
-    CMS.read_community(raw)
+  def community(_root, %{slug: slug}, _info) do
+    CMS.read_community(slug)
   end
 
   def paged_communities(_root, ~m(filter)a, %{context: %{cur_user: user}}) do
@@ -67,8 +67,8 @@ defmodule GroupherServerWeb.Resolvers.CMS do
     CMS.deny_community_apply(id)
   end
 
-  def is_community_exist?(_root, %{raw: raw}, _) do
-    CMS.is_community_exist?(raw)
+  def is_community_exist?(_root, %{slug: slug}, _) do
+    CMS.is_community_exist?(slug)
   end
 
   def has_pending_community_apply?(_root, _, %{context: %{cur_user: user}}) do
@@ -211,8 +211,8 @@ defmodule GroupherServerWeb.Resolvers.CMS do
   # #######################
   def paged_categories(_root, ~m(filter)a, _info), do: Category |> ORM.find_all(filter)
 
-  def create_category(_root, ~m(title raw)a, %{context: %{cur_user: user}}) do
-    CMS.create_category(%{title: title, raw: raw}, user)
+  def create_category(_root, ~m(title slug)a, %{context: %{cur_user: user}}) do
+    CMS.create_category(%{title: title, slug: slug}, user)
   end
 
   def delete_category(_root, %{id: id}, _info), do: Category |> ORM.find_delete!(id)
@@ -234,8 +234,8 @@ defmodule GroupherServerWeb.Resolvers.CMS do
   # #######################
   def paged_threads(_root, ~m(filter)a, _info), do: Thread |> ORM.find_all(filter)
 
-  def create_thread(_root, ~m(title raw index)a, _info),
-    do: CMS.create_thread(~m(title raw index)a)
+  def create_thread(_root, ~m(title slug index)a, _info),
+    do: CMS.create_thread(~m(title slug index)a)
 
   def set_thread(_root, ~m(community_id thread_id)a, _info) do
     CMS.set_thread(%Community{id: community_id}, %Thread{id: thread_id})
@@ -277,7 +277,7 @@ defmodule GroupherServerWeb.Resolvers.CMS do
   def create_article_tag(_root, %{thread: thread, community: community} = args, %{
         context: %{cur_user: user}
       }) do
-    CMS.create_article_tag(%Community{raw: community}, thread, args, user)
+    CMS.create_article_tag(%Community{slug: community}, thread, args, user)
   end
 
   def update_article_tag(_root, %{id: id} = args, _info) do
@@ -334,11 +334,11 @@ defmodule GroupherServerWeb.Resolvers.CMS do
   end
 
   def paged_community_subscribers(_root, ~m(community filter)a, %{context: %{cur_user: cur_user}}) do
-    CMS.community_members(:subscribers, %Community{raw: community}, filter, cur_user)
+    CMS.community_members(:subscribers, %Community{slug: community}, filter, cur_user)
   end
 
   def paged_community_subscribers(_root, ~m(community filter)a, _info) do
-    CMS.community_members(:subscribers, %Community{raw: community}, filter)
+    CMS.community_members(:subscribers, %Community{slug: community}, filter)
   end
 
   def paged_community_subscribers(_root, _args, _info), do: {:error, "invalid args"}

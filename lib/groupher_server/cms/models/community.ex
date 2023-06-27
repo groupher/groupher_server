@@ -21,7 +21,7 @@ defmodule GroupherServer.CMS.Model.Community do
 
   @max_pinned_article_count_per_thread 2
 
-  @required_fields ~w(title desc user_id logo raw)a
+  @required_fields ~w(title desc user_id logo slug)a
   # @required_fields ~w(title desc user_id)a
   @optional_fields ~w(label geo_info index aka contributes_digest pending)a
 
@@ -34,7 +34,7 @@ defmodule GroupherServer.CMS.Model.Community do
     field(:logo, :string)
     # field(:category, :string)
     field(:label, :string)
-    field(:raw, :string)
+    field(:slug, :string)
     field(:index, :integer)
     field(:geo_info, :map)
     field(:views, :integer)
@@ -84,9 +84,9 @@ defmodule GroupherServer.CMS.Model.Community do
     |> cast_embed(:meta, with: &Embeds.CommunityMeta.changeset/2)
     |> cast_assoc(:dashboard)
     |> validate_length(:title, min: 1, max: 30)
-    |> validate_length(:raw, min: 1, max: 30)
+    |> validate_length(:slug, min: 1, max: 30)
     |> foreign_key_constraint(:user_id)
-    |> unique_constraint(:raw, name: :communities_raw_index)
+    |> unique_constraint(:slug, name: :communities_raw_index)
     |> unique_constraint(:aka, name: :communities_aka_index)
 
     # |> foreign_key_constraint(:communities_author_fkey)

@@ -197,7 +197,7 @@ defmodule GroupherServer.Support.Factory do
 
   defp mock_meta(:thread) do
     unique_num = System.unique_integer([:positive, :monotonic])
-    %{title: "thread #{unique_num}", raw: "thread #{unique_num}", index: :rand.uniform(20)}
+    %{title: "thread #{unique_num}", slug: "thread #{unique_num}", index: :rand.uniform(20)}
   end
 
   defp mock_meta(:community) do
@@ -210,7 +210,7 @@ defmodule GroupherServer.Support.Factory do
       title: title,
       aka: title,
       desc: "community desc",
-      raw: title,
+      slug: title,
       logo: "https://coderplanets.oss-cn-beijing.aliyuncs.com/icons/pl/elixir.svg",
       author: mock(:user)
     }
@@ -221,7 +221,7 @@ defmodule GroupherServer.Support.Factory do
 
     %{
       title: "category#{unique_num}",
-      raw: "category#{unique_num}",
+      slug: "category#{unique_num}",
       author: mock(:author)
     }
   end
@@ -231,7 +231,7 @@ defmodule GroupherServer.Support.Factory do
 
     %{
       title: "#{Faker.Pizza.cheese()}#{unique_num}",
-      raw: "#{Faker.Pizza.cheese()}#{unique_num}",
+      slug: "#{Faker.Pizza.cheese()}#{unique_num}",
       thread: "POST",
       color: "YELLOW",
       group: "cool",

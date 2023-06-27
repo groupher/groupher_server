@@ -6,12 +6,12 @@ defmodule GroupherServer.CMS.Model.Thread do
   import Ecto.Changeset
 
   @optional_fields ~w(logo index)a
-  @required_fields ~w(title raw)a
+  @required_fields ~w(title slug)a
 
   @type t :: %Thread{}
   schema "threads" do
     field(:title, :string)
-    field(:raw, :string)
+    field(:slug, :string)
     field(:logo, :string)
     field(:index, :integer)
 
@@ -24,9 +24,9 @@ defmodule GroupherServer.CMS.Model.Thread do
     |> cast(attrs, @optional_fields ++ @required_fields)
     |> validate_required(@required_fields)
     |> validate_length(:title, min: 2, max: 20)
-    |> validate_length(:raw, min: 2, max: 20)
+    |> validate_length(:slug, min: 2, max: 20)
     |> unique_constraint(:title)
 
-    # |> unique_constraint(:raw)
+    # |> unique_constraint(:slug)
   end
 end

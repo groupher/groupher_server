@@ -1,7 +1,7 @@
 defmodule GroupherServer.Email.Templates.AdminNewRegister do
   @moduledoc """
   template for notify admin new register, if you want change style or debug the template
-  just copy and paste raw string to: https://mjml.io/try-it-live
+  just copy and paste slug string to: https://mjml.io/try-it-live
   """
 
   alias GroupherServer.Accounts.Model.User

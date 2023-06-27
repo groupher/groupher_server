@@ -18,26 +18,26 @@ defmodule GroupherServer.Test.CMS do
   describe "[cms category]" do
     test "create category with valid attrs", ~m(user)a do
       valid_attrs = mock_attrs(:category, %{user_id: user.id})
-      ~m(title raw)a = valid_attrs
+      ~m(title slug)a = valid_attrs
 
-      {:ok, category} = CMS.create_category(~m(title raw)a, user)
+      {:ok, category} = CMS.create_category(~m(title slug)a, user)
 
       assert category.title == valid_attrs.title
     end
 
     test "create category with same title fails", ~m(user)a do
       valid_attrs = mock_attrs(:category, %{user_id: user.id})
-      ~m(title raw)a = valid_attrs
+      ~m(title slug)a = valid_attrs
 
-      assert {:ok, _} = CMS.create_category(~m(title raw)a, user)
+      assert {:ok, _} = CMS.create_category(~m(title slug)a, user)
       assert {:error, _} = CMS.create_category(~m(title)a, user)
     end
 
     test "update category with valid attrs", ~m(user)a do
       valid_attrs = mock_attrs(:category, %{user_id: user.id})
-      ~m(title raw)a = valid_attrs
+      ~m(title slug)a = valid_attrs
 
-      {:ok, category} = CMS.create_category(~m(title raw)a, user)
+      {:ok, category} = CMS.create_category(~m(title slug)a, user)
 
       assert category.title == valid_attrs.title
       {:ok, updated} = CMS.update_category(%Category{id: category.id, title: "new title"})
@@ -47,11 +47,11 @@ defmodule GroupherServer.Test.CMS do
 
     test "update title to existing title fails", ~m(user)a do
       valid_attrs = mock_attrs(:category, %{user_id: user.id})
-      ~m(title raw)a = valid_attrs
+      ~m(title slug)a = valid_attrs
 
-      {:ok, category} = CMS.create_category(~m(title raw)a, user)
+      {:ok, category} = CMS.create_category(~m(title slug)a, user)
 
-      new_category_attrs = %{title: "category2 title", raw: "category2 title"}
+      new_category_attrs = %{title: "category2 title", slug: "category2 title"}
       {:ok, category2} = CMS.create_category(new_category_attrs, user)
 
       {:error, _} = CMS.update_category(%Category{id: category.id, title: category2.title})
@@ -88,22 +88,22 @@ defmodule GroupherServer.Test.CMS do
   describe "[cms community thread]" do
     test "can create thread to a community" do
       title = "post"
-      raw = "POST"
-      {:ok, thread} = CMS.create_thread(~m(title raw)a)
+      slug = "POST"
+      {:ok, thread} = CMS.create_thread(~m(title slug)a)
       assert thread.title == title
     end
 
     test "create thread with exsit title fails" do
       title = "POST"
-      raw = title
-      {:ok, _} = CMS.create_thread(~m(title raw)a)
-      assert {:error, _error} = CMS.create_thread(~m(title raw)a)
+      slug = title
+      {:ok, _} = CMS.create_thread(~m(title slug)a)
+      assert {:error, _error} = CMS.create_thread(~m(title slug)a)
     end
 
     test "can set a thread to community", ~m(community)a do
       title = "POST"
-      raw = title
-      {:ok, thread} = CMS.create_thread(~m(title raw)a)
+      slug = title
+      {:ok, thread} = CMS.create_thread(~m(title slug)a)
       {:ok, ret_community} = CMS.set_thread(community, thread)
 
       assert ret_community.id == community.id

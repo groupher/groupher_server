@@ -10,7 +10,7 @@ alias Accounts.Model.User
 
 default_meta = Embeds.ArticleMeta.default_meta()
 
-# {:ok, home_community} = ORM.find_by(Community, %{raw: "home"})
+# {:ok, home_community} = ORM.find_by(Community, %{slug: "home"})
 # {:ok, bot} = ORM.find(User, 1)
 
 # ret = CMS.update_community_count_field(home_community, bot.id, :subscribers_count, :inc)

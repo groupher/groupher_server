@@ -16,11 +16,11 @@ defmodule GroupherServerWeb.Middleware.PassportLoader do
   def call(%{errors: errors} = resolution, _) when length(errors) > 0, do: resolution
 
   def call(
-        %{context: %{cur_user: _}, arguments: %{community: community_raw} = arguments} =
+        %{context: %{cur_user: _}, arguments: %{community: community_slug} = arguments} =
           resolution,
         source: :community
       ) do
-    case ORM.find_by(Community, raw: community_raw) do
+    case ORM.find_by(Community, slug: community_slug) do
       {:ok, community} ->
         %{resolution | arguments: Map.put(arguments, :passport_communities, [community])}
 

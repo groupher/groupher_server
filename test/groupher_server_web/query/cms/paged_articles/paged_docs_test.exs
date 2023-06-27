@@ -54,7 +54,7 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedDocs do
           }
           communities {
             id
-            raw
+            slug
           }
           articleTags {
             id
@@ -102,10 +102,10 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedDocs do
       {:ok, article_tag} = CMS.create_article_tag(community, :doc, article_tag_attrs, user)
       {:ok, _} = CMS.set_article_tag(:doc, doc.id, article_tag.id)
 
-      variables = %{filter: %{page: 1, size: 10, article_tag: article_tag.raw}}
+      variables = %{filter: %{page: 1, size: 10, article_tag: article_tag.slug}}
       results = guest_conn |> query_result(@query, variables, "pagedDocs")
 
-      variables = %{filter: %{page: 1, size: 10, article_tags: [article_tag.raw]}}
+      variables = %{filter: %{page: 1, size: 10, article_tags: [article_tag.slug]}}
       results2 = guest_conn |> query_result(@query, variables, "pagedDocs")
       assert results == results2
 
@@ -122,7 +122,7 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedDocs do
       doc_attrs2 = mock_attrs(:doc, %{community_id: community.id})
       {:ok, _} = CMS.create_article(community, :doc, doc_attrs2, user)
 
-      variables = %{filter: %{page: 1, size: 10, community: community.raw}}
+      variables = %{filter: %{page: 1, size: 10, community: community.slug}}
       results = guest_conn |> query_result(@query, variables, "pagedDocs")
 
       doc = results["entries"] |> List.first()
@@ -167,7 +167,7 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedDocs do
           }
           communities {
             id
-            raw
+            slug
           }
         }
        }
@@ -179,7 +179,7 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedDocs do
       {:ok, community} = db_insert(:community)
       {:ok, doc} = CMS.create_article(community, :doc, mock_attrs(:doc), user)
 
-      variables = %{filter: %{community: community.raw}}
+      variables = %{filter: %{community: community.slug}}
       results = guest_conn |> query_result(@query, variables, "pagedDocs")
 
       assert length(results["entries"]) == 1
@@ -190,7 +190,7 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedDocs do
       {:ok, community} = db_insert(:community)
       {:ok, _} = CMS.create_article(community, :doc, mock_attrs(:doc), user)
 
-      variables = %{filter: %{community: community.raw}}
+      variables = %{filter: %{community: community.slug}}
       results = guest_conn |> query_result(@query, variables, "pagedDocs")
       doc = results["entries"] |> List.first()
 
@@ -260,7 +260,7 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedDocs do
       {:ok, _} = CMS.create_article(community, :doc, mock_attrs(:doc), user)
       {:ok, _} = CMS.create_article(community, :doc, mock_attrs(:doc), user)
 
-      variables = %{filter: %{community: community.raw}}
+      variables = %{filter: %{community: community.slug}}
       results = user_conn |> query_result(@query, variables, "pagedDocs")
       assert results["totalCount"] == 3
 

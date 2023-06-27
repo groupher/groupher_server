@@ -216,7 +216,7 @@ defmodule GroupherServer.Test.Query.Account.Basic do
       subscribedCommunities(filter: $filter) {
         entries {
           title
-          raw
+          slug
         }
         totalCount
         totalPages
@@ -227,7 +227,7 @@ defmodule GroupherServer.Test.Query.Account.Basic do
     """
     test "guest user can get paged default subscrubed communities", ~m(guest_conn)a do
       {:ok, _} = db_insert_multi(:community, 25)
-      {:ok, _} = db_insert(:community, %{raw: "home"})
+      {:ok, _} = db_insert(:community, %{slug: "home"})
 
       variables = %{filter: %{page: 1, size: 10}}
       results = guest_conn |> query_result(@query, variables, "subscribedCommunities")
@@ -239,12 +239,12 @@ defmodule GroupherServer.Test.Query.Account.Basic do
     test "guest user can get paged default subscrubed communities with home included",
          ~m(guest_conn)a do
       {:ok, _} = db_insert_multi(:community, 25)
-      {:ok, _} = db_insert(:community, %{raw: "home"})
+      {:ok, _} = db_insert(:community, %{slug: "home"})
 
       variables = %{filter: %{page: 1, size: 10}}
       results = guest_conn |> query_result(@query, variables, "subscribedCommunities")
 
-      assert results["entries"] |> Enum.any?(&(&1["raw"] == "home"))
+      assert results["entries"] |> Enum.any?(&(&1["slug"] == "home"))
     end
 
     @query """
@@ -307,7 +307,7 @@ defmodule GroupherServer.Test.Query.Account.Basic do
     end
 
     test "user should subscribe home community if not subscribed before", ~m(user)a do
-      {:ok, community} = db_insert(:community, %{raw: "home"})
+      {:ok, community} = db_insert(:community, %{slug: "home"})
 
       user_conn = simu_conn(:user, user)
       _results = user_conn |> query_result(@query, %{}, "sessionState")
