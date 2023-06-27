@@ -8,8 +8,6 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedKanbanPosts do
   alias GroupherServer.CMS
   alias GroupherServer.Repo
 
-  alias CMS.Model.Post
-
   alias CMS.Constant
 
   @article_cat Constant.article_cat()

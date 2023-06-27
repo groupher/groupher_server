@@ -35,7 +35,6 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert not is_nil(find_community.dashboard)
     end
 
-    @tag :wip
     test "can update base info in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
@@ -327,7 +326,6 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert third.group_index == 3
     end
 
-    @tag :wip
     test "can update social links in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
@@ -347,7 +345,6 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert first.link == "https://link.com"
     end
 
-    @tag :wip
     test "should overwirte all social links in community dashboard everytime",
          ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)

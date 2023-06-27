@@ -26,9 +26,9 @@ defmodule GroupherServer.CMS.Model.CommunityDashboard do
       enable: Embeds.DashboardEnable.default(),
       rss: Embeds.DashboardRSS.default(),
       name_alias: Embeds.DashboardNameAlias.default(),
-      header_link: Embeds.DashboardHeaderLink.default(),
-      footer_link: Embeds.DashboardFooterLink.default(),
-      social_link: Embeds.DashboardSocialLink.default()
+      header_links: Embeds.DashboardHeaderLink.default(),
+      footer_links: Embeds.DashboardFooterLink.default(),
+      social_links: Embeds.DashboardSocialLink.default()
     }
   end
 
