@@ -248,6 +248,50 @@ defmodule GroupherServer.Test.CMS.Articles.Blog do
     end
   end
 
+  describe "[cms blog batch delete]" do
+    test "can batch delete blogs with inner_ids", ~m(user community blog_attrs)a do
+      {:ok, blog1} = CMS.create_article(community, :blog, blog_attrs, user)
+      {:ok, blog2} = CMS.create_article(community, :blog, blog_attrs, user)
+      {:ok, blog3} = CMS.create_article(community, :blog, blog_attrs, user)
+
+      CMS.batch_mark_delete_articles(community.slug, :blog, [
+        blog1.inner_id,
+        blog2.inner_id
+      ])
+
+      {:ok, blog1} = ORM.find(Blog, blog1.id)
+      {:ok, blog2} = ORM.find(Blog, blog2.id)
+      {:ok, blog3} = ORM.find(Blog, blog3.id)
+
+      assert blog1.mark_delete == true
+      assert blog2.mark_delete == true
+      assert blog3.mark_delete == false
+    end
+
+    test "can undo batch delete blogs with inner_ids", ~m(user community blog_attrs)a do
+      {:ok, blog1} = CMS.create_article(community, :blog, blog_attrs, user)
+      {:ok, blog2} = CMS.create_article(community, :blog, blog_attrs, user)
+      {:ok, blog3} = CMS.create_article(community, :blog, blog_attrs, user)
+
+      CMS.batch_mark_delete_articles(community.slug, :blog, [
+        blog1.inner_id,
+        blog2.inner_id
+      ])
+
+      CMS.batch_undo_mark_delete_articles(community.slug, :blog, [
+        blog1.inner_id,
+        blog2.inner_id
+      ])
+
+      {:ok, blog1} = ORM.find(Blog, blog1.id)
+      {:ok, blog2} = ORM.find(Blog, blog2.id)
+      {:ok, blog3} = ORM.find(Blog, blog3.id)
+
+      assert blog1.mark_delete == false
+      assert blog2.mark_delete == false
+    end
+  end
+
   describe "[cms blog document]" do
     test "will create related document after create", ~m(user community blog_attrs)a do
       {:ok, blog} = CMS.create_article(community, :blog, blog_attrs, user)

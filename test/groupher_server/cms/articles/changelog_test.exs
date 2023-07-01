@@ -265,6 +265,50 @@ defmodule GroupherServer.Test.CMS.Articles.Changelog do
     end
   end
 
+  describe "[cms changelog batch delete]" do
+    test "can batch delete changelogs with inner_ids", ~m(user community changelog_attrs)a do
+      {:ok, changelog1} = CMS.create_article(community, :changelog, changelog_attrs, user)
+      {:ok, changelog2} = CMS.create_article(community, :changelog, changelog_attrs, user)
+      {:ok, changelog3} = CMS.create_article(community, :changelog, changelog_attrs, user)
+
+      CMS.batch_mark_delete_articles(community.slug, :changelog, [
+        changelog1.inner_id,
+        changelog2.inner_id
+      ])
+
+      {:ok, changelog1} = ORM.find(Changelog, changelog1.id)
+      {:ok, changelog2} = ORM.find(Changelog, changelog2.id)
+      {:ok, changelog3} = ORM.find(Changelog, changelog3.id)
+
+      assert changelog1.mark_delete == true
+      assert changelog2.mark_delete == true
+      assert changelog3.mark_delete == false
+    end
+
+    test "can undo batch delete changelogs with inner_ids", ~m(user community changelog_attrs)a do
+      {:ok, changelog1} = CMS.create_article(community, :changelog, changelog_attrs, user)
+      {:ok, changelog2} = CMS.create_article(community, :changelog, changelog_attrs, user)
+      {:ok, changelog3} = CMS.create_article(community, :changelog, changelog_attrs, user)
+
+      CMS.batch_mark_delete_articles(community.slug, :changelog, [
+        changelog1.inner_id,
+        changelog2.inner_id
+      ])
+
+      CMS.batch_undo_mark_delete_articles(community.slug, :changelog, [
+        changelog1.inner_id,
+        changelog2.inner_id
+      ])
+
+      {:ok, changelog1} = ORM.find(Changelog, changelog1.id)
+      {:ok, changelog2} = ORM.find(Changelog, changelog2.id)
+      {:ok, changelog3} = ORM.find(Changelog, changelog3.id)
+
+      assert changelog1.mark_delete == false
+      assert changelog2.mark_delete == false
+    end
+  end
+
   describe "[cms changelog document]" do
     test "will create related document after create", ~m(user community changelog_attrs)a do
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)

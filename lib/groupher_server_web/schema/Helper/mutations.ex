@@ -26,6 +26,8 @@ defmodule GroupherServerWeb.Schema.Helper.Mutations do
   alias GroupherServerWeb.Middleware, as: M
   alias GroupherServerWeb.Resolvers, as: R
 
+  import Helper.Utils, only: [plural: 1]
+
   @doc """
   add basic mutation reactions to article
   """
@@ -134,6 +136,30 @@ defmodule GroupherServerWeb.Schema.Helper.Mutations do
         middleware(M.Passport, claim: unquote("cms->#{to_string(thread)}.undo_mark_delete"))
 
         resolve(&R.CMS.undo_mark_delete_article/3)
+      end
+
+      @desc unquote("batch mark delete #{plural(thread)} type article, aka soft-delete")
+      field unquote(:"batch_mark_delete_#{plural(thread)}"), :done_state do
+        arg(:community, non_null(:string))
+        arg(:ids, list_of(:id))
+        arg(:thread, unquote(:"#{thread}_thread"), default_value: unquote(thread))
+
+        middleware(M.Authorize, :login)
+        middleware(M.Passport, claim: unquote("cms->#{to_string(thread)}.mark_delete"))
+
+        resolve(&R.CMS.batch_mark_delete_articles/3)
+      end
+
+      @desc unquote("batch undo mark delete #{plural(thread)} type article, aka soft-delete")
+      field unquote(:"batch_undo_mark_delete_#{plural(thread)}"), :done_state do
+        arg(:community, non_null(:string))
+        arg(:ids, list_of(:id))
+        arg(:thread, unquote(:"#{thread}_thread"), default_value: unquote(thread))
+
+        middleware(M.Authorize, :login)
+        middleware(M.Passport, claim: unquote("cms->#{to_string(thread)}.mark_delete"))
+
+        resolve(&R.CMS.batch_undo_mark_delete_articles/3)
       end
     end
   end

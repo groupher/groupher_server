@@ -2,7 +2,7 @@ defmodule GroupherServer.Test.Mutation.Flags.ChangelogFlag do
   use GroupherServer.TestTools
 
   alias GroupherServer.CMS
-  alias CMS.Model.Community
+  alias CMS.Model.{Community, Changelog}
 
   alias Helper.ORM
 
@@ -11,12 +11,14 @@ defmodule GroupherServer.Test.Mutation.Flags.ChangelogFlag do
     {:ok, community} = db_insert(:community)
 
     {:ok, changelog} = CMS.create_article(community, :changelog, mock_attrs(:changelog), user)
+    {:ok, changelog2} = CMS.create_article(community, :changelog, mock_attrs(:changelog), user)
+    {:ok, changelog3} = CMS.create_article(community, :changelog, mock_attrs(:changelog), user)
 
     guest_conn = simu_conn(:guest)
     user_conn = simu_conn(:user)
     owner_conn = simu_conn(:user, user)
 
-    {:ok, ~m(user_conn guest_conn owner_conn community user changelog)a}
+    {:ok, ~m(user_conn guest_conn owner_conn community user changelog changelog2 changelog3)a}
   end
 
   describe "[mutation changelog flag curd]" do
@@ -118,6 +120,73 @@ defmodule GroupherServer.Test.Mutation.Flags.ChangelogFlag do
       assert user_conn |> mutation_get_error?(@query, variables, ecode(:passport))
       assert guest_conn |> mutation_get_error?(@query, variables, ecode(:account_login))
       assert rule_conn |> mutation_get_error?(@query, variables, ecode(:passport))
+    end
+
+    @query """
+    mutation($community: String!, $ids: [ID]!){
+      batchMarkDeleteChangelogs(community: $community, ids: $ids) {
+        done
+      }
+    }
+    """
+
+    test "auth user can batch mark delete changelogs",
+         ~m(community changelog changelog2 changelog3)a do
+      variables = %{
+        community: community.slug,
+        ids: [changelog.inner_id, changelog2.inner_id]
+      }
+
+      passport_rules = %{"changelog.mark_delete" => true}
+      rule_conn = simu_conn(:user, cms: passport_rules)
+
+      updated = rule_conn |> mutation_result(@query, variables, "batchMarkDeleteChangelogs")
+
+      assert updated["done"] == true
+
+      {:ok, changelog} = ORM.find(Changelog, changelog.id)
+      {:ok, changelog2} = ORM.find(Changelog, changelog2.id)
+      {:ok, changelog3} = ORM.find(Changelog, changelog3.id)
+
+      assert changelog.mark_delete == true
+      assert changelog2.mark_delete == true
+      assert changelog3.mark_delete == false
+    end
+
+    @query """
+    mutation($community: String!, $ids: [ID]!){
+      batchUndoMarkDeleteChangelogs(community: $community, ids: $ids) {
+        done
+      }
+    }
+    """
+
+    test "auth user can batch undo mark delete changelogs",
+         ~m(community changelog changelog2 changelog3)a do
+      CMS.batch_mark_delete_articles(community.slug, :changelog, [
+        changelog.inner_id,
+        changelog2.inner_id
+      ])
+
+      variables = %{
+        community: community.slug,
+        ids: [changelog.inner_id, changelog2.inner_id]
+      }
+
+      passport_rules = %{"changelog.mark_delete" => true}
+      rule_conn = simu_conn(:user, cms: passport_rules)
+
+      updated = rule_conn |> mutation_result(@query, variables, "batchUndoMarkDeleteChangelogs")
+
+      assert updated["done"] == true
+
+      {:ok, changelog} = ORM.find(Changelog, changelog.id)
+      {:ok, changelog2} = ORM.find(Changelog, changelog2.id)
+      {:ok, changelog3} = ORM.find(Changelog, changelog3.id)
+
+      assert changelog.mark_delete == false
+      assert changelog2.mark_delete == false
+      assert changelog3.mark_delete == false
     end
 
     @query """
