@@ -120,7 +120,7 @@ defmodule GroupherServer.Test.Mutation.ArticleCommunity.Changelog do
     """
 
     test "auth user can mirror changelog home", ~m(changelog)a do
-      {:ok, home_community} = db_insert(:community, %{raw: "home"})
+      {:ok, home_community} = db_insert(:community, %{slug: "home"})
 
       variables = %{id: changelog.id, thread: "CHANGELOG"}
 
@@ -143,7 +143,7 @@ defmodule GroupherServer.Test.Mutation.ArticleCommunity.Changelog do
     """
 
     test "auth user can move changelog to blackhole", ~m(changelog)a do
-      {:ok, blackhole_community} = db_insert(:community, %{raw: "blackhole"})
+      {:ok, blackhole_community} = db_insert(:community, %{slug: "blackhole"})
 
       variables = %{id: changelog.id, thread: "CHANGELOG"}
 

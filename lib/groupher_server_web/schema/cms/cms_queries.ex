@@ -11,7 +11,7 @@ defmodule GroupherServerWeb.Schema.CMS.Queries do
     field :community, :community do
       # arg(:id, non_null(:id))
       # arg(:title, :string)
-      arg(:raw, non_null(:string))
+      arg(:slug, non_null(:string))
       resolve(&R.CMS.community/3)
     end
 
@@ -23,7 +23,7 @@ defmodule GroupherServerWeb.Schema.CMS.Queries do
 
     @desc "if the community exist or not"
     field :is_community_exist, :check_state do
-      arg(:raw, non_null(:string))
+      arg(:slug, non_null(:string))
 
       middleware(M.Authorize, :login)
       resolve(&R.CMS.is_community_exist?/3)
@@ -59,7 +59,7 @@ defmodule GroupherServerWeb.Schema.CMS.Queries do
     @desc "get community geo cities info"
     field :community_geo_info, list_of(:geo_info) do
       arg(:id, non_null(:id))
-      arg(:raw, :string)
+      arg(:slug, :string)
 
       resolve(&R.CMS.community_geo_info/3)
     end

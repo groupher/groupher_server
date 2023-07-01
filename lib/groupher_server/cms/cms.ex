@@ -42,7 +42,7 @@ defmodule GroupherServer.CMS do
   defdelegate update_dashboard(comunity, key, args), to: CommunityCURD
   defdelegate approve_community_apply(id), to: CommunityCURD
   defdelegate deny_community_apply(id), to: CommunityCURD
-  defdelegate is_community_exist?(raw), to: CommunityCURD
+  defdelegate is_community_exist?(slug), to: CommunityCURD
   defdelegate has_pending_community_apply?(user), to: CommunityCURD
 
   # TODO: delete after prod seed
@@ -90,8 +90,8 @@ defmodule GroupherServer.CMS do
   defdelegate subscribe_default_community_ifnot(user), to: CommunityOperation
 
   # ArticleCURD
-  defdelegate read_article(community_raw, thread, id), to: ArticleCURD
-  defdelegate read_article(community_raw, thread, id, user), to: ArticleCURD
+  defdelegate read_article(community_slug, thread, id), to: ArticleCURD
+  defdelegate read_article(community_slug, thread, id, user), to: ArticleCURD
 
   defdelegate set_article_illegal(thread, id, attrs), to: ArticleCURD
   defdelegate set_article_illegal(article, attrs), to: ArticleCURD
@@ -102,7 +102,7 @@ defmodule GroupherServer.CMS do
   defdelegate paged_articles(thread, filter), to: ArticleCURD
   defdelegate paged_articles(thread, filter, user), to: ArticleCURD
   defdelegate grouped_kanban_posts(community_id), to: ArticleCURD
-  defdelegate paged_kanban_posts(community_raw, filter), to: ArticleCURD
+  defdelegate paged_kanban_posts(community_slug, filter), to: ArticleCURD
 
   defdelegate paged_published_articles(thread, filter, user), to: ArticleCURD
   defdelegate paged_audit_failed_articles(thread, filter), to: ArticleCURD
@@ -242,13 +242,13 @@ defmodule GroupherServer.CMS do
 
   # seeds
   defdelegate seed_communities(opt), to: Seeds
-  defdelegate seed_community(raw, type), to: Seeds
-  defdelegate seed_community(raw), to: Seeds
+  defdelegate seed_community(slug, type), to: Seeds
+  defdelegate seed_community(slug), to: Seeds
   defdelegate seed_set_category(communities, category), to: Seeds
   defdelegate seed_articles(community, type), to: Seeds
   defdelegate seed_articles(community, type, count), to: Seeds
 
-  defdelegate clean_up_community(raw), to: Seeds
+  defdelegate clean_up_community(slug), to: Seeds
   defdelegate clean_up_articles(community, type), to: Seeds
 
   # defdelegate seed_bot, to: Seeds

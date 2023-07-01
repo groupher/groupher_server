@@ -47,7 +47,7 @@ defmodule GroupherServer.Test.CMS.ArticleTag.PostTag do
         }
       ]
 
-      CMS.reindex_tags_in_group(community.raw, :post, "group1", tags_with_index)
+      CMS.reindex_tags_in_group(community.slug, :post, "group1", tags_with_index)
 
       {:ok, article_tag1_after} = ORM.find(ArticleTag, article_tag1.id)
       {:ok, article_tag2_after} = ORM.find(ArticleTag, article_tag2.id)
@@ -93,7 +93,7 @@ defmodule GroupherServer.Test.CMS.ArticleTag.PostTag do
     test "create article tag with non-exsit community fails", ~m(article_tag_attrs user)a do
       assert {:error, _} =
                CMS.create_article_tag(
-                 %Community{raw: non_exsit_raw()},
+                 %Community{slug: non_exsit_slug()},
                  :post,
                  article_tag_attrs,
                  user

@@ -42,7 +42,7 @@ defmodule GroupherServer.Test.Mutation.ArticleTags.DocReindexTag do
       rule_conn = simu_conn(:user, cms: passport_rules)
 
       variables = %{
-        community: community.raw,
+        community: community.slug,
         thread: "DOC",
         group: "group1",
         tags: [

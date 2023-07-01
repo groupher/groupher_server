@@ -41,7 +41,7 @@ defmodule GroupherServer.Test.Query.Flags.PostsFlags do
           id
           pending
           communities {
-            raw
+            slug
           }
         }
         totalPages
@@ -53,7 +53,7 @@ defmodule GroupherServer.Test.Query.Flags.PostsFlags do
     """
 
     test "pending post should not see in paged query", ~m(guest_conn community post_m)a do
-      variables = %{filter: %{community: community.raw}}
+      variables = %{filter: %{community: community.slug}}
       results = guest_conn |> query_result(@query, variables, "pagedPosts")
 
       assert results["totalCount"] == @total_count
@@ -81,7 +81,7 @@ defmodule GroupherServer.Test.Query.Flags.PostsFlags do
           id
           isPinned
           communities {
-            raw
+            slug
           }
         }
         totalPages
@@ -93,7 +93,7 @@ defmodule GroupherServer.Test.Query.Flags.PostsFlags do
     """
     test "if have pinned posts, the pinned posts should at the top of entries",
          ~m(guest_conn community post_m)a do
-      variables = %{filter: %{community: community.raw}}
+      variables = %{filter: %{community: community.slug}}
 
       results = guest_conn |> query_result(@query, variables, "pagedPosts")
 
@@ -127,7 +127,7 @@ defmodule GroupherServer.Test.Query.Flags.PostsFlags do
 
     test "if have trashed posts, the mark deleted posts should not appears in result",
          ~m(guest_conn community)a do
-      variables = %{filter: %{community: community.raw}}
+      variables = %{filter: %{community: community.slug}}
       results = guest_conn |> query_result(@query, variables, "pagedPosts")
 
       random_id = results["entries"] |> Enum.shuffle() |> List.first() |> Map.get("id")

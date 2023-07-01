@@ -23,8 +23,8 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.PostTagCURD do
 
   describe "[mutation cms tag]" do
     @create_tag_query """
-    mutation($thread: Thread!, $title: String!, $raw: String!, $color: RainbowColor!, $group: String, $community: String!, $extra: [String] ) {
-      createArticleTag(thread: $thread, title: $title, raw: $raw, color: $color, group: $group, community: $community, extra: $extra) {
+    mutation($thread: Thread!, $title: String!, $slug: String!, $color: RainbowColor!, $group: String, $community: String!, $extra: [String] ) {
+      createArticleTag(thread: $thread, title: $title, slug: $slug, color: $color, group: $group, community: $community, extra: $extra) {
         id
         title
         color
@@ -43,8 +43,8 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.PostTagCURD do
          ~m(community)a do
       variables = %{
         title: "tag title",
-        raw: "tag_raw",
-        community: community.raw,
+        slug: "tag_raw",
+        community: community.slug,
         thread: "POST",
         color: "GREEN",
         group: "awesome"
@@ -68,8 +68,8 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.PostTagCURD do
     test "create tag with extra", ~m(community)a do
       variables = %{
         title: "tag title",
-        raw: "tag",
-        community: community.raw,
+        slug: "tag",
+        community: community.slug,
         thread: "POST",
         color: "GREEN",
         group: "awesome",
@@ -87,8 +87,8 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.PostTagCURD do
     test "unauth user create tag fails", ~m(community user_conn guest_conn)a do
       variables = %{
         title: "tag title",
-        raw: "tag",
-        community: community.raw,
+        slug: "tag",
+        community: community.slug,
         thread: "POST",
         color: "GREEN"
       }
@@ -104,8 +104,8 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.PostTagCURD do
     end
 
     @update_tag_query """
-    mutation($id: ID!, $color: RainbowColor, $title: String, $raw: String, $community: String!, $extra: [String], $icon: String, $group: String) {
-      updateArticleTag(id: $id, color: $color, title: $title, raw: $raw, community: $community, extra: $extra, icon: $icon, group: $group) {
+    mutation($id: ID!, $color: RainbowColor, $title: String, $slug: String, $community: String!, $extra: [String], $icon: String, $group: String) {
+      updateArticleTag(id: $id, color: $color, title: $title, slug: $slug, community: $community, extra: $extra, icon: $icon, group: $group) {
         id
         title
         color
@@ -122,8 +122,8 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.PostTagCURD do
         id: article_tag.id,
         color: "YELLOW",
         title: "new title",
-        raw: "new_title",
-        community: community.raw,
+        slug: "new_title",
+        community: community.slug,
         group: "new group",
         extra: ["newMenuID"],
         icon: "icon"
@@ -152,7 +152,7 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.PostTagCURD do
     test "auth user can delete tag", ~m(article_tag_attrs community user)a do
       {:ok, article_tag} = CMS.create_article_tag(community, :post, article_tag_attrs, user)
 
-      variables = %{id: article_tag.id, community: community.raw}
+      variables = %{id: article_tag.id, community: community.slug}
 
       rule_conn =
         simu_conn(:user,
@@ -168,7 +168,7 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.PostTagCURD do
          ~m(article_tag_attrs community user_conn guest_conn user)a do
       {:ok, article_tag} = CMS.create_article_tag(community, :post, article_tag_attrs, user)
 
-      variables = %{id: article_tag.id, community: community.raw}
+      variables = %{id: article_tag.id, community: community.slug}
       rule_conn = simu_conn(:user, cms: %{"what.ever" => true})
 
       assert user_conn |> mutation_get_error?(@delete_tag_query, variables, ecode(:passport))

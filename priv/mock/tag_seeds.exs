@@ -3,16 +3,12 @@ alias GroupherServer.CMS.Delegate.Seeds
 alias GroupherServer.{Accounts, CMS}
 alias Helper.ORM
 
-{:ok, community} = ORM.find_by(CMS.Model.Community, raw: "home")
+{:ok, community} = ORM.find_by(CMS.Model.Community, slug: "home")
 {:ok, user} = ORM.find(Accounts.Model.User, 1)
-
-IO.inspect community.raw, label: "@@ got community"
-IO.inspect user.nickname, label: "@@ got user"
-
 
 article_tag_attrs = %{
   title: "HM",
-  raw: "hm",
+  slug: "hm",
   thread: "POST",
   color: "YELLOW",
   group: "平台",

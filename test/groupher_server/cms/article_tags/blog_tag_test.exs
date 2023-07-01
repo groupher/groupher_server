@@ -44,7 +44,7 @@ defmodule GroupherServer.Test.CMS.ArticleTag.BlogTag do
     test "create article tag with non-exsit community fails", ~m(article_tag_attrs user)a do
       assert {:error, _} =
                CMS.create_article_tag(
-                 %Community{raw: non_exsit_raw()},
+                 %Community{slug: non_exsit_slug()},
                  :blog,
                  article_tag_attrs,
                  user

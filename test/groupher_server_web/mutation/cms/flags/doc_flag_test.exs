@@ -131,7 +131,7 @@ defmodule GroupherServer.Test.Mutation.Flags.DocFlag do
     test "auth user can pin doc", ~m(community doc)a do
       variables = %{id: doc.id, communityId: community.id}
 
-      passport_rules = %{community.raw => %{"doc.pin" => true}}
+      passport_rules = %{community.slug => %{"doc.pin" => true}}
       rule_conn = simu_conn(:user, cms: passport_rules)
 
       updated = rule_conn |> mutation_result(@query, variables, "pinDoc")
@@ -160,7 +160,7 @@ defmodule GroupherServer.Test.Mutation.Flags.DocFlag do
     test "auth user can undo pin doc", ~m(community doc)a do
       variables = %{id: doc.id, communityId: community.id}
 
-      passport_rules = %{community.raw => %{"doc.undo_pin" => true}}
+      passport_rules = %{community.slug => %{"doc.undo_pin" => true}}
       rule_conn = simu_conn(:user, cms: passport_rules)
 
       CMS.pin_article(:doc, doc.id, community.id)

@@ -33,8 +33,8 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Helper do
     end)
   end
 
-  def create_tags(%Community{} = community, %Thread{raw: raw}, bot, type) do
-    thread = raw |> String.to_atom()
+  def create_tags(%Community{} = community, %Thread{slug: slug}, bot, type) do
+    thread = slug |> String.to_atom()
 
     Enum.each(
       Seeds.Tags.get(community, thread, type),
@@ -51,7 +51,7 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Helper do
   # set categories to given communities
   def categorify_communities(communities, categories, part)
       when is_list(communities) and is_atom(part) do
-    the_category = categories.entries |> Enum.find(fn cat -> cat.raw == Atom.to_string(part) end)
+    the_category = categories.entries |> Enum.find(fn cat -> cat.slug == Atom.to_string(part) end)
 
     Enum.each(communities, fn community ->
       {:ok, _} = CMS.set_category(%Community{id: community.id}, %Category{id: the_category.id})
@@ -63,17 +63,17 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Helper do
   # seed thread
   def seed_threads(type) do
     threads = Seeds.Threads.get(type)
-    threads_list = threads |> Enum.map(& &1.raw)
+    threads_list = threads |> Enum.map(& &1.slug)
 
     threads
     |> Enum.each(fn thread ->
-      with {:error, _} <- ORM.find_by(Thread, %{raw: thread.raw}) do
+      with {:error, _} <- ORM.find_by(Thread, %{slug: thread.slug}) do
         CMS.create_thread(thread)
       end
     end)
 
     Thread
-    |> where([t], t.raw in ^threads_list)
+    |> where([t], t.slug in ^threads_list)
     |> ORM.paginator(page: 1, size: 10)
     |> done()
   end
@@ -116,16 +116,16 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Helper do
     results.total_count == 0
   end
 
-  def insert_community(bot, raw, type) do
+  def insert_community(bot, slug, type) do
     type = Atom.to_string(type)
-    ext = if Enum.member?(SeedsConfig.svg_icons(), raw), do: "svg", else: "png"
+    ext = if Enum.member?(SeedsConfig.svg_icons(), slug), do: "svg", else: "png"
 
     args = %{
-      title: SeedsConfig.trans(raw),
-      aka: raw,
-      desc: "#{raw} is awesome!",
-      logo: "#{@oss_endpoint}/icons/#{type}/#{raw}.#{ext}",
-      raw: raw,
+      title: SeedsConfig.trans(slug),
+      aka: slug,
+      desc: "#{slug} is awesome!",
+      logo: "#{@oss_endpoint}/icons/#{type}/#{slug}.#{ext}",
+      slug: slug,
       user_id: bot.id
     }
 

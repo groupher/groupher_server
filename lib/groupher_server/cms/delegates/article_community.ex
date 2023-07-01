@@ -141,7 +141,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleCommunity do
     preload = [:communities, :article_tags]
 
     with {:ok, info} <- match(thread),
-         {:ok, community} <- ORM.find_by(Community, %{raw: "home"}),
+         {:ok, community} <- ORM.find_by(Community, %{slug: "home"}),
          {:ok, article} <- ORM.find(info.model, article_id, preload: preload) do
       Multi.new()
       |> Multi.run(:set_community, fn _, _ ->
@@ -165,7 +165,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleCommunity do
     preload = [:communities, :original_community, :article_tags]
 
     with {:ok, info} <- match(thread),
-         {:ok, community} <- ORM.find_by(Community, %{raw: "blackhole"}),
+         {:ok, community} <- ORM.find_by(Community, %{slug: "blackhole"}),
          {:ok, article} <- ORM.find(info.model, article_id, preload: preload) do
       Multi.new()
       |> Multi.run(:set_community, fn _, _ ->

@@ -25,7 +25,7 @@ defmodule GroupherServer.Test.CMS.Community do
 
   describe "[cms community curd]" do
     test "new created community should have default threads", ~m(user)a do
-      community_attrs = mock_attrs(:community, %{raw: "elixir", user_id: user.id})
+      community_attrs = mock_attrs(:community, %{slug: "elixir", user_id: user.id})
       {:ok, community} = CMS.create_community(community_attrs)
 
       {:ok, all_threads} = ORM.find_all(Thread, %{page: 1, size: 20})
@@ -47,13 +47,13 @@ defmodule GroupherServer.Test.CMS.Community do
 
       {:ok, community} = ORM.find(Community, community.id)
       assert community.pending == @community_applying
-      assert {:error, _} = CMS.read_community(community.raw)
+      assert {:error, _} = CMS.read_community(community.slug)
 
       {:ok, community} = CMS.approve_community_apply(community.id)
 
       {:ok, community} = ORM.find(Community, community.id)
       assert community.pending == @community_normal
-      assert {:ok, _} = CMS.read_community(community.raw)
+      assert {:ok, _} = CMS.read_community(community.slug)
     end
 
     test "apply can be deny", ~m(user)a do
@@ -78,23 +78,23 @@ defmodule GroupherServer.Test.CMS.Community do
 
   describe "[cms community read]" do
     test "read community should inc views", ~m(community)a do
-      {:ok, community} = CMS.read_community(community.raw)
+      {:ok, community} = CMS.read_community(community.slug)
       assert community.views == 1
-      {:ok, community} = CMS.read_community(community.raw)
+      {:ok, community} = CMS.read_community(community.slug)
       assert community.views == 2
-      {:ok, community} = CMS.read_community(community.raw)
+      {:ok, community} = CMS.read_community(community.slug)
       assert community.views == 3
     end
 
     test "read subscribed community should have a flag", ~m(community user user2)a do
       {:ok, _} = CMS.subscribe_community(community, user)
 
-      {:ok, community} = CMS.read_community(community.raw, user)
+      {:ok, community} = CMS.read_community(community.slug, user)
 
       assert community.viewer_has_subscribed
       assert user.id in community.meta.subscribed_user_ids
 
-      {:ok, community} = CMS.read_community(community.raw, user2)
+      {:ok, community} = CMS.read_community(community.slug, user2)
       assert not community.viewer_has_subscribed
       assert user2.id not in community.meta.subscribed_user_ids
     end
@@ -103,14 +103,14 @@ defmodule GroupherServer.Test.CMS.Community do
       title = "chief editor"
       {:ok, community} = CMS.set_editor(community, title, user)
 
-      {:ok, community} = CMS.read_community(community.raw, user)
+      {:ok, community} = CMS.read_community(community.slug, user)
       assert community.viewer_is_editor
 
-      {:ok, community} = CMS.read_community(community.raw, user2)
+      {:ok, community} = CMS.read_community(community.slug, user2)
       assert not community.viewer_is_editor
 
       {:ok, community} = CMS.unset_editor(community, user)
-      {:ok, community} = CMS.read_community(community.raw, user)
+      {:ok, community} = CMS.read_community(community.slug, user)
       assert not community.viewer_is_editor
     end
   end

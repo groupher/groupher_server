@@ -61,7 +61,7 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedPosts do
           }
           communities {
             id
-            raw
+            slug
           }
           articleTags {
             id
@@ -120,10 +120,10 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedPosts do
       {:ok, article_tag} = CMS.create_article_tag(community, :post, article_tag_attrs, user)
       {:ok, _} = CMS.set_article_tag(:post, post.id, article_tag.id)
 
-      variables = %{filter: %{page: 1, size: 10, article_tag: article_tag.raw}}
+      variables = %{filter: %{page: 1, size: 10, article_tag: article_tag.slug}}
       results = guest_conn |> query_result(@query, variables, "pagedPosts")
 
-      variables = %{filter: %{page: 1, size: 10, article_tags: [article_tag.raw]}}
+      variables = %{filter: %{page: 1, size: 10, article_tags: [article_tag.slug]}}
       results2 = guest_conn |> query_result(@query, variables, "pagedPosts")
       assert results == results2
 
@@ -140,7 +140,7 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedPosts do
       post_attrs2 = mock_attrs(:post, %{community_id: community.id})
       {:ok, _post} = CMS.create_article(community, :post, post_attrs2, user)
 
-      variables = %{filter: %{page: 1, size: 10, community: community.raw}}
+      variables = %{filter: %{page: 1, size: 10, community: community.slug}}
       results = guest_conn |> query_result(@query, variables, "pagedPosts")
 
       post = results["entries"] |> List.first()
@@ -185,7 +185,7 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedPosts do
           }
           communities {
             id
-            raw
+            slug
           }
         }
        }
@@ -197,7 +197,7 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedPosts do
       {:ok, community} = db_insert(:community)
       {:ok, post} = CMS.create_article(community, :post, mock_attrs(:post), user)
 
-      variables = %{filter: %{community: community.raw}}
+      variables = %{filter: %{community: community.slug}}
       results = guest_conn |> query_result(@query, variables, "pagedPosts")
 
       assert length(results["entries"]) == 1
@@ -208,7 +208,7 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedPosts do
       {:ok, community} = db_insert(:community)
       {:ok, _post} = CMS.create_article(community, :post, mock_attrs(:post), user)
 
-      variables = %{filter: %{community: community.raw}}
+      variables = %{filter: %{community: community.slug}}
       results = guest_conn |> query_result(@query, variables, "pagedPosts")
       post = results["entries"] |> List.first()
 
@@ -277,7 +277,7 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedPosts do
       {:ok, _post2} = CMS.create_article(community, :post, mock_attrs(:post), user)
       {:ok, _post3} = CMS.create_article(community, :post, mock_attrs(:post), user)
 
-      variables = %{filter: %{community: community.raw}}
+      variables = %{filter: %{community: community.slug}}
       results = user_conn |> query_result(@query, variables, "pagedPosts")
       assert results["totalCount"] == 3
 
@@ -287,7 +287,7 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedPosts do
       assert not the_post["viewerHasCollected"]
       assert not the_post["viewerHasReported"]
 
-      {:ok, _} = CMS.read_article(post.original_community_raw, :post, post.inner_id, user)
+      {:ok, _} = CMS.read_article(post.original_community_slug, :post, post.inner_id, user)
       {:ok, _} = CMS.upvote_article(:post, post.id, user)
       {:ok, _} = CMS.collect_article(:post, post.id, user)
       {:ok, _} = CMS.report_article(:post, post.id, "reason", "attr_info", user)

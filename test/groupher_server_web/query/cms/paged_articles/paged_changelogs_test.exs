@@ -55,7 +55,7 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedChangelogs do
           }
           communities {
             id
-            raw
+            slug
           }
           articleTags {
             id
@@ -103,10 +103,10 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedChangelogs do
       {:ok, article_tag} = CMS.create_article_tag(community, :changelog, article_tag_attrs, user)
       {:ok, _} = CMS.set_article_tag(:changelog, changelog.id, article_tag.id)
 
-      variables = %{filter: %{page: 1, size: 10, article_tag: article_tag.raw}}
+      variables = %{filter: %{page: 1, size: 10, article_tag: article_tag.slug}}
       results = guest_conn |> query_result(@query, variables, "pagedChangelogs")
 
-      variables = %{filter: %{page: 1, size: 10, article_tags: [article_tag.raw]}}
+      variables = %{filter: %{page: 1, size: 10, article_tags: [article_tag.slug]}}
       results2 = guest_conn |> query_result(@query, variables, "pagedChangelogs")
       assert results == results2
 
@@ -123,7 +123,7 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedChangelogs do
       changelog_attrs2 = mock_attrs(:changelog, %{community_id: community.id})
       {:ok, _} = CMS.create_article(community, :changelog, changelog_attrs2, user)
 
-      variables = %{filter: %{page: 1, size: 10, community: community.raw}}
+      variables = %{filter: %{page: 1, size: 10, community: community.slug}}
       results = guest_conn |> query_result(@query, variables, "pagedChangelogs")
 
       changelog = results["entries"] |> List.first()
@@ -168,7 +168,7 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedChangelogs do
           }
           communities {
             id
-            raw
+            slug
           }
         }
        }
@@ -180,7 +180,7 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedChangelogs do
       {:ok, community} = db_insert(:community)
       {:ok, changelog} = CMS.create_article(community, :changelog, mock_attrs(:changelog), user)
 
-      variables = %{filter: %{community: community.raw}}
+      variables = %{filter: %{community: community.slug}}
       results = guest_conn |> query_result(@query, variables, "pagedChangelogs")
 
       assert length(results["entries"]) == 1
@@ -191,7 +191,7 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedChangelogs do
       {:ok, community} = db_insert(:community)
       {:ok, _} = CMS.create_article(community, :changelog, mock_attrs(:changelog), user)
 
-      variables = %{filter: %{community: community.raw}}
+      variables = %{filter: %{community: community.slug}}
       results = guest_conn |> query_result(@query, variables, "pagedChangelogs")
       changelog = results["entries"] |> List.first()
 
@@ -261,7 +261,7 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedChangelogs do
       {:ok, _} = CMS.create_article(community, :changelog, mock_attrs(:changelog), user)
       {:ok, _} = CMS.create_article(community, :changelog, mock_attrs(:changelog), user)
 
-      variables = %{filter: %{community: community.raw}}
+      variables = %{filter: %{community: community.slug}}
       results = user_conn |> query_result(@query, variables, "pagedChangelogs")
       assert results["totalCount"] == 3
 
@@ -272,7 +272,7 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedChangelogs do
       assert not the_changelog["viewerHasReported"]
 
       {:ok, _} =
-        CMS.read_article(changelog.original_community_raw, :changelog, changelog.inner_id, user)
+        CMS.read_article(changelog.original_community_slug, :changelog, changelog.inner_id, user)
 
       {:ok, _} = CMS.upvote_article(:changelog, changelog.id, user)
       {:ok, _} = CMS.collect_article(:changelog, changelog.id, user)

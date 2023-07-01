@@ -29,7 +29,7 @@ defmodule GroupherServer.Test.Mutation.Sink.ChangelogSink do
 
     test "login user can sink a changelog", ~m(community changelog)a do
       variables = %{id: changelog.id, communityId: community.id}
-      passport_rules = %{community.raw => %{"changelog.sink" => true}}
+      passport_rules = %{community.slug => %{"changelog.sink" => true}}
       rule_conn = simu_conn(:user, cms: passport_rules)
 
       result = rule_conn |> mutation_result(@query, variables, "sinkChangelog")
@@ -57,7 +57,7 @@ defmodule GroupherServer.Test.Mutation.Sink.ChangelogSink do
     test "login user can undo sink to a changelog", ~m(community changelog)a do
       variables = %{id: changelog.id, communityId: community.id}
 
-      passport_rules = %{community.raw => %{"changelog.undo_sink" => true}}
+      passport_rules = %{community.slug => %{"changelog.undo_sink" => true}}
       rule_conn = simu_conn(:user, cms: passport_rules)
 
       {:ok, _} = CMS.sink_article(:changelog, changelog.id)

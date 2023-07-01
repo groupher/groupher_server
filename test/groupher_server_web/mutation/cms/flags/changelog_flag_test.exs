@@ -131,7 +131,7 @@ defmodule GroupherServer.Test.Mutation.Flags.ChangelogFlag do
     test "auth user can pin changelog", ~m(community changelog)a do
       variables = %{id: changelog.id, communityId: community.id}
 
-      passport_rules = %{community.raw => %{"changelog.pin" => true}}
+      passport_rules = %{community.slug => %{"changelog.pin" => true}}
       rule_conn = simu_conn(:user, cms: passport_rules)
 
       updated = rule_conn |> mutation_result(@query, variables, "pinChangelog")
@@ -160,7 +160,7 @@ defmodule GroupherServer.Test.Mutation.Flags.ChangelogFlag do
     test "auth user can undo pin changelog", ~m(community changelog)a do
       variables = %{id: changelog.id, communityId: community.id}
 
-      passport_rules = %{community.raw => %{"changelog.undo_pin" => true}}
+      passport_rules = %{community.slug => %{"changelog.undo_pin" => true}}
       rule_conn = simu_conn(:user, cms: passport_rules)
 
       CMS.pin_article(:changelog, changelog.id, community.id)

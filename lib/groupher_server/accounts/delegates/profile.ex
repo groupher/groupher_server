@@ -145,7 +145,7 @@ defmodule GroupherServer.Accounts.Delegate.Profile do
   def default_subscribed_communities(%{page: _, size: _} = filter) do
     filter = Map.merge(filter, %{size: @default_subscribed_communities, category: "pl"})
 
-    with {:ok, home_community} <- ORM.find_by(Community, raw: "home"),
+    with {:ok, home_community} <- ORM.find_by(Community, slug: "home"),
          {:ok, paged_communities} <- ORM.find_all(Community, filter) do
       %{
         entries: paged_communities.entries ++ [home_community],
@@ -194,7 +194,7 @@ defmodule GroupherServer.Accounts.Delegate.Profile do
         false ->
           entries =
             Enum.map(paged_communities.entries, fn c ->
-              index = Map.get(customization.sidebar_communities_index, c.raw, 100_000)
+              index = Map.get(customization.sidebar_communities_index, c.slug, 100_000)
               %{c | index: index}
             end)
 

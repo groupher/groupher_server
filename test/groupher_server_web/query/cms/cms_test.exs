@@ -45,8 +45,8 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
     end
 
     @check_community_exist_query """
-    query($raw: String!) {
-      isCommunityExist(raw: $raw) {
+    query($slug: String!) {
+      isCommunityExist(slug: $slug) {
         exist
       }
     }
@@ -59,18 +59,18 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
         rule_conn
         |> query_result(
           @check_community_exist_query,
-          %{raw: "elixir"},
+          %{slug: "elixir"},
           "isCommunityExist"
         )
 
       assert not check_state["exist"]
 
-      community_attrs = mock_attrs(:community, %{raw: "elixir", user_id: user.id})
+      community_attrs = mock_attrs(:community, %{slug: "elixir", user_id: user.id})
       {:ok, _community} = CMS.create_community(community_attrs)
 
       check_state =
         rule_conn
-        |> query_result(@check_community_exist_query, %{raw: "elixir"}, "isCommunityExist")
+        |> query_result(@check_community_exist_query, %{slug: "elixir"}, "isCommunityExist")
 
       assert check_state["exist"]
     end
@@ -78,8 +78,8 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
 
   describe "[cms communities]" do
     @query """
-    query($raw: String) {
-      community(raw: $raw) {
+    query($slug: String) {
+      community(slug: $slug) {
         id
         title
         threadsCount
@@ -87,7 +87,7 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
         views
         threads {
           id
-          raw
+          slug
           index
         }
       }
@@ -97,7 +97,7 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
     test "views should work", ~m(guest_conn)a do
       {:ok, community} = db_insert(:community)
 
-      variables = %{raw: community.raw}
+      variables = %{slug: community.slug}
       guest_conn |> query_result(@query, variables, "community")
 
       {:ok, community} = ORM.find(Community, community.id)
@@ -109,12 +109,12 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
     end
 
     test "can get from alias community name", ~m(guest_conn)a do
-      {:ok, _community} = db_insert(:community, %{raw: "kubernetes", aka: "k8s"})
+      {:ok, _community} = db_insert(:community, %{slug: "kubernetes", aka: "k8s"})
 
-      variables = %{raw: "k8s"}
+      variables = %{slug: "k8s"}
       aka_results = guest_conn |> query_result(@query, variables, "community")
 
-      variables = %{raw: "kubernetes"}
+      variables = %{slug: "kubernetes"}
       results = guest_conn |> query_result(@query, variables, "community")
 
       assert results["id"] == aka_results["id"]
@@ -127,7 +127,7 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
         CMS.set_thread(community, thread)
       end)
 
-      variables = %{raw: community.raw}
+      variables = %{slug: community.slug}
       results = guest_conn |> query_result(@query, variables, "community")
 
       assert results["threadsCount"] == 5
@@ -139,7 +139,7 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
       article_tag_attrs = mock_attrs(:article_tag)
       {:ok, _article_tag} = CMS.create_article_tag(community, :post, article_tag_attrs, user)
 
-      variables = %{raw: community.raw}
+      variables = %{slug: community.slug}
       results = guest_conn |> query_result(@query, variables, "community")
 
       assert results["articleTagsCount"] == 2
@@ -153,7 +153,7 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
         CMS.set_thread(community, thread)
       end)
 
-      variables = %{raw: community.raw}
+      variables = %{slug: community.slug}
       results = guest_conn |> query_result(@query, variables, "community")
 
       first_idx = results["threads"] |> List.first() |> Map.get("index")
@@ -173,7 +173,7 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
           categories {
             id
             title
-            raw
+            slug
           }
         }
         totalCount
@@ -228,7 +228,7 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
       CMS.set_category(%Community{id: community2.id}, %Category{id: category2.id})
       CMS.set_category(%Community{id: communityn.id}, %Category{id: category2.id})
 
-      variables = %{filter: %{page: 1, size: 20, category: category1.raw}}
+      variables = %{filter: %{page: 1, size: 20, category: category1.slug}}
       results = guest_conn |> query_result(@query, variables, "pagedCommunities")
 
       assert results["entries"]
@@ -238,7 +238,7 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
 
       assert results["totalCount"] == 1
 
-      variables = %{filter: %{page: 1, size: 20, category: category2.raw}}
+      variables = %{filter: %{page: 1, size: 20, category: category2.slug}}
       results = guest_conn |> query_result(@query, variables, "pagedCommunities")
 
       assert results["totalCount"] == 2
@@ -262,7 +262,7 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
         entries {
           id
           title
-          raw
+          slug
           index
         }
         totalCount
@@ -326,9 +326,9 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
     test "guest user can get paged categories", ~m(guest_conn user)a do
       variables = %{filter: %{page: 1, size: 10}}
       valid_attrs = mock_attrs(:category)
-      ~m(title raw)a = valid_attrs
+      ~m(title slug)a = valid_attrs
 
-      {:ok, _} = CMS.create_category(~m(title raw)a, %User{id: user.id})
+      {:ok, _} = CMS.create_category(~m(title slug)a, %User{id: user.id})
 
       results = guest_conn |> query_result(@query, variables, "pagedCategories")
       author = results["entries"] |> List.first() |> Map.get("author")
@@ -340,9 +340,9 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
     test "paged categories containes communities info", ~m(guest_conn user community)a do
       variables = %{filter: %{page: 1, size: 10}}
       valid_attrs = mock_attrs(:category)
-      ~m(title raw)a = valid_attrs
+      ~m(title slug)a = valid_attrs
 
-      {:ok, category} = CMS.create_category(~m(title raw)a, %User{id: user.id})
+      {:ok, category} = CMS.create_category(~m(title slug)a, %User{id: user.id})
 
       {:ok, _} = CMS.set_category(%Community{id: community.id}, %Category{id: category.id})
 
@@ -355,8 +355,8 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
 
   describe "[cms query community]" do
     @query """
-    query($raw: String!) {
-      community(raw: $raw, title: $title) {
+    query($slug: String!) {
+      community(slug: $slug, title: $title) {
         id
         title
         desc
@@ -369,8 +369,8 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
     end
 
     @query """
-    query($raw: String!) {
-      community(raw: $raw) {
+    query($slug: String!) {
+      community(slug: $slug) {
         id
         title
         desc
@@ -393,7 +393,7 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
           }
 
           nameAlias {
-            raw
+            slug
             name
           }
         }
@@ -404,21 +404,21 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
       community_attrs = mock_attrs(:community) |> Map.merge(%{user_id: user.id})
 
       {:ok, community} = CMS.create_community(community_attrs)
-      {:ok, _} = CMS.update_dashboard(community.raw, :seo, %{og_title: "groupher"})
-      {:ok, _} = CMS.update_dashboard(community.raw, :layout, %{post_layout: "new layout"})
+      {:ok, _} = CMS.update_dashboard(community.slug, :seo, %{og_title: "groupher"})
+      {:ok, _} = CMS.update_dashboard(community.slug, :layout, %{post_layout: "new layout"})
 
       {:ok, _} =
-        CMS.update_dashboard(community.raw, :layout, %{kanban_bg_colors: ["GREEN", "RED"]})
+        CMS.update_dashboard(community.slug, :layout, %{kanban_bg_colors: ["GREEN", "RED"]})
 
-      {:ok, _} = CMS.update_dashboard(community.raw, :base_info, %{favicon: "new favicon"})
-
-      {:ok, _} =
-        CMS.update_dashboard(community.raw, :rss, %{rss_feed_type: "digest", rss_feed_count: 50})
+      {:ok, _} = CMS.update_dashboard(community.slug, :base_info, %{favicon: "new favicon"})
 
       {:ok, _} =
-        CMS.update_dashboard(community.raw, :name_alias, [%{raw: "raw 0", name: "name 0"}])
+        CMS.update_dashboard(community.slug, :rss, %{rss_feed_type: "digest", rss_feed_count: 50})
 
-      variables = %{raw: community.raw}
+      {:ok, _} =
+        CMS.update_dashboard(community.slug, :name_alias, [%{slug: "slug 0", name: "name 0"}])
+
+      variables = %{slug: community.slug}
 
       results = guest_conn |> query_result(@query, variables, "community")
       assert get_in(results, ["dashboard", "seo", "ogTitle"]) == "groupher"
@@ -430,15 +430,15 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
       assert get_in(results, ["dashboard", "rss", "rssFeedCount"]) == 50
 
       assert get_in(results, ["dashboard", "nameAlias"]) == [
-               %{"name" => "name 0", "raw" => "raw 0"}
+               %{"name" => "name 0", "slug" => "slug 0"}
              ]
     end
   end
 
   describe "[cms community editors]" do
     @query """
-    query($raw: String!) {
-      community(raw: $raw) {
+    query($slug: String!) {
+      community(slug: $slug) {
         id
         editorsCount
       }
@@ -451,7 +451,7 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
 
       Enum.each(users, &CMS.set_editor(community, title, %User{id: &1.id}))
 
-      variables = %{raw: community.raw}
+      variables = %{slug: community.slug}
       results = guest_conn |> query_result(@query, variables, "community")
       editors_count = results["editorsCount"]
 
@@ -488,8 +488,8 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
 
   describe "[cms community subscribe]" do
     @query """
-    query($raw: String!) {
-      community(raw: $raw) {
+    query($slug: String!) {
+      community(slug: $slug) {
         id
         subscribersCount
       }
@@ -501,7 +501,7 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
 
       Enum.each(users, &CMS.subscribe_community(community, %User{id: &1.id}))
 
-      variables = %{raw: community.raw}
+      variables = %{slug: community.slug}
       results = guest_conn |> query_result(@query, variables, "community")
       subscribers_count = results["subscribersCount"]
 
@@ -537,7 +537,7 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
       assert results |> is_valid_pagination?
     end
 
-    test "guest user can get paged subscribers by community raw", ~m(guest_conn community)a do
+    test "guest user can get paged subscribers by community slug", ~m(guest_conn community)a do
       {:ok, users} = db_insert_multi(:user, 25)
 
       Enum.each(
@@ -545,7 +545,7 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
         &CMS.subscribe_community(community, %User{id: &1.id})
       )
 
-      variables = %{community: community.raw, filter: %{page: 1, size: 10}}
+      variables = %{community: community.slug, filter: %{page: 1, size: 10}}
       results = guest_conn |> query_result(@query, variables, "pagedCommunitySubscribers")
 
       assert results |> is_valid_pagination?

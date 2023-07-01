@@ -47,7 +47,7 @@ defmodule GroupherServer.CMS.Delegate.Search do
     from(
       c in Community,
       join: cat in assoc(c, :categories),
-      where: cat.raw == ^category
+      where: cat.slug == ^category
     )
     |> do_search_communities(title)
   end
@@ -56,7 +56,7 @@ defmodule GroupherServer.CMS.Delegate.Search do
     queryable
     |> where(
       [c],
-      ilike(c.title, ^"%#{title}%") or ilike(c.raw, ^"%#{title}%") or ilike(c.aka, ^"%#{title}%")
+      ilike(c.title, ^"%#{title}%") or ilike(c.slug, ^"%#{title}%") or ilike(c.aka, ^"%#{title}%")
     )
     |> ORM.paginator(page: 1, size: @search_items_count)
     |> done()

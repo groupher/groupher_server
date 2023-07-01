@@ -118,7 +118,7 @@ defmodule GroupherServer.Test.Mutation.ArticleCommunity.Post do
     """
 
     test "auth user can mirror post home", ~m(post)a do
-      {:ok, home_community} = db_insert(:community, %{raw: "home"})
+      {:ok, home_community} = db_insert(:community, %{slug: "home"})
 
       variables = %{id: post.id, thread: "POST"}
 
@@ -140,7 +140,7 @@ defmodule GroupherServer.Test.Mutation.ArticleCommunity.Post do
     }
     """
     test "auth user can move post to blackhole", ~m(post)a do
-      {:ok, blackhole_community} = db_insert(:community, %{raw: "blackhole"})
+      {:ok, blackhole_community} = db_insert(:community, %{slug: "blackhole"})
 
       variables = %{id: post.id, thread: "POST"}
 

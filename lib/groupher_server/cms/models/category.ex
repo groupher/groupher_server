@@ -7,14 +7,14 @@ defmodule GroupherServer.CMS.Model.Category do
 
   alias GroupherServer.CMS.Model.{Author, Community}
 
-  @required_fields ~w(title raw author_id)a
+  @required_fields ~w(title slug author_id)a
   @optional_fields ~w(index)a
 
   @type t :: %Category{}
 
   schema "categories" do
     field(:title, :string)
-    field(:raw, :string)
+    field(:slug, :string)
     field(:index, :integer)
     belongs_to(:author, Author)
 

@@ -41,8 +41,8 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
 
   @default_apply_category Constant.apply_category(:public)
 
-  def read_community(raw, user), do: read_community(raw) |> viewer_has_states(user)
-  def read_community(raw), do: do_read_community(raw)
+  def read_community(slug, user), do: read_community(slug) |> viewer_has_states(user)
+  def read_community(slug), do: do_read_community(slug)
 
   def paged_communities(filter, %User{id: user_id, meta: meta}) do
     with {:ok, paged_communtiies} <- paged_communities(filter) do
@@ -95,17 +95,17 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
     |> Enum.with_index()
     |> Enum.map(fn {thread, index} ->
       title = thread |> Atom.to_string()
-      raw = title
+      slug = title
 
-      case ORM.find_by(Thread, raw: raw) do
+      case ORM.find_by(Thread, slug: slug) do
         {:ok, _} -> {:ok, :pass}
-        {:error, _} -> CMS.create_thread(~m(title raw index)a)
+        {:error, _} -> CMS.create_thread(~m(title slug index)a)
       end
     end)
 
     exist_threas = @community_default_threads |> Enum.map(&to_string(&1))
 
-    from(t in Thread, where: t.raw in ^exist_threas) |> Repo.all() |> done
+    from(t in Thread, where: t.slug in ^exist_threas) |> Repo.all() |> done
   end
 
   @doc """
@@ -124,7 +124,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
   update dashboard settings of a community
   """
   def update_dashboard(community, key, args) do
-    with {:ok, community} <- ORM.find_by(Community, raw: community),
+    with {:ok, community} <- ORM.find_by(Community, slug: community),
          {:ok, community_dashboard} <- ensure_dashboard_exist(community),
          {:ok, _} <- ORM.update_dashboard(community_dashboard, key, args) do
       {:ok, community}
@@ -147,8 +147,8 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
   @doc """
   check if community exist
   """
-  def is_community_exist?(raw) do
-    case ORM.find_by(Community, raw: raw) do
+  def is_community_exist?(slug) do
+    case ORM.find_by(Community, slug: slug) do
       {:ok, _} -> {:ok, %{exist: true}}
       {:error, _} -> {:ok, %{exist: false}}
     end
@@ -276,8 +276,8 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
   @doc """
   update thread / article count in community meta
   """
-  def update_community_count_field(%Community{meta: nil, raw: raw}, thread) do
-    with {:ok, community} = CMS.read_community(raw) do
+  def update_community_count_field(%Community{meta: nil, slug: slug}, thread) do
+    with {:ok, community} = CMS.read_community(slug) do
       update_community_count_field(community, thread)
     end
   end
@@ -310,8 +310,8 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
     load_community_members(community, CommunityEditor, filters)
   end
 
-  def community_members(:editors, %Community{raw: raw} = community, filters)
-      when not is_nil(raw) do
+  def community_members(:editors, %Community{slug: slug} = community, filters)
+      when not is_nil(slug) do
     load_community_members(community, CommunityEditor, filters)
   end
 
@@ -336,8 +336,8 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
     load_community_members(community, CommunitySubscriber, filters)
   end
 
-  def community_members(:subscribers, %Community{raw: raw} = community, filters)
-      when not is_nil(raw) do
+  def community_members(:subscribers, %Community{slug: slug} = community, filters)
+      when not is_nil(slug) do
     load_community_members(community, CommunitySubscriber, filters)
   end
 
@@ -369,11 +369,11 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
   TODO: create_thread
   """
   def create_thread(attrs) do
-    raw = to_string(attrs.raw)
+    slug = to_string(attrs.slug)
     title = attrs.title
     index = attrs |> Map.get(:index, 0)
 
-    Thread |> ORM.create(~m(title raw index)a)
+    Thread |> ORM.create(~m(title slug index)a)
   end
 
   @doc """
@@ -412,9 +412,9 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
     end
   end
 
-  defp do_read_community(raw) do
-    with {:ok, raw_community} <- find_community(raw),
-         {:ok, community} <- ensure_community_with_dashboard(raw_community) do
+  defp do_read_community(slug) do
+    with {:ok, community_slug} <- find_community(slug),
+         {:ok, community} <- ensure_community_with_dashboard(community_slug) do
       case community.meta do
         nil ->
           {:ok, community} = ORM.update_meta(community, @default_meta)
@@ -439,10 +439,10 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
     end
   end
 
-  defp find_community(raw) do
+  defp find_community(slug) do
     Community
     |> where([c], c.pending == ^@community_normal)
-    |> where([c], c.raw == ^raw or c.aka == ^raw)
+    |> where([c], c.slug == ^slug or c.aka == ^slug)
     |> preload(:dashboard)
     |> Repo.one()
     |> done
@@ -469,13 +469,13 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
   end
 
   defp load_community_members(
-         %Community{raw: raw},
+         %Community{slug: slug},
          queryable,
          %{page: page, size: size} = filters
        ) do
     queryable
     |> join(:inner, [member], c in assoc(member, :community))
-    |> where([member, c], c.raw == ^raw)
+    |> where([member, c], c.slug == ^slug)
     |> join(:inner, [member], u in assoc(member, :user))
     |> select([member, c, u], u)
     |> QueryBuilder.filter_pack(filters)

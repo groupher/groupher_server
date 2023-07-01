@@ -6,49 +6,49 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Categories do
     [
       %{
         title: "编程语言",
-        raw: "pl",
+        slug: "pl",
         index: 0
       },
       %{
         title: "框架 & 库",
-        raw: "framework",
+        slug: "framework",
         index: 1
       },
       %{
         title: "数据库",
-        raw: "database",
+        slug: "database",
         index: 2
       },
       %{
         title: "devops",
-        raw: "devops",
+        slug: "devops",
         index: 3
       },
       %{
         title: "开发工具",
-        raw: "tools",
+        slug: "tools",
         index: 4
       },
       %{
         title: "城市",
-        raw: "city",
+        slug: "city",
         index: 5
       },
       %{
         title: "人工智能",
-        raw: "ai",
+        slug: "ai",
         index: 6
       },
       %{
         # blackhole, Feedback, dev
         title: "站务",
-        raw: "feedback",
+        slug: "feedback",
         index: 8
       },
       %{
         # Makers, Adwall, Outwork
         title: "其他",
-        raw: "others",
+        slug: "others",
         index: 9
       }
     ]

@@ -204,7 +204,7 @@ defmodule GroupherServer.Test.CMS.ArticleCommunity.Changelog do
     end
 
     test "changelog can be mirror to home", ~m(community changelog_attrs user)a do
-      {:ok, home_community} = db_insert(:community, %{raw: "home"})
+      {:ok, home_community} = db_insert(:community, %{slug: "home"})
 
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
       assert changelog.original_community_id == community.id
@@ -220,13 +220,13 @@ defmodule GroupherServer.Test.CMS.ArticleCommunity.Changelog do
       assert exist_in?(community, changelog.communities)
       assert exist_in?(home_community, changelog.communities)
 
-      filter = %{page: 1, size: 10, community: community.raw}
+      filter = %{page: 1, size: 10, community: community.slug}
       {:ok, paged_articles} = CMS.paged_articles(:changelog, filter)
 
       assert exist_in?(changelog, paged_articles.entries)
       assert paged_articles.total_count === 1
 
-      filter = %{page: 1, size: 10, community: home_community.raw}
+      filter = %{page: 1, size: 10, community: home_community.slug}
       {:ok, paged_articles} = CMS.paged_articles(:changelog, filter)
 
       assert exist_in?(changelog, paged_articles.entries)
@@ -234,7 +234,7 @@ defmodule GroupherServer.Test.CMS.ArticleCommunity.Changelog do
     end
 
     test "changelog can be mirror to home with tags", ~m(community changelog_attrs user)a do
-      {:ok, home_community} = db_insert(:community, %{raw: "home"})
+      {:ok, home_community} = db_insert(:community, %{slug: "home"})
 
       article_tag_attrs0 = mock_attrs(:article_tag)
       article_tag_attrs = mock_attrs(:article_tag)
@@ -265,13 +265,13 @@ defmodule GroupherServer.Test.CMS.ArticleCommunity.Changelog do
       assert exist_in?(article_tag0, changelog.article_tags)
       assert exist_in?(article_tag, changelog.article_tags)
 
-      filter = %{page: 1, size: 10, community: community.raw}
+      filter = %{page: 1, size: 10, community: community.slug}
       {:ok, paged_articles} = CMS.paged_articles(:changelog, filter)
 
       assert exist_in?(changelog, paged_articles.entries)
       assert paged_articles.total_count === 1
 
-      filter = %{page: 1, size: 10, community: home_community.raw}
+      filter = %{page: 1, size: 10, community: home_community.slug}
       {:ok, paged_articles} = CMS.paged_articles(:changelog, filter)
 
       assert exist_in?(changelog, paged_articles.entries)
@@ -279,7 +279,7 @@ defmodule GroupherServer.Test.CMS.ArticleCommunity.Changelog do
     end
 
     test "changelog can be move to blackhole", ~m(community changelog_attrs user)a do
-      {:ok, blackhole_community} = db_insert(:community, %{raw: "blackhole"})
+      {:ok, blackhole_community} = db_insert(:community, %{slug: "blackhole"})
 
       {:ok, changelog} = CMS.create_article(community, :changelog, changelog_attrs, user)
       assert changelog.original_community_id == community.id
@@ -294,7 +294,7 @@ defmodule GroupherServer.Test.CMS.ArticleCommunity.Changelog do
 
       assert exist_in?(blackhole_community, changelog.communities)
 
-      filter = %{page: 1, size: 10, community: blackhole_community.raw}
+      filter = %{page: 1, size: 10, community: blackhole_community.slug}
       {:ok, paged_articles} = CMS.paged_articles(:changelog, filter)
 
       assert exist_in?(changelog, paged_articles.entries)
@@ -302,7 +302,7 @@ defmodule GroupherServer.Test.CMS.ArticleCommunity.Changelog do
     end
 
     test "changelog can be move to blackhole with tags", ~m(community changelog_attrs user)a do
-      {:ok, blackhole_community} = db_insert(:community, %{raw: "blackhole"})
+      {:ok, blackhole_community} = db_insert(:community, %{slug: "blackhole"})
 
       article_tag_attrs0 = mock_attrs(:article_tag)
       article_tag_attrs = mock_attrs(:article_tag)

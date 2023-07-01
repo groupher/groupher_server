@@ -29,7 +29,7 @@ defmodule GroupherServer.Test.Mutation.Sink.BlogSink do
 
     test "login user can sink a blog", ~m(community blog)a do
       variables = %{id: blog.id, communityId: community.id}
-      passport_rules = %{community.raw => %{"blog.sink" => true}}
+      passport_rules = %{community.slug => %{"blog.sink" => true}}
       rule_conn = simu_conn(:user, cms: passport_rules)
 
       result = rule_conn |> mutation_result(@query, variables, "sinkBlog")
@@ -57,7 +57,7 @@ defmodule GroupherServer.Test.Mutation.Sink.BlogSink do
     test "login user can undo sink to a blog", ~m(community blog)a do
       variables = %{id: blog.id, communityId: community.id}
 
-      passport_rules = %{community.raw => %{"blog.undo_sink" => true}}
+      passport_rules = %{community.slug => %{"blog.undo_sink" => true}}
       rule_conn = simu_conn(:user, cms: passport_rules)
 
       {:ok, _} = CMS.sink_article(:blog, blog.id)

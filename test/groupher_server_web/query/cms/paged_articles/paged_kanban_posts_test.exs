@@ -84,7 +84,7 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedKanbanPosts do
       {:ok, _post} = CMS.set_post_cat(post, @article_cat.feature)
       {:ok, _post} = CMS.set_post_state(post, @article_state.done)
 
-      variables = %{community: community.raw}
+      variables = %{community: community.slug}
       results = guest_conn |> query_result(@query, variables, "groupedKanbanPosts")
 
       assert results["todo"] |> is_valid_pagination?
@@ -128,7 +128,7 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedKanbanPosts do
       {:ok, _post} = CMS.set_post_state(post, @article_state.done)
 
       variables = %{
-        community: community.raw,
+        community: community.slug,
         filter: %{page: 1, size: 20, state: "WIP"}
       }
 

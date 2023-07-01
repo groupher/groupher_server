@@ -104,7 +104,7 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
   object :thread_item do
     field(:id, :id)
     field(:title, :string)
-    field(:raw, :string)
+    field(:slug, :string)
     field(:index, :integer)
   end
 
@@ -153,7 +153,7 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
     field(:id, :id)
     field(:title, :string)
     field(:desc, :string)
-    field(:raw, :string)
+    field(:slug, :string)
     field(:index, :integer)
     field(:logo, :string)
     field(:author, :user, resolve: dataloader(CMS, :author))
@@ -185,7 +185,7 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
   object :category do
     field(:id, :id)
     field(:title, :string)
-    field(:raw, :string)
+    field(:slug, :string)
     field(:index, :integer)
     field(:author, :user, resolve: dataloader(CMS, :author))
     field(:communities, list_of(:community), resolve: dataloader(CMS, :communities))
@@ -196,7 +196,7 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
   object :article_tag do
     field(:id, :id)
     field(:title, :string)
-    field(:raw, :string)
+    field(:slug, :string)
     field(:color, :string)
     field(:thread, :string)
     field(:group, :string)

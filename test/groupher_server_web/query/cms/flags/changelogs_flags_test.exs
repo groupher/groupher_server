@@ -41,7 +41,7 @@ defmodule GroupherServer.Test.Query.Flags.ChangelogsFlags do
           id
           pending
           communities {
-            raw
+            slug
           }
         }
         totalPages
@@ -54,7 +54,7 @@ defmodule GroupherServer.Test.Query.Flags.ChangelogsFlags do
 
     test "pending changelog should not see in paged query",
          ~m(guest_conn community changelog_m)a do
-      variables = %{filter: %{community: community.raw}}
+      variables = %{filter: %{community: community.slug}}
       results = guest_conn |> query_result(@query, variables, "pagedChangelogs")
 
       assert results["totalCount"] == @total_count
@@ -82,7 +82,7 @@ defmodule GroupherServer.Test.Query.Flags.ChangelogsFlags do
           id
           isPinned
           communities {
-            raw
+            slug
           }
         }
         totalPages
@@ -95,7 +95,7 @@ defmodule GroupherServer.Test.Query.Flags.ChangelogsFlags do
 
     test "if have pinned changelogs, the pinned changelogs should at the top of entries",
          ~m(guest_conn community changelog_m)a do
-      variables = %{filter: %{community: community.raw}}
+      variables = %{filter: %{community: community.slug}}
 
       results = guest_conn |> query_result(@query, variables, "pagedChangelogs")
 
@@ -129,7 +129,7 @@ defmodule GroupherServer.Test.Query.Flags.ChangelogsFlags do
 
     test "if have trashed changelogs, the mark deleted changelogs should not appears in result",
          ~m(guest_conn community)a do
-      variables = %{filter: %{community: community.raw}}
+      variables = %{filter: %{community: community.slug}}
       results = guest_conn |> query_result(@query, variables, "pagedChangelogs")
 
       random_id = results["entries"] |> Enum.shuffle() |> List.first() |> Map.get("id")

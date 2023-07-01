@@ -23,7 +23,7 @@ defmodule GroupherServer.Test.Query.CMS.BlogTags do
         entries {
           id
           title
-          raw
+          slug
           color
           thread
           extra
@@ -55,7 +55,7 @@ defmodule GroupherServer.Test.Query.CMS.BlogTags do
          ~m(guest_conn community article_tag_attrs user)a do
       {:ok, _article_tag} = CMS.create_article_tag(community, :blog, article_tag_attrs, user)
 
-      variables = %{filter: %{community: community.raw}}
+      variables = %{filter: %{community: community.slug}}
       results = guest_conn |> query_result(@query, variables, "pagedArticleTags")
 
       assert results |> is_valid_pagination?
@@ -66,7 +66,7 @@ defmodule GroupherServer.Test.Query.CMS.BlogTags do
          ~m(guest_conn community  article_tag_attrs user)a do
       {:ok, article_tag} = CMS.create_article_tag(community, :blog, article_tag_attrs, user)
 
-      variables = %{filter: %{community: community.raw, thread: "BLOG"}}
+      variables = %{filter: %{community: community.slug, thread: "BLOG"}}
       results = guest_conn |> query_result(@query, variables, "pagedArticleTags")
 
       assert results["totalCount"] == 1
@@ -74,7 +74,7 @@ defmodule GroupherServer.Test.Query.CMS.BlogTags do
       tag = results["entries"] |> List.first()
       assert tag["id"] == to_string(article_tag.id)
 
-      variables = %{filter: %{community: community.raw, thread: "BLOG"}}
+      variables = %{filter: %{community: community.slug, thread: "BLOG"}}
       results = guest_conn |> query_result(@query, variables, "pagedArticleTags")
 
       assert results["totalCount"] == 1

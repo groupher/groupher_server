@@ -13,7 +13,7 @@ defmodule GroupherServer.Test.Seeds.CommunitySeed do
       {:ok, found} = ORM.find(Community, community.id, preload: [threads: :thread])
 
       assert community.title == "Groupher"
-      assert community.raw == "home"
+      assert community.slug == "home"
       assert found.threads |> length == 5
     end
 
@@ -22,7 +22,7 @@ defmodule GroupherServer.Test.Seeds.CommunitySeed do
     #   {:ok, found} = ORM.find(Community, community.id, preload: [threads: :thread])
 
     #   assert community.title == "黑洞"
-    #   assert community.raw == "blackhole"
+    #   assert community.slug == "blackhole"
     #   assert found.threads |> length == 2
 
     #   threads = found.threads |> Enum.map(& &1.thread.title)
@@ -34,7 +34,7 @@ defmodule GroupherServer.Test.Seeds.CommunitySeed do
       {:ok, found} = ORM.find(Community, community.id, preload: [threads: :thread])
 
       assert community.title == "反馈与建议"
-      assert community.raw == "feedback"
+      assert community.slug == "feedback"
       assert found.threads |> length == 3
 
       threads = found.threads |> Enum.map(& &1.thread.title)
@@ -69,7 +69,7 @@ defmodule GroupherServer.Test.Seeds.CommunitySeed do
     #   assert tags_titles == ["打听", "讨论", "下班后", "推荐", "二手", "吐槽", "求/转/合租", "奇奇怪怪"]
 
     #   assert community.title == "成都"
-    #   assert community.raw == "chengdu"
+    #   assert community.slug == "chengdu"
 
     #   threads = found.threads |> Enum.map(& &1.thread.title)
     #   assert threads == ["帖子", "团队", "工作"]
@@ -98,14 +98,14 @@ defmodule GroupherServer.Test.Seeds.CommunitySeed do
       {:ok, community} = CMS.seed_community("react", :framework)
       {:ok, found} = ORM.find(Community, community.id, preload: [threads: :thread])
 
-      filter = %{community: community.raw, thread: "POST"}
+      filter = %{community: community.slug, thread: "POST"}
       {:ok, tags} = CMS.paged_article_tags(filter)
       tags_titles = tags |> Enum.map(& &1.title)
 
       assert tags_titles == ["求助", "分享推荐", "讨论", "学习资源", "杂谈", "社区事务"]
 
       assert community.title == "react"
-      assert community.raw == "react"
+      assert community.slug == "react"
 
       threads = found.threads |> Enum.map(& &1.thread.title)
       assert threads == ["帖子", "博客", "分布"]

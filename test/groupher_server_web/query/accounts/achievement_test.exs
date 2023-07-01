@@ -53,7 +53,7 @@ defmodule GroupherServer.Test.Query.Account.Achievement do
           id
           logo
           title
-          raw
+          slug
         }
         totalPages
         totalCount

@@ -22,7 +22,7 @@ defmodule GroupherServer.Test.Query.CMS.PostTags do
         entries {
           id
           title
-          raw
+          slug
           color
           thread
           extra
@@ -53,7 +53,7 @@ defmodule GroupherServer.Test.Query.CMS.PostTags do
          ~m(guest_conn community article_tag_attrs user)a do
       {:ok, _article_tag} = CMS.create_article_tag(community, :post, article_tag_attrs, user)
 
-      variables = %{filter: %{community: community.raw}}
+      variables = %{filter: %{community: community.slug}}
       results = guest_conn |> query_result(@query, variables, "pagedArticleTags")
 
       assert results |> is_valid_pagination?
@@ -64,7 +64,7 @@ defmodule GroupherServer.Test.Query.CMS.PostTags do
          ~m(guest_conn community  article_tag_attrs user)a do
       {:ok, article_tag} = CMS.create_article_tag(community, :post, article_tag_attrs, user)
 
-      variables = %{filter: %{community: community.raw, thread: "POST"}}
+      variables = %{filter: %{community: community.slug, thread: "POST"}}
       results = guest_conn |> query_result(@query, variables, "pagedArticleTags")
 
       assert results["totalCount"] == 1

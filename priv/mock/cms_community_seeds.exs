@@ -17,7 +17,7 @@ thread_ids = threads.entries |> Enum.map(& &1.id)
 # {:ok, thread} =
 # db_insert(:thread, %{
 # title: threads |> Enum.at(cnt - 1),
-# raw: threads |> Enum.at(cnt - 1)
+# slug: threads |> Enum.at(cnt - 1)
 # })
 
 # acc ++ [thread]
@@ -30,7 +30,7 @@ Enum.each(communities, fn c ->
       title: c,
       desc: "#{c} is the my favorites",
       logo: "https://coderplanets.oss-cn-beijing.aliyuncs.com/icons/pl/#{c}.svg",
-      raw: c
+      slug: c
     })
 
   Enum.each(thread_ids, fn thread_id ->
