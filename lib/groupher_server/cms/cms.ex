@@ -123,6 +123,8 @@ defmodule GroupherServer.CMS do
   defdelegate undo_sink_article(thread, id), to: ArticleCURD
 
   defdelegate archive_articles(thread), to: ArticleCURD
+  defdelegate batch_mark_delete_articles(community, thread, id_list), to: ArticleCURD
+  defdelegate batch_undo_mark_delete_articles(community, thread, id_list), to: ArticleCURD
 
   defdelegate paged_citing_contents(type, id, filter), to: CitedArtiment
 

@@ -244,6 +244,50 @@ defmodule GroupherServer.Test.CMS.Articles.Post do
     end
   end
 
+  describe "[cms post batch delete]" do
+    test "can batch delete posts with inner_ids", ~m(user community post_attrs)a do
+      {:ok, post1} = CMS.create_article(community, :post, post_attrs, user)
+      {:ok, post2} = CMS.create_article(community, :post, post_attrs, user)
+      {:ok, post3} = CMS.create_article(community, :post, post_attrs, user)
+
+      CMS.batch_mark_delete_articles(community.slug, :post, [
+        post1.inner_id,
+        post2.inner_id
+      ])
+
+      {:ok, post1} = ORM.find(Post, post1.id)
+      {:ok, post2} = ORM.find(Post, post2.id)
+      {:ok, post3} = ORM.find(Post, post3.id)
+
+      assert post1.mark_delete == true
+      assert post2.mark_delete == true
+      assert post3.mark_delete == false
+    end
+
+    test "can undo batch delete posts with inner_ids", ~m(user community post_attrs)a do
+      {:ok, post1} = CMS.create_article(community, :post, post_attrs, user)
+      {:ok, post2} = CMS.create_article(community, :post, post_attrs, user)
+      {:ok, post3} = CMS.create_article(community, :post, post_attrs, user)
+
+      CMS.batch_mark_delete_articles(community.slug, :post, [
+        post1.inner_id,
+        post2.inner_id
+      ])
+
+      CMS.batch_undo_mark_delete_articles(community.slug, :post, [
+        post1.inner_id,
+        post2.inner_id
+      ])
+
+      {:ok, post1} = ORM.find(Post, post1.id)
+      {:ok, post2} = ORM.find(Post, post2.id)
+      {:ok, post3} = ORM.find(Post, post3.id)
+
+      assert post1.mark_delete == false
+      assert post2.mark_delete == false
+    end
+  end
+
   describe "[cms post document]" do
     test "will create related document after create", ~m(user community post_attrs)a do
       {:ok, post} = CMS.create_article(community, :post, post_attrs, user)

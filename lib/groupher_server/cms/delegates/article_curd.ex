@@ -60,15 +60,15 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
   @doc """
   read articles for un-logined user
   """
-  def read_article(community_slug, thread, id) when thread in @article_threads do
-    with {:ok, article} <- check_article_pending(community_slug, thread, id) do
+  def read_article(community_slug, thread, inner_id) when thread in @article_threads do
+    with {:ok, article} <- if_article_legal(community_slug, thread, inner_id) do
       do_read_article(article, thread)
     end
   end
 
-  def read_article(community_slug, thread, id, %User{id: user_id} = user)
+  def read_article(community_slug, thread, inner_id, %User{id: user_id} = user)
       when thread in @article_threads do
-    with {:ok, article} <- check_article_pending(community_slug, thread, id, user) do
+    with {:ok, article} <- if_article_legal(community_slug, thread, inner_id, user) do
       Multi.new()
       |> Multi.run(:normal_read, fn _, _ -> do_read_article(article, thread) end)
       |> Multi.run(:add_viewed_user, fn _, %{normal_read: article} ->
@@ -592,6 +592,47 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
   end
 
   @doc """
+  make sure the given ids are deleted
+  """
+  def batch_mark_delete_articles(community, thread, inner_id_list) do
+    do_batch_mark_delete_articles(community, thread, inner_id_list, true)
+  end
+
+  @doc """
+  make sure the given ids are deleted
+  """
+  def batch_undo_mark_delete_articles(community, thread, inner_id_list) do
+    do_batch_mark_delete_articles(community, thread, inner_id_list, false)
+  end
+
+  defp do_batch_mark_delete_articles(community, thread, inner_id_list, delete_flag) do
+    with {:ok, info} <- match(thread) do
+      batch_query =
+        info.model
+        |> where([article], article.original_community_slug == ^community)
+        |> where([article], article.inner_id in ^inner_id_list)
+
+      Multi.new()
+      |> Multi.run(:update_articles, fn _, _ ->
+        batch_query
+        |> Repo.update_all(set: [mark_delete: delete_flag])
+        |> done
+      end)
+      |> Multi.run(:update_community_article_count, fn _, _ ->
+        communities =
+          from(a in batch_query, preload: :communities)
+          |> Repo.all()
+          |> Enum.map(& &1.communities)
+          |> Enum.at(0)
+
+        CommunityCURD.update_community_count_field(communities, thread)
+      end)
+      |> Repo.transaction()
+      |> result()
+    end
+  end
+
+  @doc """
   remove article forever
   """
   def delete_article(article, reason \\ @remove_article_hint) do
@@ -669,43 +710,43 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
     |> result()
   end
 
-  defp check_article_pending(community_slug, thread, id, user)
+  defp if_article_legal(community_slug, thread, inner_id, user)
        when thread in @article_threads do
-    clauses = %{original_community_slug: community_slug, inner_id: id}
+    clauses = %{original_community_slug: community_slug, inner_id: inner_id}
 
     with {:ok, info} <- match(thread),
          {:ok, article} <- ORM.find_by(info.model, clauses, preload: :author) do
-      check_article_pending(article, user)
+      if_article_legal(article, user)
     end
   end
 
-  defp check_article_pending(community_slug, thread, id)
+  defp if_article_legal(community_slug, thread, inner_id)
        when thread in @article_threads do
-    clauses = %{original_community_slug: community_slug, inner_id: id}
+    clauses = %{original_community_slug: community_slug, inner_id: inner_id}
 
     with {:ok, info} <- match(thread),
          {:ok, article} <- ORM.find_by(info.model, clauses) do
-      check_article_pending(article)
+      if_article_legal(article)
     end
   end
 
   # pending article can be seen is viewer is author
-  defp check_article_pending(thread, id, %User{} = user) when thread in @article_threads do
+  defp if_article_legal(thread, id, %User{} = user) when thread in @article_threads do
     with {:ok, info} <- match(thread),
          {:ok, article} <- ORM.find(info.model, id, preload: :author) do
-      check_article_pending(article, user)
+      if_article_legal(article, user)
     end
   end
 
-  defp check_article_pending(%{pending: @audit_legal} = article, _) do
+  defp if_article_legal(%{pending: @audit_legal} = article, _) do
     {:ok, article}
   end
 
-  defp check_article_pending(%{pending: @audit_failed} = article, _) do
+  defp if_article_legal(%{pending: @audit_failed} = article, _) do
     {:ok, article}
   end
 
-  defp check_article_pending(%{pending: @audit_illegal} = article, %User{id: user_id}) do
+  defp if_article_legal(%{pending: @audit_illegal} = article, %User{id: user_id}) do
     case article.author.user_id == user_id do
       true -> {:ok, article}
       false -> raise_error(:pending, "this article is under audition")
@@ -713,18 +754,18 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
   end
 
   # pending article should not be seen
-  defp check_article_pending(thread, id) when thread in @article_threads do
+  defp if_article_legal(thread, id) when thread in @article_threads do
     with {:ok, info} <- match(thread),
          {:ok, article} <- ORM.find(info.model, id) do
-      check_article_pending(article)
+      if_article_legal(article)
     end
   end
 
-  defp check_article_pending(%{pending: @audit_illegal}) do
+  defp if_article_legal(%{pending: @audit_illegal}) do
     raise_error(:pending, "this article is under audition")
   end
 
-  defp check_article_pending(article), do: {:ok, article}
+  defp if_article_legal(article), do: {:ok, article}
 
   defp add_pin_articles_ifneed(articles, querable, %{community: community} = filter) do
     thread = module_to_atom(querable)
@@ -853,6 +894,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
 
   defp result({:ok, %{update_edit_status: result}}), do: {:ok, result}
   defp result({:ok, %{update_article: result}}), do: {:ok, result}
+  defp result({:ok, %{update_articles: result}}), do: {:ok, %{done: true}}
   defp result({:ok, %{delete_article: result}}), do: {:ok, result}
   # NOTE:  for read article, order is import
   defp result({:ok, %{set_viewer_has_states: result}}), do: result |> done()

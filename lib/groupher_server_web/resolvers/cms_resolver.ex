@@ -153,6 +153,14 @@ defmodule GroupherServerWeb.Resolvers.CMS do
     CMS.mark_delete_article(thread, id)
   end
 
+  def batch_mark_delete_articles(_root, ~m(community thread ids)a, _info) do
+    CMS.batch_mark_delete_articles(community, thread, ids)
+  end
+
+  def batch_undo_mark_delete_articles(_root, ~m(community thread ids)a, _info) do
+    CMS.batch_undo_mark_delete_articles(community, thread, ids)
+  end
+
   def undo_mark_delete_article(_root, ~m(id thread)a, _info) do
     CMS.undo_mark_delete_article(thread, id)
   end

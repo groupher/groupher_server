@@ -19,6 +19,10 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
     field(:exist, :boolean)
   end
 
+  object :done_state do
+    field(:done, :boolean)
+  end
+
   ######
   # common stands for minimal info of the type
   # usually used in abuse_report, feeds, etc ..

@@ -267,7 +267,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
   end
 
   def update_community_count_field(communities, thread) when is_list(communities) do
-    case Enum.all?(communities, &({:ok, _} = update_community_count_field(&1, thread))) do
+    case Enum.all?(Enum.uniq(communities), &({:ok, _} = update_community_count_field(&1, thread))) do
       true -> {:ok, :pass}
       false -> {:error, "update_community_count_field"}
     end

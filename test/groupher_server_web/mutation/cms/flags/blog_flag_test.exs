@@ -2,7 +2,7 @@ defmodule GroupherServer.Test.Mutation.Flags.BlogFlag do
   use GroupherServer.TestTools
 
   alias GroupherServer.CMS
-  alias CMS.Model.Community
+  alias CMS.Model.{Community, Blog}
 
   alias Helper.ORM
 
@@ -11,12 +11,14 @@ defmodule GroupherServer.Test.Mutation.Flags.BlogFlag do
     {:ok, community} = db_insert(:community)
 
     {:ok, blog} = CMS.create_article(community, :blog, mock_attrs(:blog), user)
+    {:ok, blog2} = CMS.create_article(community, :blog, mock_attrs(:blog), user)
+    {:ok, blog3} = CMS.create_article(community, :blog, mock_attrs(:blog), user)
 
     guest_conn = simu_conn(:guest)
     user_conn = simu_conn(:user)
     owner_conn = simu_conn(:user, user)
 
-    {:ok, ~m(user_conn guest_conn owner_conn community user blog)a}
+    {:ok, ~m(user_conn guest_conn owner_conn community user blog blog2 blog3)a}
   end
 
   describe "[mutation blog flag curd]" do
@@ -117,6 +119,73 @@ defmodule GroupherServer.Test.Mutation.Flags.BlogFlag do
       assert user_conn |> mutation_get_error?(@query, variables, ecode(:passport))
       assert guest_conn |> mutation_get_error?(@query, variables, ecode(:account_login))
       assert rule_conn |> mutation_get_error?(@query, variables, ecode(:passport))
+    end
+
+    @query """
+    mutation($community: String!, $ids: [ID]!){
+      batchMarkDeleteBlogs(community: $community, ids: $ids) {
+        done
+      }
+    }
+    """
+
+    test "auth user can batch mark delete blogs",
+         ~m(community blog blog2 blog3)a do
+      variables = %{
+        community: community.slug,
+        ids: [blog.inner_id, blog2.inner_id]
+      }
+
+      passport_rules = %{"blog.mark_delete" => true}
+      rule_conn = simu_conn(:user, cms: passport_rules)
+
+      updated = rule_conn |> mutation_result(@query, variables, "batchMarkDeleteBlogs")
+
+      assert updated["done"] == true
+
+      {:ok, blog} = ORM.find(Blog, blog.id)
+      {:ok, blog2} = ORM.find(Blog, blog2.id)
+      {:ok, blog3} = ORM.find(Blog, blog3.id)
+
+      assert blog.mark_delete == true
+      assert blog2.mark_delete == true
+      assert blog3.mark_delete == false
+    end
+
+    @query """
+    mutation($community: String!, $ids: [ID]!){
+      batchUndoMarkDeleteBlogs(community: $community, ids: $ids) {
+        done
+      }
+    }
+    """
+
+    test "auth user can batch undo mark delete blogs",
+         ~m(community blog blog2 blog3)a do
+      CMS.batch_mark_delete_articles(community.slug, :blog, [
+        blog.inner_id,
+        blog2.inner_id
+      ])
+
+      variables = %{
+        community: community.slug,
+        ids: [blog.inner_id, blog2.inner_id]
+      }
+
+      passport_rules = %{"blog.mark_delete" => true}
+      rule_conn = simu_conn(:user, cms: passport_rules)
+
+      updated = rule_conn |> mutation_result(@query, variables, "batchUndoMarkDeleteBlogs")
+
+      assert updated["done"] == true
+
+      {:ok, blog} = ORM.find(Blog, blog.id)
+      {:ok, blog2} = ORM.find(Blog, blog2.id)
+      {:ok, blog3} = ORM.find(Blog, blog3.id)
+
+      assert blog.mark_delete == false
+      assert blog2.mark_delete == false
+      assert blog3.mark_delete == false
     end
 
     @query """
