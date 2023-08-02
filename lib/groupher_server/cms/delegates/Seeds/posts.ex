@@ -1,4 +1,4 @@
-defmodule GroupherServer.CMS.Delegate.Seeds.Posts do
+defmodule GroupherServer.CMS.Delegate.Seeds.Articles do
   @moduledoc """
   seeds data for init, should be called ONLY in new database, like migration
   """
@@ -19,7 +19,7 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Posts do
   seed communities pragraming languages
   """
   # type: city, pl, framework, ...
-  def seed_posts(community_slug, thread) do
+  def seed_articles(community_slug, thread) do
     with {:ok, community} <- ORM.find_by(Community, slug: community_slug),
          {:ok, user} <- ORM.find(User, 1) do
       attrs = mock_attrs(thread, %{community_id: community.id})

@@ -44,7 +44,7 @@ defmodule GroupherServerWeb.Resolvers.CMS do
 
   def update_dashboard(_root, %{dashboard_section: key, community: community} = args, _info) do
     dashboard_args =
-      case key in [:header_links, :footer_links, :name_alias, :social_links] do
+      case key in [:header_links, :footer_links, :name_alias, :social_links, :faqs] do
         true -> Map.drop(args, [:community, :dashboard_section]) |> Map.get(key)
         false -> Map.drop(args, [:community, :dashboard_section])
       end

@@ -326,6 +326,73 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert third.group_index == 3
     end
 
+    @tag :wip
+    test "can update faqs in community dashboard", ~m(community_attrs)a do
+      {:ok, community} = CMS.create_community(community_attrs)
+
+      {:ok, _} =
+        CMS.update_dashboard(community.slug, :faqs, [
+          %{
+            title: "xx is yy ?",
+            index: 0,
+            body: "this is body"
+          }
+        ])
+
+      {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
+
+      first = find_community.dashboard.faqs |> Enum.at(0)
+
+      assert first.title == "xx is yy ?"
+      assert first.body == "this is body"
+    end
+
+    @tag :wip
+    test "should overwirte all faqs in community dashboard everytime",
+         ~m(community_attrs)a do
+      {:ok, community} = CMS.create_community(community_attrs)
+
+      {:ok, _} =
+        CMS.update_dashboard(community.slug, :faqs, [
+          %{
+            title: "xx is yy ?",
+            index: 0,
+            body: "this is body"
+          },
+          %{
+            title: "xx is yy 2 ?",
+            index: 1,
+            body: "this is body 2"
+          }
+        ])
+
+      {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
+
+      assert find_community.dashboard.faqs |> length == 2
+
+      first = find_community.dashboard.faqs |> Enum.at(0)
+      second = find_community.dashboard.faqs |> Enum.at(1)
+
+      assert first.title == "xx is yy ?"
+      assert second.title == "xx is yy 2 ?"
+
+      {:ok, _} =
+        CMS.update_dashboard(community.slug, :faqs, [
+          %{
+            title: "xx is zz ?",
+            index: 0,
+            body: "this is body"
+          }
+        ])
+
+      {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
+      assert find_community.dashboard.faqs |> length == 1
+
+      third = find_community.dashboard.faqs |> Enum.at(0)
+      assert third.title == "xx is zz ?"
+      assert third.body == "this is body"
+    end
+
     test "can update social links in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
