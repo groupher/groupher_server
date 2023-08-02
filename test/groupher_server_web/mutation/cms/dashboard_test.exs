@@ -397,7 +397,6 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       }
     }
     """
-    @tag :wip
     test "update community dashboard faqs info", ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
 

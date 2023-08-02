@@ -139,7 +139,7 @@ defmodule GroupherServer.CMS.Model.Metrics.Dashboard do
     [
       [:title, :string, ""],
       [:body, :string, ""],
-      [:index, :integer, 0],
+      [:index, :integer, 0]
     ]
   end
 end

@@ -326,7 +326,6 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert third.group_index == 3
     end
 
-    @tag :wip
     test "can update faqs in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
@@ -347,7 +346,6 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert first.body == "this is body"
     end
 
-    @tag :wip
     test "should overwirte all faqs in community dashboard everytime",
          ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
