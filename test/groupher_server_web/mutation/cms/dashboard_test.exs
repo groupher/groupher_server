@@ -351,7 +351,6 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       }
     }
     """
-
     test "update community dashboard social links info", ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
 
@@ -381,6 +380,53 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
 
       assert link.type == "twitter"
       assert link.link == "link"
+    end
+
+    @update_faqs_query """
+    mutation($community: String!, $faqs: [dashboardFaqMap]) {
+      updateDashboardFaqs(community: $community, faqs: $faqs) {
+        id
+        title
+        dashboard {
+          faqs {
+            title
+            body
+            index
+          }
+        }
+      }
+    }
+    """
+    test "update community dashboard faqs info", ~m(community)a do
+      rule_conn = simu_conn(:user, cms: %{"community.update" => true})
+
+      variables = %{
+        community: community.slug,
+        faqs: [
+          %{
+            title: "title",
+            body: "body",
+            index: 0
+          }
+        ]
+      }
+
+      updated =
+        rule_conn
+        |> mutation_result(
+          @update_faqs_query,
+          variables,
+          "updateDashboardFaqs"
+        )
+
+      assert updated["dashboard"]["faqs"] |> List.first() |> Map.get("title") == "title"
+
+      {:ok, found} = Community |> ORM.find(updated["id"], preload: :dashboard)
+
+      faq = found.dashboard.faqs |> Enum.at(0)
+
+      assert faq.title == "title"
+      assert faq.body == "body"
     end
   end
 end

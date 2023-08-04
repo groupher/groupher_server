@@ -139,6 +139,7 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
   object(:dasbboard_name_alias, do: dashboard_gq_fields(:name_alias))
   object(:dasbboard_link, do: dashboard_gq_fields(:header_link))
   object(:dasbboard_social_link, do: dashboard_gq_fields(:social_link))
+  object(:dasbboard_faq_section, do: dashboard_gq_fields(:faq_section))
 
   object :dashboard do
     field(:seo, :dasbboard_seo)
@@ -150,6 +151,7 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
     field(:header_links, list_of(:dasbboard_link))
     field(:footer_links, list_of(:dasbboard_link))
     field(:social_links, list_of(:dasbboard_social_link))
+    field(:faqs, list_of(:dasbboard_faq_section))
   end
 
   object :community do

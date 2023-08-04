@@ -134,4 +134,12 @@ defmodule GroupherServer.CMS.Model.Metrics.Dashboard do
       [:link, :string, ""]
     ]
   end
+
+  def macro_schema(:faq_section) do
+    [
+      [:title, :string, ""],
+      [:body, :string, ""],
+      [:index, :integer, 0]
+    ]
+  end
 end
