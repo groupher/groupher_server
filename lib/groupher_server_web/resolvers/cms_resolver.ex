@@ -59,8 +59,8 @@ defmodule GroupherServerWeb.Resolvers.CMS do
     CMS.apply_community(args)
   end
 
-  def approve_community_apply(_root, %{id: id}, _) do
-    CMS.approve_community_apply(id)
+  def approve_community_apply(_root, %{community: community}, _) do
+    CMS.approve_community_apply(community)
   end
 
   def deny_community_apply(_root, %{id: id}, _) do

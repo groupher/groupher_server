@@ -60,11 +60,11 @@ defmodule GroupherServer.CMS.Delegate.ArticleTag do
     with {:ok, article_tag} <- ORM.find(ArticleTag, id),
          {:ok, community} <- ORM.find(Community, article_tag.community_id) do
       Multi.new()
-      |> Multi.run(:delete_article_tag, fn _, _ ->
-        ORM.delete(article_tag)
-      end)
       |> Multi.run(:update_community_count, fn _, _ ->
         CommunityCURD.update_community_count_field(community, :article_tags_count)
+      end)
+      |> Multi.run(:delete_article_tag, fn _, _ ->
+        ORM.delete(article_tag)
       end)
       |> Repo.transaction()
       |> result()

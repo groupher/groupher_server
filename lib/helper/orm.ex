@@ -190,6 +190,7 @@ defmodule Helper.ORM do
   DO NOT use it directly
   """
   def delete(content), do: Repo.delete(content)
+  def delete!(content), do: Repo.delete!(content)
 
   def find_delete!(queryable, id) do
     with {:ok, content} <- find(queryable, id) do

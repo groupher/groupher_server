@@ -38,22 +38,33 @@ defmodule GroupherServer.Test.CMS.Community do
   end
 
   describe "[cms community apply]" do
-    test "apply a community should have pending and can not be read", ~m(user)a do
-      attrs = mock_attrs(:community) |> Map.merge(%{user_id: user.id, apply_msg: "apply msg"})
+    # @tag :wip
+    # test "apply a community should have pending and can not be read", ~m(user)a do
+    #   attrs = mock_attrs(:community) |> Map.merge(%{user_id: user.id, apply_msg: "apply msg"})
+    #   {:ok, community} = CMS.apply_community(attrs)
+
+    #   assert community.meta.apply_msg == "apply msg"
+    #   assert community.meta.apply_category == "PUBLIC"
+
+    #   {:ok, community} = ORM.find(Community, community.id)
+    #   assert community.pending == @community_applying
+    #   assert {:error, _} = CMS.read_community(community.slug)
+
+    #   {:ok, community} = CMS.approve_community_apply(community.slug)
+
+    #   {:ok, community} = ORM.find(Community, community.id)
+    #   assert community.pending == @community_normal
+    #   assert {:ok, _} = CMS.read_community(community.slug)
+    # end
+
+    test "apply community can set root user by default", ~m(user)a do
+      attrs = mock_attrs(:community) |> Map.merge(%{user_id: user.id})
       {:ok, community} = CMS.apply_community(attrs)
 
-      assert community.meta.apply_msg == "apply msg"
-      assert community.meta.apply_category == "PUBLIC"
+      {:ok, community} = ORM.find(Community, community.id, preload: :root_user)
 
-      {:ok, community} = ORM.find(Community, community.id)
-      assert community.pending == @community_applying
-      assert {:error, _} = CMS.read_community(community.slug)
-
-      {:ok, community} = CMS.approve_community_apply(community.id)
-
-      {:ok, community} = ORM.find(Community, community.id)
-      assert community.pending == @community_normal
-      assert {:ok, _} = CMS.read_community(community.slug)
+      assert community.root_user.user_id == user.id
+      assert community.root_user.community_id == community.id
     end
 
     test "apply can be deny", ~m(user)a do

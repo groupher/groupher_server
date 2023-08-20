@@ -11,11 +11,12 @@ defmodule GroupherServer.CMS.Model.ArticleTag do
   alias CMS.Model.{Author, Community}
 
   @required_fields ~w(thread title color author_id community_id slug)a
-  @updatable_fields ~w(thread title color community_id group extra icon slug index layout)a
+  @updatable_fields ~w(thread title desc color community_id group extra icon slug index layout)a
 
   @type t :: %ArticleTag{}
   schema "article_tags" do
     field(:title, :string)
+    field(:desc, :string)
     field(:slug, :string)
     field(:color, :string)
     field(:thread, :string)

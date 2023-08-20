@@ -13,6 +13,7 @@ defmodule GroupherServer.CMS.Model.Community do
   alias CMS.Model.{
     Embeds,
     CommunityDashboard,
+    CommunityRootUser,
     Category,
     CommunityThread,
     CommunitySubscriber,
@@ -44,9 +45,15 @@ defmodule GroupherServer.CMS.Model.Community do
 
     has_many(:threads, {"communities_threads", CommunityThread}, on_delete: :delete_all)
     has_many(:subscribers, {"communities_subscribers", CommunitySubscriber})
+
+    has_one(:root_user, CommunityRootUser)
+    # TODO: rename to communities_modeators
     has_many(:editors, {"communities_editors", CommunityEditor})
 
     has_one(:dashboard, CommunityDashboard)
+
+    # this is virtual field, admins is caculated by combined preloaded root_user and modeators
+    embeds_one(:admins, Embeds.CommunityAdmin)
 
     field(:articles_count, :integer, default: 0)
     field(:editors_count, :integer, default: 0)
@@ -83,6 +90,7 @@ defmodule GroupherServer.CMS.Model.Community do
     |> validate_required(@required_fields)
     |> cast_embed(:meta, with: &Embeds.CommunityMeta.changeset/2)
     |> cast_assoc(:dashboard)
+    |> cast_assoc(:root_user)
     |> validate_length(:title, min: 1, max: 30)
     |> validate_length(:slug, min: 1, max: 30)
     |> foreign_key_constraint(:user_id)

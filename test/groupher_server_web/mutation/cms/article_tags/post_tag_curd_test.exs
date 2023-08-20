@@ -104,10 +104,11 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.PostTagCURD do
     end
 
     @update_tag_query """
-    mutation($id: ID!, $color: RainbowColor, $title: String, $slug: String, $community: String!, $extra: [String], $icon: String, $group: String) {
-      updateArticleTag(id: $id, color: $color, title: $title, slug: $slug, community: $community, extra: $extra, icon: $icon, group: $group) {
+    mutation($id: ID!, $color: RainbowColor, $title: String, $desc: String, $slug: String, $community: String!, $extra: [String], $icon: String, $group: String) {
+      updateArticleTag(id: $id, color: $color, title: $title, desc: $desc, slug: $slug, community: $community, extra: $extra, icon: $icon, group: $group) {
         id
         title
+        desc
         color
         group
         extra
@@ -122,6 +123,7 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.PostTagCURD do
         id: article_tag.id,
         color: "YELLOW",
         title: "new title",
+        desc: "this tag is awesome",
         slug: "new_title",
         community: community.slug,
         group: "new group",
@@ -132,10 +134,12 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.PostTagCURD do
       passport_rules = %{community.title => %{"post.article_tag.update" => true}}
       rule_conn = simu_conn(:user, cms: passport_rules)
 
-      updated = rule_conn |> mutation_result(@update_tag_query, variables, "updateArticleTag")
+      updated =
+        rule_conn |> mutation_result(@update_tag_query, variables, "updateArticleTag", :debug)
 
       assert updated["color"] == "YELLOW"
       assert updated["title"] == "new title"
+      assert updated["desc"] == "this tag is awesome"
       assert updated["group"] == "new group"
       assert updated["extra"] == ["newMenuID"]
       assert updated["icon"] == "icon"
@@ -148,7 +152,6 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.PostTagCURD do
       }
     }
     """
-
     test "auth user can delete tag", ~m(article_tag_attrs community user)a do
       {:ok, article_tag} = CMS.create_article_tag(community, :post, article_tag_attrs, user)
 

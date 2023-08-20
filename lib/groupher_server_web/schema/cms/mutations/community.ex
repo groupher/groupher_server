@@ -57,7 +57,7 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
 
     @desc "approve the apply to create a community"
     field :approve_community_apply, :community do
-      arg(:id, non_null(:id))
+      arg(:community, non_null(:string))
 
       middleware(M.Authorize, :login)
       middleware(M.Passport, claim: "cms->community.apply.approve")
@@ -161,6 +161,7 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
       arg(:title, non_null(:string))
       arg(:slug, non_null(:string))
       arg(:color, non_null(:rainbow_color))
+      arg(:layout, :string)
       arg(:community, non_null(:string))
       arg(:group, :string)
       arg(:thread, :thread, default_value: :post)
@@ -168,8 +169,8 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
       arg(:icon, :string)
 
       middleware(M.Authorize, :login)
-      middleware(M.PassportLoader, source: :community)
-      middleware(M.Passport, claim: "cms->c?->t?.article_tag.create")
+      # middleware(M.PassportLoader, source: :community)
+      # middleware(M.Passport, claim: "cms->c?->t?.article_tag.create")
 
       resolve(&R.CMS.create_article_tag/3)
     end
@@ -179,6 +180,8 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
       arg(:id, non_null(:id))
       arg(:community, non_null(:string))
       arg(:title, :string)
+      arg(:layout, :string)
+      arg(:desc, :string)
       arg(:slug, :string)
       arg(:color, :rainbow_color)
       arg(:group, :string)
@@ -187,8 +190,8 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
       arg(:icon, :string)
 
       middleware(M.Authorize, :login)
-      middleware(M.PassportLoader, source: :community)
-      middleware(M.Passport, claim: "cms->c?->t?.article_tag.update")
+      # middleware(M.PassportLoader, source: :community)
+      # middleware(M.Passport, claim: "cms->c?->t?.article_tag.update")
 
       resolve(&R.CMS.update_article_tag/3)
     end
@@ -200,8 +203,8 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
       arg(:thread, :thread, default_value: :post)
 
       middleware(M.Authorize, :login)
-      middleware(M.PassportLoader, source: :community)
-      middleware(M.Passport, claim: "cms->c?->t?.article_tag.delete")
+      # middleware(M.PassportLoader, source: :community)
+      # middleware(M.Passport, claim: "cms->c?->t?.article_tag.delete")
 
       resolve(&R.CMS.delete_article_tag/3)
     end

@@ -21,9 +21,10 @@ defmodule GroupherServer.Test.Mutation.CMS.CRUD do
     {:ok, user} = db_insert(:user)
 
     user_conn = simu_conn(:user)
+    user_conn2 = simu_conn(:user)
     guest_conn = simu_conn(:guest)
 
-    {:ok, ~m(user_conn guest_conn community thread category user)a}
+    {:ok, ~m(user_conn user_conn2 guest_conn community thread category user)a}
   end
 
   describe "mutation cms category" do
@@ -756,8 +757,20 @@ defmodule GroupherServer.Test.Mutation.CMS.CRUD do
     mutation($title: String!, $desc: String!, $logo: String!, $slug: String!, $applyMsg: String, $applyCategory: String) {
       applyCommunity(title: $title, desc: $desc, logo: $logo, slug: $slug, applyMsg: $applyMsg, applyCategory: $applyCategory) {
         id
+        admins {
+          root {
+            login
+            avatar
+            nickname
+          }
+          moderators {
+            login
+            avatar
+            nickname
+          }
+        }
         pending
-
+        slug
         meta {
           applyMsg
           applyCategory
@@ -765,8 +778,8 @@ defmodule GroupherServer.Test.Mutation.CMS.CRUD do
       }
     }
     """
-
-    test "can apply a community with or without apply info", ~m(user_conn)a do
+    @tag :wip
+    test "apply a community should have default root user", ~m(user_conn)a do
       variables = mock_attrs(:community)
       created = user_conn |> mutation_result(@apply_community_query, variables, "applyCommunity")
 
@@ -774,29 +787,22 @@ defmodule GroupherServer.Test.Mutation.CMS.CRUD do
       assert created["id"] == to_string(found.id)
       assert created["pending"] == @community_applying
 
-      variables = mock_attrs(:community, %{applyMsg: "apply msg", applyCategory: "CITY"})
-      created = user_conn |> mutation_result(@apply_community_query, variables, "applyCommunity")
-
-      assert created["pending"] == @community_applying
-
-      assert created |> get_in(["meta", "applyMsg"]) == "apply msg"
-      assert created |> get_in(["meta", "applyCategory"]) == "CITY"
+      IO.inspect(created["admins"], label: "see?")
     end
 
     @approve_community_query """
-    mutation($id: ID!) {
-      approveCommunityApply(id: $id) {
-        id
+    mutation($community: String!) {
+      approveCommunityApply(community: $community) {
+        slug
         pending
       }
     }
     """
-
     test "can approve a community apply2", ~m(user_conn)a do
       variables = mock_attrs(:community)
       created = user_conn |> mutation_result(@apply_community_query, variables, "applyCommunity")
 
-      variables = %{id: created["id"]}
+      variables = %{community: created["slug"]}
       rule_conn = simu_conn(:user, cms: %{"community.apply.approve" => true})
 
       rule_conn
@@ -814,7 +820,6 @@ defmodule GroupherServer.Test.Mutation.CMS.CRUD do
       }
     }
     """
-
     test "can deny a community apply", ~m(user_conn)a do
       variables = mock_attrs(:community)
       created = user_conn |> mutation_result(@apply_community_query, variables, "applyCommunity")

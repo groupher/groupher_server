@@ -154,6 +154,11 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
     field(:faqs, list_of(:dasbboard_faq_section))
   end
 
+  object :community_admins do
+    field(:root, :common_user)
+    field(:moderators, list_of(:common_user))
+  end
+
   object :community do
     meta(:cache, max_age: 30)
     field(:id, :id)
@@ -166,6 +171,11 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
     field(:threads, list_of(:thread_item), resolve: dataloader(CMS, :threads))
     field(:categories, list_of(:category), resolve: dataloader(CMS, :categories))
     field(:dashboard, :dashboard, resolve: dataloader(CMS, :dashboard))
+    field(:root_user, :user, resolve: dataloader(CMS, :root_user))
+
+    # field(:admins, :community_admins, resolve: dataloader(CMS, :admins))
+    field(:admins, :community_admins)
+
     field(:meta, :community_meta)
     field(:views, :integer)
     field(:contributes_digest, list_of(:integer))
@@ -202,6 +212,8 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
   object :article_tag do
     field(:id, :id)
     field(:title, :string)
+    field(:desc, :string)
+    field(:layout, :string)
     field(:slug, :string)
     field(:color, :string)
     field(:thread, :string)

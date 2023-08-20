@@ -25,6 +25,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
     CommunityDashboard,
     CommunityEditor,
     CommunitySubscriber,
+    CommunityRootUser,
     Thread
   }
 
@@ -32,6 +33,8 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
 
   @default_meta Embeds.CommunityMeta.default_meta()
   @default_dashboard CommunityDashboard.default()
+  @default_community_settings %{meta: @default_meta, dashboard: @default_dashboard}
+
   @article_threads get_config(:article, :threads)
   @community_default_threads get_config(:general, :community_default_threads)
 
@@ -39,7 +42,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
   @community_normal Constant.pending(:normal)
   @community_applying Constant.pending(:applying)
 
-  @default_apply_category Constant.apply_category(:public)
+  @default_apply_category Constant.apply_category(:web)
 
   def read_community(slug, user), do: read_community(slug) |> viewer_has_states(user)
   def read_community(slug), do: do_read_community(slug)
@@ -68,26 +71,27 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
   """
   def create_community(args) do
     with {:ok, community} <- do_create_community(args),
+         {:ok, _} <- init_community_root(community, args.user_id),
          {:ok, threads} = create_default_threads_ifneed() do
       Enum.map(threads, fn thread ->
         CMS.set_thread(community, thread)
       end)
 
-      {:ok, community}
+      read_community(community.slug)
     end
   end
 
   defp do_create_community(%{user_id: user_id} = args) do
     with {:ok, author} <- ensure_author_exists(%User{id: user_id}) do
-      default_settings = %{meta: @default_meta, dashboard: @default_dashboard}
-
       args =
-        args
-        |> Map.merge(%{user_id: author.user_id})
-        |> Map.merge(default_settings)
+        args |> Map.merge(%{user_id: author.user_id}) |> Map.merge(@default_community_settings)
 
       Community |> ORM.create(args)
     end
+  end
+
+  defp init_community_root(%Community{id: community_id}, user_id) do
+    CommunityRootUser |> ORM.create(%{community_id: community_id, user_id: user_id})
   end
 
   def create_default_threads_ifneed() do
@@ -171,6 +175,12 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
     |> done
   end
 
+  # def set_community_root(user_id) do
+  #   with {:ok, user} <- ORM.find(User, user_id) do
+  #     IO.inspect(user, label: "set root user")
+  #   end
+  # end
+
   def apply_community(args) do
     with {:ok, community} <- create_community(Map.merge(args, %{pending: @community_applying})) do
       apply_msg = Map.get(args, :apply_msg, "")
@@ -181,9 +191,9 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
     end
   end
 
-  def approve_community_apply(id) do
+  def approve_community_apply(slug) do
     # TODO: create community with thread, category and tags
-    with {:ok, community} <- ORM.find(Community, id) do
+    with {:ok, community} <- ORM.find_by(Community, slug: slug) do
       ORM.update(community, %{pending: @community_normal})
     end
   end
@@ -414,7 +424,8 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
 
   defp do_read_community(slug) do
     with {:ok, community_slug} <- find_community(slug),
-         {:ok, community} <- ensure_community_with_dashboard(community_slug) do
+         {:ok, community} <- ensure_community_with_dashboard(community_slug),
+         {:ok, community} <- add_admins(community) do
       case community.meta do
         nil ->
           {:ok, community} = ORM.update_meta(community, @default_meta)
@@ -424,6 +435,16 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
           community |> ORM.read(inc: :views)
       end
     end
+  end
+
+  # community here is already loaded root_user and admins
+  defp add_admins(%Community{} = community) do
+    admins = %{
+      root: community.root_user.user,
+      moderators: [community.root_user.user]
+    }
+
+    community = community |> Map.merge(%{admins: admins}) |> done
   end
 
   defp ensure_community_with_dashboard(%Community{} = community) do
@@ -441,9 +462,10 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
 
   defp find_community(slug) do
     Community
-    |> where([c], c.pending == ^@community_normal)
+    # |> where([c], c.pending == ^@community_normal)
     |> where([c], c.slug == ^slug or c.aka == ^slug)
     |> preload(:dashboard)
+    |> preload(root_user: :user)
     |> Repo.one()
     |> done
   end
