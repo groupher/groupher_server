@@ -41,9 +41,9 @@ defmodule GroupherServer.Accounts do
 
   # achievement
   defdelegate achieve(user, operation, key), to: Achievements
-  defdelegate paged_editable_communities(user, filter), to: Achievements
+  defdelegate paged_moderatorable_communities(user, filter), to: Achievements
   defdelegate downgrade_achievement(user, action, count), to: Achievements
-  # defdelegate paged_editable_communities(filter), to: Achievements
+  # defdelegate paged_moderatorable_communities(filter), to: Achievements
 
   # publish
   defdelegate paged_published_articles(user, thread, filter), to: Publish

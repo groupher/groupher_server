@@ -134,8 +134,7 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.PostTagCURD do
       passport_rules = %{community.title => %{"post.article_tag.update" => true}}
       rule_conn = simu_conn(:user, cms: passport_rules)
 
-      updated =
-        rule_conn |> mutation_result(@update_tag_query, variables, "updateArticleTag", :debug)
+      updated = rule_conn |> mutation_result(@update_tag_query, variables, "updateArticleTag")
 
       assert updated["color"] == "YELLOW"
       assert updated["title"] == "new title"

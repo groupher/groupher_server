@@ -1,6 +1,6 @@
 defmodule Helper.Certification do
   @moduledoc """
-  valid editors and passport details
+  valid moderators and passport details
   """
   import Helper.Utils, only: [get_config: 2]
 
@@ -26,19 +26,20 @@ defmodule Helper.Certification do
     "article_tag.unset"
   ]
 
-  def editor_titles(:cms) do
-    ["chief editor", "post editor", "volunteer"]
+  def moderator_titles(:cms) do
+    ["root", "moderator"]
   end
 
-  def passport_rules(cms: "volunteer") do
+  def passport_rules(cms: "root") do
     %{
       "post.article_tag.create" => true,
       "post.article_tag.edit" => true,
       "post.mark_delete" => true
+      # todo ...
     }
   end
 
-  def passport_rules(cms: "chief editor") do
+  def passport_rules(cms: "moderator") do
     %{
       "post.article_tag.create" => true,
       "post.article_tag.edit" => true,
@@ -82,9 +83,9 @@ defmodule Helper.Certification do
             "system_notification.publish",
             "stamp_passport",
             # community
-            "editor.set",
-            "editor.unset",
-            "editor.update",
+            "moderator.set",
+            "moderator.unset",
+            "moderator.update",
             "community.create",
             "community.update",
             "community.delete",

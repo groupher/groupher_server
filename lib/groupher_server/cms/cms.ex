@@ -31,7 +31,7 @@ defmodule GroupherServer.CMS do
   # do not pattern match in delegating func, do it on one delegating inside
   # see https://github.com/elixir-lang/elixir/issues/5306
 
-  # Community CURD: editors, thread, tag
+  # Community CURD: moderators, thread, tag
   defdelegate read_community(args), to: CommunityCURD
   defdelegate read_community(args, user), to: CommunityCURD
   defdelegate paged_communities(filter, user), to: CommunityCURD
@@ -48,11 +48,11 @@ defmodule GroupherServer.CMS do
   # TODO: delete after prod seed
   defdelegate update_community_count_field(community, user_id, type, opt), to: CommunityCURD
   defdelegate update_community_count_field(community, thread), to: CommunityCURD
-  # >> editor ..
-  defdelegate update_editor(user, community, title), to: CommunityCURD
+  # >> moderator ..
+  defdelegate update_moderator(user, community, role), to: CommunityCURD
   # >> geo info ..
   defdelegate community_geo_info(community), to: CommunityCURD
-  # >> subscribers / editors
+  # >> subscribers / moderators
   defdelegate community_members(type, community, filters), to: CommunityCURD
   defdelegate community_members(type, community, filters, user), to: CommunityCURD
   # >> category
@@ -74,9 +74,9 @@ defmodule GroupherServer.CMS do
   # >> category
   defdelegate set_category(community, category), to: CommunityOperation
   defdelegate unset_category(community, category), to: CommunityOperation
-  # >> editor
-  defdelegate set_editor(community, title, user), to: CommunityOperation
-  defdelegate unset_editor(community, user), to: CommunityOperation
+  # >> moderator
+  defdelegate add_moderator(community, role, user), to: CommunityOperation
+  defdelegate remove_moderator(community, user), to: CommunityOperation
   # >> thread
   defdelegate set_thread(community, thread), to: CommunityOperation
   defdelegate unset_thread(community, thread), to: CommunityOperation

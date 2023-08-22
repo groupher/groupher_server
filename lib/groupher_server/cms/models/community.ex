@@ -17,7 +17,7 @@ defmodule GroupherServer.CMS.Model.Community do
     Category,
     CommunityThread,
     CommunitySubscriber,
-    CommunityEditor
+    CommunityModerator
   }
 
   @max_pinned_article_count_per_thread 2
@@ -46,17 +46,13 @@ defmodule GroupherServer.CMS.Model.Community do
     has_many(:threads, {"communities_threads", CommunityThread}, on_delete: :delete_all)
     has_many(:subscribers, {"communities_subscribers", CommunitySubscriber})
 
-    has_one(:root_user, CommunityRootUser)
-    # TODO: rename to communities_modeators
-    has_many(:editors, {"communities_editors", CommunityEditor})
+    # this field will be rewrite as virtual for GQ workflow
+    has_many(:moderators, {"communities_moderators", CommunityModerator})
 
     has_one(:dashboard, CommunityDashboard)
 
-    # this is virtual field, admins is caculated by combined preloaded root_user and modeators
-    embeds_one(:admins, Embeds.CommunityAdmin)
-
     field(:articles_count, :integer, default: 0)
-    field(:editors_count, :integer, default: 0)
+    field(:moderators_count, :integer, default: 0)
     field(:subscribers_count, :integer, default: 0)
     field(:article_tags_count, :integer, default: 0)
     field(:threads_count, :integer, default: 0)
@@ -64,7 +60,7 @@ defmodule GroupherServer.CMS.Model.Community do
     field(:pending, :integer, default: 0)
 
     field(:viewer_has_subscribed, :boolean, default: false, virtual: true)
-    field(:viewer_is_editor, :boolean, default: false, virtual: true)
+    field(:viewer_is_moderator, :boolean, default: false, virtual: true)
     field(:contributes_digest, {:array, :integer}, default: [])
 
     many_to_many(
@@ -90,7 +86,6 @@ defmodule GroupherServer.CMS.Model.Community do
     |> validate_required(@required_fields)
     |> cast_embed(:meta, with: &Embeds.CommunityMeta.changeset/2)
     |> cast_assoc(:dashboard)
-    |> cast_assoc(:root_user)
     |> validate_length(:title, min: 1, max: 30)
     |> validate_length(:slug, min: 1, max: 30)
     |> foreign_key_constraint(:user_id)

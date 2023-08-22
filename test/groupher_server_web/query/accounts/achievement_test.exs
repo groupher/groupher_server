@@ -48,7 +48,7 @@ defmodule GroupherServer.Test.Query.Account.Achievement do
   describe "[account editable-communities]" do
     @query """
     query($login: String, $filter: PagedFilter!) {
-      editableCommunities(login: $login, filter: $filter) {
+      moderatorableCommunities(login: $login, filter: $filter) {
         entries {
           id
           logo
@@ -64,7 +64,7 @@ defmodule GroupherServer.Test.Query.Account.Achievement do
     """
     test "can get user's empty editable communities list", ~m(guest_conn user)a do
       variables = %{login: user.login, filter: %{page: 1, size: 20}}
-      results = guest_conn |> query_result(@query, variables, "editableCommunities")
+      results = guest_conn |> query_result(@query, variables, "moderatorableCommunities")
 
       assert results |> is_valid_pagination?(:empty)
     end
@@ -73,12 +73,12 @@ defmodule GroupherServer.Test.Query.Account.Achievement do
       {:ok, community} = db_insert(:community)
       {:ok, community2} = db_insert(:community)
 
-      title = "chief editor"
-      {:ok, _} = CMS.set_editor(community, title, user)
-      {:ok, _} = CMS.set_editor(community2, title, user)
+      role = "moderator"
+      {:ok, _} = CMS.add_moderator(community, role, user)
+      {:ok, _} = CMS.add_moderator(community2, role, user)
 
       variables = %{login: user.login, filter: %{page: 1, size: 20}}
-      results = guest_conn |> query_result(@query, variables, "editableCommunities")
+      results = guest_conn |> query_result(@query, variables, "moderatorableCommunities")
 
       assert results["totalCount"] == 2
       assert results["entries"] |> Enum.any?(&(&1["id"] == to_string(community.id)))

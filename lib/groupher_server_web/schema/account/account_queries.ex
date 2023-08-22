@@ -98,12 +98,12 @@ defmodule GroupherServerWeb.Schema.Account.Queries do
     end
 
     @desc "paged communities which the user it's the editor"
-    field :editable_communities, :paged_communities do
+    field :moderatorable_communities, :paged_communities do
       arg(:login, :string)
       arg(:filter, non_null(:paged_filter))
 
       middleware(M.PageSizeProof)
-      resolve(&R.Accounts.editable_communities/3)
+      resolve(&R.Accounts.moderatorable_communities/3)
     end
 
     @desc "get all passport rules include system and community etc ..."

@@ -61,10 +61,10 @@ defmodule GroupherServer.Test.CMS.Community do
       attrs = mock_attrs(:community) |> Map.merge(%{user_id: user.id})
       {:ok, community} = CMS.apply_community(attrs)
 
-      {:ok, community} = ORM.find(Community, community.id, preload: :root_user)
+      {:ok, community} = ORM.find(Community, community.id, preload: [moderators: :user])
+      moderator_user = community.moderators |> Enum.at(0)
 
-      assert community.root_user.user_id == user.id
-      assert community.root_user.community_id == community.id
+      assert moderator_user.user_id == user.id
     end
 
     test "apply can be deny", ~m(user)a do
@@ -111,18 +111,18 @@ defmodule GroupherServer.Test.CMS.Community do
     end
 
     test "read editored community should have a flag", ~m(community user user2)a do
-      title = "chief editor"
-      {:ok, community} = CMS.set_editor(community, title, user)
+      role = "moderator"
+      {:ok, community} = CMS.add_moderator(community, role, user)
 
       {:ok, community} = CMS.read_community(community.slug, user)
-      assert community.viewer_is_editor
+      assert community.viewer_is_moderator
 
       {:ok, community} = CMS.read_community(community.slug, user2)
-      assert not community.viewer_is_editor
+      assert not community.viewer_is_moderator
 
-      {:ok, community} = CMS.unset_editor(community, user)
+      {:ok, community} = CMS.remove_moderator(community, user)
       {:ok, community} = CMS.read_community(community.slug, user)
-      assert not community.viewer_is_editor
+      assert not community.viewer_is_moderator
     end
   end
 
@@ -144,23 +144,23 @@ defmodule GroupherServer.Test.CMS.Community do
     end
   end
 
-  describe "[cms community editor]" do
-    test "can set editor to a community", ~m(user community)a do
-      title = "chief editor"
-      {:ok, community} = CMS.set_editor(community, title, user)
+  describe "[cms community moderator]" do
+    test "can set moderator to a community", ~m(user community)a do
+      role = "moderator"
+      {:ok, community} = CMS.add_moderator(community, role, user)
 
-      assert community.editors_count == 1
-      assert user.id in community.meta.editors_ids
+      assert community.moderators_count == 1
+      assert user.id in community.meta.moderators_ids
     end
 
-    test "can unset editor to a community", ~m(user community)a do
-      title = "chief editor"
-      {:ok, community} = CMS.set_editor(community, title, user)
-      assert community.editors_count == 1
+    test "can unset moderator to a community", ~m(user community)a do
+      role = "moderator"
+      {:ok, community} = CMS.add_moderator(community, role, user)
+      assert community.moderators_count == 1
 
-      {:ok, community} = CMS.unset_editor(community, user)
-      assert community.editors_count == 0
-      assert user.id not in community.meta.editors_ids
+      {:ok, community} = CMS.remove_moderator(community, user)
+      assert community.moderators_count == 0
+      assert user.id not in community.meta.moderators_ids
     end
   end
 

@@ -224,7 +224,6 @@ defmodule GroupherServer.Test.Mutation.Flags.BlogFlag do
       }
     }
     """
-
     test "auth user can undo pin blog", ~m(community blog)a do
       variables = %{id: blog.id, communityId: community.id}
 

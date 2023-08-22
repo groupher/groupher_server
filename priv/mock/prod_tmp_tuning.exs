@@ -169,7 +169,7 @@ alias Seeds.Prod.Turning
 # 设置某一个志愿者
 # {:ok, home_community} = ORM.find_by(Community, %{slug: "home"})
 # {:ok, me} = ORM.find_by(User, %{login: "mydearxym"})
-# {:ok, _community} = CMS.set_editor(home_community, "volunteer", me)
+# {:ok, _community} = CMS.add_moderator(home_community, "volunteer", me)
 
 # 批量设置志愿者
 # {:ok, me} = ORM.find_by(User, %{login: "mydearxym"})
@@ -177,7 +177,7 @@ alias Seeds.Prod.Turning
 
 # all_community.entries
 # |> Enum.each(fn community ->
-#   CMS.set_editor(community, "volunteer", me)
+#   CMS.add_moderator(community, "volunteer", me)
 # end)
 
 # 批量更新社区订阅者，内容数

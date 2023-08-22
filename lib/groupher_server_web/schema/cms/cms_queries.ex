@@ -48,12 +48,12 @@ defmodule GroupherServerWeb.Schema.CMS.Queries do
     end
 
     @desc "paged subscribers of a community"
-    field :paged_community_editors, :paged_users do
+    field :paged_community_moderators, :paged_users do
       arg(:id, non_null(:id))
       arg(:filter, :paged_filter)
 
       middleware(M.PageSizeProof)
-      resolve(&R.CMS.paged_community_editors/3)
+      resolve(&R.CMS.paged_community_moderators/3)
     end
 
     @desc "get community geo cities info"

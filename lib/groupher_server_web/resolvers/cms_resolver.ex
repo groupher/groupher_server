@@ -254,22 +254,22 @@ defmodule GroupherServerWeb.Resolvers.CMS do
   end
 
   # #######################
-  # editors ..
+  # moderators ..
   # #######################
-  def set_editor(_root, ~m(community_id user_id title)a, _) do
-    CMS.set_editor(%Community{id: community_id}, title, %User{id: user_id})
+  def add_moderator(_root, ~m(community_id user_id role)a, _) do
+    CMS.add_moderator(%Community{id: community_id}, role, %User{id: user_id})
   end
 
-  def unset_editor(_root, ~m(community_id user_id)a, _) do
-    CMS.unset_editor(%Community{id: community_id}, %User{id: user_id})
+  def remove_moderator(_root, ~m(community_id user_id)a, _) do
+    CMS.remove_moderator(%Community{id: community_id}, %User{id: user_id})
   end
 
-  def update_editor(_root, ~m(community_id user_id title)a, _) do
-    CMS.update_editor(%Community{id: community_id}, title, %User{id: user_id})
+  def update_moderator(_root, ~m(community_id user_id role)a, _) do
+    CMS.update_moderator(%Community{id: community_id}, role, %User{id: user_id})
   end
 
-  def paged_community_editors(_root, ~m(id filter)a, _info) do
-    CMS.community_members(:editors, %Community{id: id}, filter)
+  def paged_community_moderators(_root, ~m(id filter)a, _info) do
+    CMS.community_members(:moderators, %Community{id: id}, filter)
   end
 
   # #######################

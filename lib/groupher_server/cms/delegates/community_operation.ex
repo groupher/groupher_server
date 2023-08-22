@@ -1,6 +1,6 @@
 defmodule GroupherServer.CMS.Delegate.CommunityOperation do
   @moduledoc """
-  community operations, like: set/unset category/thread/editor...
+  community operations, like: set/unset category/thread/moderator...
   """
   import ShortMaps
 
@@ -15,7 +15,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
     Category,
     Community,
     CommunityCategory,
-    CommunityEditor,
+    CommunityModerator,
     CommunitySubscriber,
     CommunityThread,
     Thread
@@ -64,21 +64,21 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
   end
 
   @doc """
-  set a community editor
+  set a community moderator
   """
-  def set_editor(%Community{id: community_id}, title, %User{id: user_id}) do
+  def add_moderator(%Community{id: community_id}, role, %User{id: user_id}) do
     Multi.new()
     |> Multi.insert(
-      :insert_editor,
-      CommunityEditor.changeset(%CommunityEditor{}, ~m(user_id community_id title)a)
+      :insert_moderator,
+      CommunityModerator.changeset(%CommunityModerator{}, ~m(user_id community_id role)a)
     )
     |> Multi.run(:update_community_count, fn _, _ ->
       with {:ok, community} <- ORM.find(Community, community_id) do
-        CommunityCURD.update_community_count_field(community, user_id, :editors_count, :inc)
+        CommunityCURD.update_community_count_field(community, user_id, :moderators_count, :inc)
       end
     end)
     |> Multi.run(:stamp_passport, fn _, _ ->
-      rules = Certification.passport_rules(cms: title)
+      rules = Certification.passport_rules(cms: role)
       PassportCURD.stamp_passport(rules, %User{id: user_id})
     end)
     |> Repo.transaction()
@@ -86,16 +86,16 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
   end
 
   @doc """
-  unset a community editor
+  unset a community moderator
   """
-  def unset_editor(%Community{id: community_id}, %User{id: user_id}) do
+  def remove_moderator(%Community{id: community_id}, %User{id: user_id}) do
     Multi.new()
-    |> Multi.run(:delete_editor, fn _, _ ->
-      ORM.findby_delete!(CommunityEditor, ~m(user_id community_id)a)
+    |> Multi.run(:delete_moderator, fn _, _ ->
+      ORM.findby_delete!(CommunityModerator, ~m(user_id community_id)a)
     end)
     |> Multi.run(:update_community_count, fn _, _ ->
       with {:ok, community} <- ORM.find(Community, community_id) do
-        CommunityCURD.update_community_count_field(community, user_id, :editors_count, :dec)
+        CommunityCURD.update_community_count_field(community, user_id, :moderators_count, :dec)
       end
     end)
     |> Multi.run(:stamp_passport, fn _, _ ->

@@ -207,17 +207,17 @@ defmodule GroupherServerWeb.Resolvers.Accounts do
     end
   end
 
-  # paged communities which the user it's the editor
-  def editable_communities(_root, ~m(login filter)a, _info) do
+  # paged communities which the user it's the moderator
+  def moderatorable_communities(_root, ~m(login filter)a, _info) do
     with {:ok, user_id} <- Accounts.get_userid_and_cache(login) do
-      Accounts.paged_editable_communities(%User{id: user_id}, filter)
+      Accounts.paged_moderatorable_communities(%User{id: user_id}, filter)
     else
       _ -> raise_error(:not_exsit, "#{login} not found")
     end
   end
 
-  def editable_communities(_root, ~m(filter)a, %{context: %{cur_user: cur_user}}) do
-    Accounts.paged_editable_communities(cur_user, filter)
+  def moderatorable_communities(_root, ~m(filter)a, %{context: %{cur_user: cur_user}}) do
+    Accounts.paged_moderatorable_communities(cur_user, filter)
   end
 
   # mailbox

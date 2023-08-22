@@ -435,33 +435,32 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
     end
   end
 
-  describe "[cms community editors]" do
+  describe "[cms community moderators]" do
     @query """
     query($slug: String!) {
       community(slug: $slug) {
         id
-        editorsCount
+        moderatorsCount
       }
     }
     """
-
-    test "guest can get editors count of a community", ~m(guest_conn community)a do
-      title = "chief editor"
+    test "guest can get moderators count of a community", ~m(guest_conn community)a do
+      role = "moderator"
       {:ok, users} = db_insert_multi(:user, assert_v(:inner_page_size))
 
-      Enum.each(users, &CMS.set_editor(community, title, %User{id: &1.id}))
+      Enum.each(users, &CMS.add_moderator(community, role, %User{id: &1.id}))
 
       variables = %{slug: community.slug}
       results = guest_conn |> query_result(@query, variables, "community")
-      editors_count = results["editorsCount"]
+      moderators_count = results["moderatorsCount"]
 
       assert results["id"] == to_string(community.id)
-      assert editors_count == assert_v(:inner_page_size)
+      assert moderators_count == assert_v(:inner_page_size)
     end
 
     @query """
     query($id: ID!, $filter: PagedFilter!) {
-      pagedCommunityEditors(id: $id, filter: $filter) {
+      pagedCommunityModerators(id: $id, filter: $filter) {
         entries {
           nickname
         }
@@ -472,15 +471,14 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
       }
     }
     """
-
-    test "guest user can get paged editors", ~m(guest_conn community)a do
-      title = "chief editor"
+    test "guest user can get paged moderators", ~m(guest_conn community)a do
+      role = "moderator"
       {:ok, users} = db_insert_multi(:user, 25)
 
-      Enum.each(users, &CMS.set_editor(community, title, %User{id: &1.id}))
+      Enum.each(users, &CMS.add_moderator(community, role, %User{id: &1.id}))
 
       variables = %{id: community.id, filter: %{page: 1, size: 10}}
-      results = guest_conn |> query_result(@query, variables, "pagedCommunityEditors")
+      results = guest_conn |> query_result(@query, variables, "pagedCommunityModerators")
 
       assert results |> is_valid_pagination?
     end

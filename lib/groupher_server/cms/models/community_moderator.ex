@@ -1,4 +1,4 @@
-defmodule GroupherServer.CMS.Model.CommunityEditor do
+defmodule GroupherServer.CMS.Model.CommunityModerator do
   @moduledoc false
   alias __MODULE__
 
@@ -9,14 +9,14 @@ defmodule GroupherServer.CMS.Model.CommunityEditor do
 
   alias Accounts.Model.User
   alias CMS.Model.Community
-  alias Helper.Certification
+  # alias Helper.Certification
 
-  @required_fields ~w(user_id community_id title)a
+  @required_fields ~w(user_id community_id role)a
 
-  @type t :: %CommunityEditor{}
+  @type t :: %CommunityModerator{}
 
-  schema "communities_editors" do
-    field(:title, :string)
+  schema "communities_moderators" do
+    field(:role, :string)
     belongs_to(:user, User, foreign_key: :user_id)
     belongs_to(:community, Community, foreign_key: :community_id)
 
@@ -24,13 +24,14 @@ defmodule GroupherServer.CMS.Model.CommunityEditor do
   end
 
   @doc false
-  def changeset(%CommunityEditor{} = community_editor, attrs) do
-    community_editor
+  def changeset(%CommunityModerator{} = community_moderator, attrs) do
+    community_moderator
     |> cast(attrs, @required_fields)
     |> validate_required(@required_fields)
-    |> validate_inclusion(:title, Certification.editor_titles(:cms))
+    # |> validate_inclusion(:title, Certification.moderator_titles(:cms))
     |> foreign_key_constraint(:community_id)
     |> foreign_key_constraint(:user_id)
-    |> unique_constraint(:user_id, name: :communities_editors_user_id_community_id_index)
+
+    # |> unique_constraint(:user_id, name: :communities_editors_user_id_community_id_index)
   end
 end

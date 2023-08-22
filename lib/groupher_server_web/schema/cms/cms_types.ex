@@ -154,9 +154,9 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
     field(:faqs, list_of(:dasbboard_faq_section))
   end
 
-  object :community_admins do
-    field(:root, :common_user)
-    field(:moderators, list_of(:common_user))
+  object :community_moderator do
+    field(:role, :string)
+    field(:user, :common_user)
   end
 
   object :community do
@@ -171,10 +171,9 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
     field(:threads, list_of(:thread_item), resolve: dataloader(CMS, :threads))
     field(:categories, list_of(:category), resolve: dataloader(CMS, :categories))
     field(:dashboard, :dashboard, resolve: dataloader(CMS, :dashboard))
-    field(:root_user, :user, resolve: dataloader(CMS, :root_user))
 
-    # field(:admins, :community_admins, resolve: dataloader(CMS, :admins))
-    field(:admins, :community_admins)
+    # field(:moderators, list_of(:community_moderator), resolve: dataloader(CMS, moderators: :user))
+    field(:moderators, list_of(:community_moderator))
 
     field(:meta, :community_meta)
     field(:views, :integer)
@@ -182,11 +181,11 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
 
     field(:articles_count, :integer)
     field(:subscribers_count, :integer)
-    field(:editors_count, :integer)
+    field(:moderators_count, :integer)
     field(:article_tags_count, :integer)
 
     field(:viewer_has_subscribed, :boolean)
-    field(:viewer_is_editor, :boolean)
+    field(:viewer_is_moderator, :boolean)
 
     field(:pending, :integer)
 

@@ -3,16 +3,17 @@ defmodule GroupherServer.Test.CMS do
 
   alias GroupherServer.Accounts.Model.User
   alias GroupherServer.CMS
-  alias CMS.Model.{Category, Community, CommunityEditor}
+  alias CMS.Model.{Category, Community, CommunityModerator}
 
   alias Helper.{Certification, ORM}
 
   setup do
     {:ok, user} = db_insert(:user)
+    {:ok, user2} = db_insert(:user)
     {:ok, community} = db_insert(:community)
     {:ok, category} = db_insert(:category)
 
-    {:ok, ~m(user community category)a}
+    {:ok, ~m(user user2 community category)a}
   end
 
   describe "[cms category]" do
@@ -110,30 +111,48 @@ defmodule GroupherServer.Test.CMS do
     end
   end
 
-  describe "[cms community editors]" do
-    test "can add editor to a community, editor has default passport", ~m(user community)a do
-      title = "chief editor"
+  describe "[cms community moderators]" do
+    test "can add multi moderators to a community", ~m(user user2 community)a do
+      role = "moderator"
 
-      {:ok, _} = CMS.set_editor(community, title, user)
+      {:ok, _} = CMS.add_moderator(community, role, user)
+      {:ok, _} = CMS.add_moderator(community, role, user2)
 
-      related_rules = Certification.passport_rules(cms: title)
+      {:ok, moderatorss} = CommunityModerator |> ORM.find_all(%{page: 1, size: 10})
 
-      {:ok, editor} = CommunityEditor |> ORM.find_by(user_id: user.id)
+      assert moderatorss.total_count == 2
+
+      moderator_user = moderatorss.entries |> Enum.at(0)
+      moderator_user2 = moderatorss.entries |> Enum.at(1)
+
+      assert user.id == moderator_user.user_id
+      assert user2.id == moderator_user2.user_id
+    end
+
+    test "can add moderator to a community, moderator has default passport",
+         ~m(user community)a do
+      role = "moderator"
+
+      {:ok, _} = CMS.add_moderator(community, role, user)
+
+      related_rules = Certification.passport_rules(cms: role)
+
+      {:ok, moderator} = CommunityModerator |> ORM.find_by(user_id: user.id)
       {:ok, user_passport} = CMS.get_passport(user)
 
-      assert editor.user_id == user.id
-      assert editor.community_id == community.id
+      assert moderator.user_id == user.id
+      assert moderator.community_id == community.id
       assert Map.equal?(related_rules, user_passport)
     end
 
-    test "user can get paged-editors of a community", ~m(community)a do
+    test "user can get paged-moderators of a community", ~m(community)a do
       {:ok, users} = db_insert_multi(:user, 25)
-      title = "chief editor"
+      role = "moderator"
 
-      Enum.each(users, &CMS.set_editor(community, title, %User{id: &1.id}))
+      Enum.each(users, &CMS.add_moderator(community, role, %User{id: &1.id}))
 
       filter = %{page: 1, size: 10}
-      {:ok, results} = CMS.community_members(:editors, %Community{id: community.id}, filter)
+      {:ok, results} = CMS.community_members(:moderators, %Community{id: community.id}, filter)
 
       assert results |> is_valid_pagination?(:raw)
       assert results.total_count == 25

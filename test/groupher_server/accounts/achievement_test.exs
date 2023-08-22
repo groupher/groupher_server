@@ -19,31 +19,31 @@ defmodule GroupherServer.Test.Accounts.Achievement do
 
   describe "[Accounts Achievement communities]" do
     test "normal user should have a empty editable communities list", ~m(user)a do
-      {:ok, results} = Accounts.paged_editable_communities(user, %{page: 1, size: 20})
+      {:ok, results} = Accounts.paged_moderatorable_communities(user, %{page: 1, size: 20})
 
       assert results |> is_valid_pagination?(:raw)
       assert results.total_count == 0
     end
 
-    test "community editor should get a editable community list", ~m(user)a do
-      title = "chief editor"
+    test "community moderator should get a editable community list", ~m(user)a do
+      role = "moderator"
       {:ok, community} = db_insert(:community)
       {:ok, community2} = db_insert(:community)
 
-      {:ok, _} = CMS.set_editor(community, title, user)
-      {:ok, _} = CMS.set_editor(community2, title, user)
+      {:ok, _} = CMS.add_moderator(community, role, user)
+      {:ok, _} = CMS.add_moderator(community2, role, user)
 
       # bad boy
       {:ok, community_x} = db_insert(:community)
       {:ok, user_x} = db_insert(:user)
-      {:ok, _} = CMS.set_editor(community_x, title, user_x)
+      {:ok, _} = CMS.add_moderator(community_x, role, user_x)
 
-      {:ok, editable_communities} =
-        Accounts.paged_editable_communities(user, %{page: 1, size: 20})
+      {:ok, moderatorable_communities} =
+        Accounts.paged_moderatorable_communities(user, %{page: 1, size: 20})
 
-      assert editable_communities.total_count == 2
-      assert editable_communities.entries |> Enum.any?(&(&1.id == community.id))
-      assert editable_communities.entries |> Enum.any?(&(&1.id == community2.id))
+      assert moderatorable_communities.total_count == 2
+      assert moderatorable_communities.entries |> Enum.any?(&(&1.id == community.id))
+      assert moderatorable_communities.entries |> Enum.any?(&(&1.id == community2.id))
     end
   end
 

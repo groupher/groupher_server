@@ -117,43 +117,43 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
       resolve(&R.CMS.create_thread/3)
     end
 
-    @desc "add a editor for a community"
-    field :set_editor, :user do
+    @desc "add a moderator for a community"
+    field :add_moderator, :user do
       arg(:community_id, non_null(:id))
       arg(:user_id, non_null(:id))
-      arg(:title, non_null(:string))
+      arg(:role, non_null(:string))
 
       middleware(M.Authorize, :login)
       middleware(M.PassportLoader, source: :community)
-      middleware(M.Passport, claim: "cms->editor.set")
+      middleware(M.Passport, claim: "cms->moderator.set")
 
-      resolve(&R.CMS.set_editor/3)
+      resolve(&R.CMS.add_moderator/3)
     end
 
-    @desc "unset a editor from a community, the user's passport also deleted"
-    field :unset_editor, :user do
+    @desc "unset a moderator from a community, the user's passport also deleted"
+    field :remove_moderator, :user do
       arg(:community_id, non_null(:id))
       arg(:user_id, non_null(:id))
 
       middleware(M.Authorize, :login)
       middleware(M.PassportLoader, source: :community)
-      middleware(M.Passport, claim: "cms->editor.unset")
+      middleware(M.Passport, claim: "cms->moderator.unset")
 
-      resolve(&R.CMS.unset_editor/3)
+      resolve(&R.CMS.remove_moderator/3)
     end
 
-    # TODO: remove, should remove both editor and cms->passport
-    @desc "update cms editor's title, passport is not effected"
-    field :update_cms_editor, :user do
+    # TODO: remove, should remove both moderator and cms->passport
+    @desc "update cms moderator's title, passport is not effected"
+    field :update_cms_moderator, :user do
       arg(:community_id, non_null(:id))
       arg(:user_id, non_null(:id))
-      arg(:title, non_null(:string))
+      arg(:role, non_null(:string))
 
       middleware(M.Authorize, :login)
       middleware(M.PassportLoader, source: :community)
-      middleware(M.Passport, claim: "cms->editor.update")
+      middleware(M.Passport, claim: "cms->moderator.update")
 
-      resolve(&R.CMS.update_editor/3)
+      resolve(&R.CMS.update_moderator/3)
     end
 
     @desc "create a tag"
@@ -169,8 +169,8 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
       arg(:icon, :string)
 
       middleware(M.Authorize, :login)
-      # middleware(M.PassportLoader, source: :community)
-      # middleware(M.Passport, claim: "cms->c?->t?.article_tag.create")
+      middleware(M.PassportLoader, source: :community)
+      middleware(M.Passport, claim: "cms->c?->t?.article_tag.create")
 
       resolve(&R.CMS.create_article_tag/3)
     end
@@ -190,8 +190,8 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
       arg(:icon, :string)
 
       middleware(M.Authorize, :login)
-      # middleware(M.PassportLoader, source: :community)
-      # middleware(M.Passport, claim: "cms->c?->t?.article_tag.update")
+      middleware(M.PassportLoader, source: :community)
+      middleware(M.Passport, claim: "cms->c?->t?.article_tag.update")
 
       resolve(&R.CMS.update_article_tag/3)
     end
@@ -203,8 +203,8 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
       arg(:thread, :thread, default_value: :post)
 
       middleware(M.Authorize, :login)
-      # middleware(M.PassportLoader, source: :community)
-      # middleware(M.Passport, claim: "cms->c?->t?.article_tag.delete")
+      middleware(M.PassportLoader, source: :community)
+      middleware(M.Passport, claim: "cms->c?->t?.article_tag.delete")
 
       resolve(&R.CMS.delete_article_tag/3)
     end
