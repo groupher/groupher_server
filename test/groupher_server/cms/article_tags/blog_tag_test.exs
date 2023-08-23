@@ -17,7 +17,7 @@ defmodule GroupherServer.Test.CMS.ArticleTag.BlogTag do
     {:ok, ~m(user community blog blog_attrs article_tag_attrs article_tag_attrs2)a}
   end
 
-  describe "[blog tag CURD]" do
+  describe "[blog tag CRUD]" do
     test "create article tag with valid data", ~m(community article_tag_attrs user)a do
       {:ok, article_tag} = CMS.create_article_tag(community, :blog, article_tag_attrs, user)
       assert article_tag.title == article_tag_attrs.title

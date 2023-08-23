@@ -10,7 +10,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
   alias GroupherServer.{Accounts, CMS, Repo}
 
   alias Accounts.Model.User
-  alias CMS.Delegate.PassportCURD
+  alias CMS.Delegate.PassportCRUD
 
   alias CMS.Model.{
     Category,
@@ -22,7 +22,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
     Thread
   }
 
-  alias CMS.Delegate.CommunityCURD
+  alias CMS.Delegate.CommunityCRUD
   alias Ecto.Multi
 
   @doc """
@@ -78,13 +78,11 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
         CommunityModerator.changeset(%CommunityModerator{}, ~m(user_id community_id role)a)
       )
       |> Multi.run(:update_community_count, fn _, _ ->
-        with {:ok, community} <- ORM.find(Community, community_id) do
-          CommunityCURD.update_community_count_field(community, user_id, :moderators_count, :inc)
-        end
+        CommunityCRUD.update_community_count_field(community, user_id, :moderators_count, :inc)
       end)
       |> Multi.run(:stamp_passport, fn _, _ ->
         rules = Certification.passport_rules(cms: role)
-        PassportCURD.stamp_passport(rules, %User{id: user_id})
+        PassportCRUD.stamp_passport(rules, %User{id: user_id})
       end)
       |> Repo.transaction()
       |> result()
@@ -97,7 +95,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
   @doc """
   update community moderator
   """
-  def update_moderator(community_slug, role, %User{id: user_id}, %User{} = cur_user) do
+  def update_moderator_passport(community_slug, role, %User{id: user_id}, %User{} = cur_user) do
     with {:ok, community} <- CMS.read_community(community_slug),
          {:ok, true} <- user_is_root?(community, cur_user) do
       community_id = community.id
@@ -125,11 +123,11 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
       end)
       |> Multi.run(:update_community_count, fn _, _ ->
         with {:ok, community} <- ORM.find(Community, community_id) do
-          CommunityCURD.update_community_count_field(community, user_id, :moderators_count, :dec)
+          CommunityCRUD.update_community_count_field(community, user_id, :moderators_count, :dec)
         end
       end)
       |> Multi.run(:stamp_passport, fn _, _ ->
-        PassportCURD.delete_passport(%User{id: user_id})
+        PassportCRUD.delete_passport(%User{id: user_id})
       end)
       |> Repo.transaction()
       |> result()
@@ -159,7 +157,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
         ORM.find(Community, record.community_id)
       end)
       |> Multi.run(:update_community_count, fn _, %{subscribed_community: community} ->
-        CommunityCURD.update_community_count_field(community, user_id, :subscribers_count, :inc)
+        CommunityCRUD.update_community_count_field(community, user_id, :subscribers_count, :inc)
       end)
       |> Multi.run(:update_user_subscribe_state, fn _, _ ->
         Accounts.update_subscribe_state(user_id)
@@ -179,7 +177,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
         update_community_geo(community_id, user_id, remote_ip, :inc)
       end)
       |> Multi.run(:update_community_count, fn _, %{subscribed_community: community} ->
-        CommunityCURD.update_community_count_field(community, user_id, :subscribers_count, :inc)
+        CommunityCRUD.update_community_count_field(community, user_id, :subscribers_count, :inc)
       end)
       |> Multi.run(:update_user_subscribe_state, fn _, _ ->
         Accounts.update_subscribe_state(user_id)
@@ -200,7 +198,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
         ORM.findby_delete!(CommunitySubscriber, %{community_id: community.id, user_id: user_id})
       end)
       |> Multi.run(:update_community_count, fn _, _ ->
-        CommunityCURD.update_community_count_field(community, user_id, :subscribers_count, :dec)
+        CommunityCRUD.update_community_count_field(community, user_id, :subscribers_count, :dec)
       end)
       |> Multi.run(:update_user_subscribe_state, fn _, _ ->
         Accounts.update_subscribe_state(user_id)
@@ -228,7 +226,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
         ORM.findby_delete!(CommunitySubscriber, %{community_id: community.id, user_id: user_id})
       end)
       |> Multi.run(:update_community_count, fn _, _ ->
-        CommunityCURD.update_community_count_field(community, user_id, :subscribers_count, :dec)
+        CommunityCRUD.update_community_count_field(community, user_id, :subscribers_count, :dec)
       end)
       |> Multi.run(:update_user_subscribe_state, fn _, _ ->
         Accounts.update_subscribe_state(user_id)
@@ -259,7 +257,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
         ORM.findby_delete!(CommunitySubscriber, %{community_id: community.id, user_id: user_id})
       end)
       |> Multi.run(:update_community_count, fn _, _ ->
-        CommunityCURD.update_community_count_field(community, user_id, :subscribers_count, :dec)
+        CommunityCRUD.update_community_count_field(community, user_id, :subscribers_count, :dec)
       end)
       |> Multi.run(:update_user_subscribe_state, fn _, _ ->
         Accounts.update_subscribe_state(user_id)

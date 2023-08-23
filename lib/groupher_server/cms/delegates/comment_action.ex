@@ -1,6 +1,6 @@
 defmodule GroupherServer.CMS.Delegate.CommentAction do
   @moduledoc """
-  CURD and operations for article comments
+  CRUD and operations for article comments
   """
   import Ecto.Query, warn: false
   import Helper.Utils, only: [done: 1, strip_struct: 1, get_config: 2, ensure: 2]
@@ -10,7 +10,7 @@ defmodule GroupherServer.CMS.Delegate.CommentAction do
 
   import Helper.ErrorCode
 
-  import GroupherServer.CMS.Delegate.CommentCURD,
+  import GroupherServer.CMS.Delegate.CommentCRUD,
     only: [
       add_participant_to_article: 2,
       do_create_comment: 4,

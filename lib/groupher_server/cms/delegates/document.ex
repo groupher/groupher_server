@@ -1,6 +1,6 @@
 defmodule GroupherServer.CMS.Delegate.Document do
   @moduledoc """
-  CURD operation on post/job ...
+  CRUD operation on post/job ...
   """
   import Ecto.Query, warn: false
   import Helper.Utils, only: [thread_of: 2]

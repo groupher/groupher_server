@@ -6,7 +6,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleTag do
   import GroupherServer.CMS.Helper.Matcher
   import Helper.Validator.Guards, only: [g_is_id: 1]
   import Helper.Utils, only: [done: 1, atom_values_to_upcase: 1]
-  import GroupherServer.CMS.Delegate.ArticleCURD, only: [ensure_author_exists: 1]
+  import GroupherServer.CMS.Delegate.ArticleCRUD, only: [ensure_author_exists: 1]
   import ShortMaps
   import Helper.ErrorCode
 
@@ -18,7 +18,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleTag do
   alias GroupherServer.CMS
 
   alias CMS.Model.{ArticleTag, Community}
-  alias CMS.Delegate.CommunityCURD
+  alias CMS.Delegate.CommunityCRUD
 
   alias Ecto.Multi
 
@@ -36,7 +36,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleTag do
         ORM.create(ArticleTag, attrs)
       end)
       |> Multi.run(:update_community_count, fn _, _ ->
-        CommunityCURD.update_community_count_field(community, :article_tags_count)
+        CommunityCRUD.update_community_count_field(community, :article_tags_count)
       end)
       |> Repo.transaction()
       |> result()
@@ -64,7 +64,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleTag do
         ORM.delete(article_tag)
       end)
       |> Multi.run(:update_community_count, fn _, _ ->
-        CommunityCURD.update_community_count_field(community, :article_tags_count)
+        CommunityCRUD.update_community_count_field(community, :article_tags_count)
       end)
       |> Repo.transaction()
       |> result()

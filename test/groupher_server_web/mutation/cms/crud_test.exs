@@ -512,11 +512,12 @@ defmodule GroupherServer.Test.Mutation.CMS.CRUD do
 
     @update_moderator_query """
     mutation($community: String!, $user: String!, $role: String!){
-      updateCmsModerator(community: $community, user: $user, role: $role) {
+      updateModeratorPassport(community: $community, user: $user, role: $role) {
         id
       }
     }
     """
+    @tag :wip
     test "auth user can update moderator to community", ~m(user user2 community)a do
       role = "moderator"
 
@@ -529,7 +530,7 @@ defmodule GroupherServer.Test.Mutation.CMS.CRUD do
       rule_conn = simu_conn(:user, user2, cms: passport_rules)
 
       rule_conn
-      |> mutation_result(@update_moderator_query, variables, "updateCmsModerator")
+      |> mutation_result(@update_moderator_query, variables, "updateModeratorPassport")
 
       {:ok, update_community} = ORM.find(Community, community.id, preload: :moderators)
       assert role == update_community.moderators |> List.first() |> Map.get(:role)

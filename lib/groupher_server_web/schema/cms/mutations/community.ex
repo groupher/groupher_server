@@ -144,7 +144,7 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
 
     # TODO: remove, should remove both moderator and cms->passport
     @desc "update cms moderator's title, passport is not effected"
-    field :update_cms_moderator, :user do
+    field :update_moderator_passport, :user do
       arg(:community, non_null(:string))
       arg(:user, non_null(:string))
       arg(:role, non_null(:string))
@@ -153,7 +153,7 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
       middleware(M.PassportLoader, source: :community)
       middleware(M.Passport, claim: "cms->moderator.update")
 
-      resolve(&R.CMS.update_moderator/3)
+      resolve(&R.CMS.update_moderator_passport/3)
     end
 
     @desc "create a tag"

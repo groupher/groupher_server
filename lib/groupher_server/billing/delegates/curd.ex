@@ -1,4 +1,4 @@
-defmodule GroupherServer.Billing.Delegate.CURD do
+defmodule GroupherServer.Billing.Delegate.CRUD do
   @moduledoc """
   create update & list for billings
   """

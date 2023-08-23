@@ -1,4 +1,4 @@
-defmodule GroupherServer.CMS.Delegate.PassportCURD do
+defmodule GroupherServer.CMS.Delegate.PassportCRUD do
   @moduledoc """
   passport curd
   """

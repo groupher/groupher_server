@@ -1,4 +1,4 @@
-defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.DocTagCURD do
+defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.DocTagCRUD do
   @moduledoc false
 
   use GroupherServer.TestTools

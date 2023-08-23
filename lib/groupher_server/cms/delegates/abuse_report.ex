@@ -1,6 +1,6 @@
 defmodule GroupherServer.CMS.Delegate.AbuseReport do
   @moduledoc """
-  CURD and operations for article comments
+  CRUD and operations for article comments
   """
   import Ecto.Query, warn: false
   import Helper.Utils, only: [done: 1, strip_struct: 1, get_config: 2]

@@ -1,4 +1,4 @@
-defmodule GroupherServer.CMS.Delegate.CommunityCURD do
+defmodule GroupherServer.CMS.Delegate.CommunityCRUD do
   @moduledoc """
   community curd
   """
@@ -7,7 +7,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
   import Helper.Utils,
     only: [done: 1, strip_struct: 1, get_config: 2, plural: 1, ensure: 2]
 
-  import GroupherServer.CMS.Delegate.ArticleCURD, only: [ensure_author_exists: 1]
+  import GroupherServer.CMS.Delegate.ArticleCRUD, only: [ensure_author_exists: 1]
   import GroupherServer.CMS.Helper.Matcher
   import ShortMaps
 

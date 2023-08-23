@@ -271,9 +271,9 @@ defmodule GroupherServerWeb.Resolvers.CMS do
     end
   end
 
-  def update_moderator(_root, ~m(community user role)a, %{context: %{cur_user: cur_user}}) do
+  def update_moderator_passport(_root, ~m(community user role)a, %{context: %{cur_user: cur_user}}) do
     with {:ok, target_user} <- ORM.find_user(user) do
-      CMS.update_moderator(community, role, %User{id: target_user.id}, cur_user)
+      CMS.update_moderator_passport(community, role, %User{id: target_user.id}, cur_user)
     end
   end
 

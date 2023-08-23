@@ -1,7 +1,7 @@
 import Ecto.Query, warn: false
 
 alias Helper.ORM
-alias GroupherServer.CMS.Delegate.CommunityCURD
+alias GroupherServer.CMS.Delegate.CommunityCRUD
 
 alias GroupherServer.Repo
 alias GroupherServer.CMS.Model.Post
@@ -24,7 +24,7 @@ Enum.each(all_posts.entries, fn post ->
   IO.inspect(inner_id, label: "next inner_id")
 
   ORM.update(post, %{inner_id: inner_id})
-  CommunityCURD.update_community_inner_id(post.original_community, :post, %{inner_id: inner_id})
+  CommunityCRUD.update_community_inner_id(post.original_community, :post, %{inner_id: inner_id})
 
   # IO.inspect("---")
 end)
