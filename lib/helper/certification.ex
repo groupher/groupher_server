@@ -34,7 +34,9 @@ defmodule Helper.Certification do
     %{
       "post.article_tag.create" => true,
       "post.article_tag.edit" => true,
-      "post.mark_delete" => true
+      "post.mark_delete" => true,
+      "root.spec" => true,
+      "community.add_moderator" => true
       # todo ...
     }
   end

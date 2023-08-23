@@ -256,16 +256,25 @@ defmodule GroupherServerWeb.Resolvers.CMS do
   # #######################
   # moderators ..
   # #######################
-  def add_moderator(_root, ~m(community_id user_id role)a, _) do
-    CMS.add_moderator(%Community{id: community_id}, role, %User{id: user_id})
+  defp find() do
   end
 
-  def remove_moderator(_root, ~m(community_id user_id)a, _) do
-    CMS.remove_moderator(%Community{id: community_id}, %User{id: user_id})
+  def add_moderator(_root, ~m(community user role)a, %{context: %{cur_user: cur_user}}) do
+    with {:ok, target_user} <- ORM.find_user(user) do
+      CMS.add_moderator(community, role, %User{id: target_user.id}, cur_user)
+    end
   end
 
-  def update_moderator(_root, ~m(community_id user_id role)a, _) do
-    CMS.update_moderator(%Community{id: community_id}, role, %User{id: user_id})
+  def remove_moderator(_root, ~m(community user)a, %{context: %{cur_user: cur_user}}) do
+    with {:ok, target_user} <- ORM.find_user(user) do
+      CMS.remove_moderator(community, %User{id: target_user.id}, cur_user)
+    end
+  end
+
+  def update_moderator(_root, ~m(community user role)a, %{context: %{cur_user: cur_user}}) do
+    with {:ok, target_user} <- ORM.find_user(user) do
+      CMS.update_moderator(community, role, %User{id: target_user.id}, cur_user)
+    end
   end
 
   def paged_community_moderators(_root, ~m(id filter)a, _info) do

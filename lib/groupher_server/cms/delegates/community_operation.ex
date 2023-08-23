@@ -4,8 +4,9 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
   """
   import ShortMaps
 
-  alias Helper.{Certification, IP2City, ORM}
+  import Helper.Utils, only: [done: 1]
 
+  alias Helper.{Certification, IP2City, ORM}
   alias GroupherServer.{Accounts, CMS, Repo}
 
   alias Accounts.Model.User
@@ -66,43 +67,86 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
   @doc """
   set a community moderator
   """
-  def add_moderator(%Community{id: community_id}, role, %User{id: user_id}) do
-    Multi.new()
-    |> Multi.insert(
-      :insert_moderator,
-      CommunityModerator.changeset(%CommunityModerator{}, ~m(user_id community_id role)a)
-    )
-    |> Multi.run(:update_community_count, fn _, _ ->
-      with {:ok, community} <- ORM.find(Community, community_id) do
-        CommunityCURD.update_community_count_field(community, user_id, :moderators_count, :inc)
-      end
-    end)
-    |> Multi.run(:stamp_passport, fn _, _ ->
-      rules = Certification.passport_rules(cms: role)
-      PassportCURD.stamp_passport(rules, %User{id: user_id})
-    end)
-    |> Repo.transaction()
-    |> result()
+  def add_moderator(community_slug, role, %User{id: user_id}, %User{} = cur_user) do
+    with {:ok, community} <- CMS.read_community(community_slug),
+         {:ok, true} <- user_is_root?(community, cur_user) do
+      community_id = community.id
+
+      Multi.new()
+      |> Multi.insert(
+        :insert_moderator,
+        CommunityModerator.changeset(%CommunityModerator{}, ~m(user_id community_id role)a)
+      )
+      |> Multi.run(:update_community_count, fn _, _ ->
+        with {:ok, community} <- ORM.find(Community, community_id) do
+          CommunityCURD.update_community_count_field(community, user_id, :moderators_count, :inc)
+        end
+      end)
+      |> Multi.run(:stamp_passport, fn _, _ ->
+        rules = Certification.passport_rules(cms: role)
+        PassportCURD.stamp_passport(rules, %User{id: user_id})
+      end)
+      |> Repo.transaction()
+      |> result()
+    else
+      {:error, false} ->
+        {:error, "only root can set moderator"}
+    end
+  end
+
+  @doc """
+  update community moderator
+  """
+  def update_moderator(community_slug, role, %User{id: user_id}, %User{} = cur_user) do
+    with {:ok, community} <- CMS.read_community(community_slug),
+         {:ok, true} <- user_is_root?(community, cur_user) do
+      community_id = community.id
+
+      clauses = ~m(user_id community_id)a
+      CommunityModerator |> ORM.update_by(clauses, ~m(role)a)
+      User |> ORM.find(user_id)
+    else
+      {:error, false} ->
+        {:error, "only root can set moderator"}
+    end
   end
 
   @doc """
   unset a community moderator
   """
-  def remove_moderator(%Community{id: community_id}, %User{id: user_id}) do
-    Multi.new()
-    |> Multi.run(:delete_moderator, fn _, _ ->
-      ORM.findby_delete!(CommunityModerator, ~m(user_id community_id)a)
-    end)
-    |> Multi.run(:update_community_count, fn _, _ ->
-      with {:ok, community} <- ORM.find(Community, community_id) do
-        CommunityCURD.update_community_count_field(community, user_id, :moderators_count, :dec)
-      end
-    end)
-    |> Multi.run(:stamp_passport, fn _, _ ->
-      PassportCURD.delete_passport(%User{id: user_id})
-    end)
-    |> Repo.transaction()
-    |> result()
+  def remove_moderator(community_slug, %User{id: user_id}, %User{} = cur_user) do
+    with {:ok, community} <- CMS.read_community(community_slug),
+         {:ok, true} <- user_is_root?(community, cur_user) do
+      community_id = community.id
+
+      Multi.new()
+      |> Multi.run(:delete_moderator, fn _, _ ->
+        ORM.findby_delete!(CommunityModerator, ~m(user_id community_id)a)
+      end)
+      |> Multi.run(:update_community_count, fn _, _ ->
+        with {:ok, community} <- ORM.find(Community, community_id) do
+          CommunityCURD.update_community_count_field(community, user_id, :moderators_count, :dec)
+        end
+      end)
+      |> Multi.run(:stamp_passport, fn _, _ ->
+        PassportCURD.delete_passport(%User{id: user_id})
+      end)
+      |> Repo.transaction()
+      |> result()
+    else
+      {:error, false} ->
+        {:error, "only root can set moderator"}
+    end
+  end
+
+  # this is for first init when create community
+  defp user_is_root?(%Community{moderators: []}, %User{} = cur_user), do: {:ok, true}
+
+  defp user_is_root?(%Community{moderators: moderators}, %User{} = cur_user) do
+    moderators
+    |> Enum.filter(&(&1.role == "root"))
+    |> Enum.any?(&(to_string(&1.user_id) == to_string(cur_user.id)))
+    |> done
   end
 
   @doc """

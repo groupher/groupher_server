@@ -9,7 +9,6 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
 
   import GroupherServer.CMS.Delegate.ArticleCURD, only: [ensure_author_exists: 1]
   import GroupherServer.CMS.Helper.Matcher
-  import GroupherServer.CMS.Delegate.CommunityOperation, only: [add_moderator: 3]
   import ShortMaps
 
   alias Helper.ORM
@@ -72,7 +71,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
   """
   def create_community(args) do
     with {:ok, community} <- do_create_community(args),
-         {:ok, _} <- init_community_root(community, args.user_id),
+         {:ok, _} <- init_community_root(community.slug, args.user_id),
          {:ok, threads} = create_default_threads_ifneed() do
       Enum.map(threads, fn thread ->
         CMS.set_thread(community, thread)
@@ -91,8 +90,8 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
     end
   end
 
-  defp init_community_root(%Community{id: community_id} = community, user_id, role \\ "root") do
-    add_moderator(community, role, %User{id: user_id})
+  defp init_community_root(community_slug, user_id, role \\ "root") do
+    CMS.add_moderator(community_slug, role, %User{id: user_id}, %User{id: user_id})
   end
 
   def create_default_threads_ifneed() do
@@ -350,17 +349,6 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
   def community_members(:subscribers, %Community{slug: slug} = community, filters)
       when not is_nil(slug) do
     load_community_members(community, CommunitySubscriber, filters)
-  end
-
-  @doc """
-  update community moderator
-  """
-  def update_moderator(%Community{id: community_id}, role, %User{id: user_id}) do
-    clauses = ~m(user_id community_id)a
-
-    with {:ok, _} <- CommunityModerator |> ORM.update_by(clauses, ~m(role)a) do
-      User |> ORM.find(user_id)
-    end
   end
 
   def create_category(attrs, %User{id: user_id}) do

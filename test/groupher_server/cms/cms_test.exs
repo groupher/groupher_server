@@ -10,7 +10,11 @@ defmodule GroupherServer.Test.CMS do
   setup do
     {:ok, user} = db_insert(:user)
     {:ok, user2} = db_insert(:user)
-    {:ok, community} = db_insert(:community)
+    # {:ok, community} = db_insert(:community)
+
+    community_attrs = mock_attrs(:community) |> Map.merge(%{user_id: user.id})
+    {:ok, community} = CMS.create_community(community_attrs)
+
     {:ok, category} = db_insert(:category)
 
     {:ok, ~m(user user2 community category)a}
@@ -88,8 +92,8 @@ defmodule GroupherServer.Test.CMS do
 
   describe "[cms community thread]" do
     test "can create thread to a community" do
-      title = "post"
-      slug = "POST"
+      title = "OTHER"
+      slug = "other"
       {:ok, thread} = CMS.create_thread(~m(title slug)a)
       assert thread.title == title
     end
@@ -114,9 +118,8 @@ defmodule GroupherServer.Test.CMS do
   describe "[cms community moderators]" do
     test "can add multi moderators to a community", ~m(user user2 community)a do
       role = "moderator"
-
-      {:ok, _} = CMS.add_moderator(community, role, user)
-      {:ok, _} = CMS.add_moderator(community, role, user2)
+      cur_user = user
+      {:ok, _} = CMS.add_moderator(community.slug, role, user2, cur_user)
 
       {:ok, moderatorss} = CommunityModerator |> ORM.find_all(%{page: 1, size: 10})
 
@@ -130,32 +133,34 @@ defmodule GroupherServer.Test.CMS do
     end
 
     test "can add moderator to a community, moderator has default passport",
-         ~m(user community)a do
+         ~m(user user2 community)a do
       role = "moderator"
+      cur_user = user
 
-      {:ok, _} = CMS.add_moderator(community, role, user)
+      {:ok, _} = CMS.add_moderator(community.slug, role, user2, user)
 
       related_rules = Certification.passport_rules(cms: role)
 
-      {:ok, moderator} = CommunityModerator |> ORM.find_by(user_id: user.id)
-      {:ok, user_passport} = CMS.get_passport(user)
+      {:ok, moderator} = CommunityModerator |> ORM.find_by(user_id: user2.id)
+      {:ok, user_passport} = CMS.get_passport(user2)
 
-      assert moderator.user_id == user.id
+      assert moderator.user_id == user2.id
       assert moderator.community_id == community.id
       assert Map.equal?(related_rules, user_passport)
     end
 
-    test "user can get paged-moderators of a community", ~m(community)a do
+    test "user can get paged-moderators of a community", ~m(user community)a do
       {:ok, users} = db_insert_multi(:user, 25)
       role = "moderator"
+      cur_user = user
 
-      Enum.each(users, &CMS.add_moderator(community, role, %User{id: &1.id}))
+      Enum.each(users, &CMS.add_moderator(community.slug, role, %User{id: &1.id}, cur_user))
 
       filter = %{page: 1, size: 10}
       {:ok, results} = CMS.community_members(:moderators, %Community{id: community.id}, filter)
 
       assert results |> is_valid_pagination?(:raw)
-      assert results.total_count == 25
+      assert results.total_count == 26
     end
   end
 end

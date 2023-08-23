@@ -15,12 +15,16 @@ defmodule GroupherServer.Test.CMS.Community do
 
   setup do
     {:ok, user} = db_insert(:user)
+
+    community_attrs = mock_attrs(:community) |> Map.merge(%{user_id: user.id})
+    {:ok, community} = CMS.create_community(community_attrs)
+
     {:ok, user2} = db_insert(:user)
-    {:ok, community} = db_insert(:community)
+    {:ok, user3} = db_insert(:user)
 
     article_tag_attrs = mock_attrs(:article_tag)
 
-    {:ok, ~m(user community article_tag_attrs user2)a}
+    {:ok, ~m(user community article_tag_attrs user2 user3)a}
   end
 
   describe "[cms community curd]" do
@@ -90,11 +94,11 @@ defmodule GroupherServer.Test.CMS.Community do
   describe "[cms community read]" do
     test "read community should inc views", ~m(community)a do
       {:ok, community} = CMS.read_community(community.slug)
-      assert community.views == 1
-      {:ok, community} = CMS.read_community(community.slug)
-      assert community.views == 2
-      {:ok, community} = CMS.read_community(community.slug)
       assert community.views == 3
+      {:ok, community} = CMS.read_community(community.slug)
+      assert community.views == 4
+      {:ok, community} = CMS.read_community(community.slug)
+      assert community.views == 5
     end
 
     test "read subscribed community should have a flag", ~m(community user user2)a do
@@ -110,18 +114,20 @@ defmodule GroupherServer.Test.CMS.Community do
       assert user2.id not in community.meta.subscribed_user_ids
     end
 
-    test "read editored community should have a flag", ~m(community user user2)a do
+    test "read moderatorable community should have a flag", ~m(community user user2 user3)a do
       role = "moderator"
-      {:ok, community} = CMS.add_moderator(community, role, user)
-
-      {:ok, community} = CMS.read_community(community.slug, user)
-      assert community.viewer_is_moderator
+      cur_user = user
+      {:ok, community} = CMS.add_moderator(community.slug, role, user2, cur_user)
 
       {:ok, community} = CMS.read_community(community.slug, user2)
+      assert community.viewer_is_moderator
+
+      {:ok, community} = CMS.read_community(community.slug, user3)
       assert not community.viewer_is_moderator
 
-      {:ok, community} = CMS.remove_moderator(community, user)
-      {:ok, community} = CMS.read_community(community.slug, user)
+      {:ok, community} = CMS.remove_moderator(community.slug, user2, cur_user)
+      {:ok, community} = CMS.read_community(community.slug, user2)
+
       assert not community.viewer_is_moderator
     end
   end
@@ -145,22 +151,27 @@ defmodule GroupherServer.Test.CMS.Community do
   end
 
   describe "[cms community moderator]" do
-    test "can set moderator to a community", ~m(user community)a do
-      role = "moderator"
-      {:ok, community} = CMS.add_moderator(community, role, user)
+    test "can set moderator to a community", ~m(user user2 community)a do
+      cur_user = user
 
-      assert community.moderators_count == 1
+      role = "moderator"
+      {:ok, community} = CMS.add_moderator(community.slug, role, user2, cur_user)
+
+      assert community.moderators_count == 2
       assert user.id in community.meta.moderators_ids
+      assert user2.id in community.meta.moderators_ids
     end
 
-    test "can unset moderator to a community", ~m(user community)a do
+    test "can unset moderator to a community", ~m(user user2 community)a do
       role = "moderator"
-      {:ok, community} = CMS.add_moderator(community, role, user)
-      assert community.moderators_count == 1
+      cur_user = user
 
-      {:ok, community} = CMS.remove_moderator(community, user)
-      assert community.moderators_count == 0
-      assert user.id not in community.meta.moderators_ids
+      {:ok, community} = CMS.add_moderator(community.slug, role, user2, cur_user)
+      assert community.moderators_count == 2
+
+      {:ok, community} = CMS.remove_moderator(community.slug, user2, cur_user)
+      assert community.moderators_count == 1
+      assert user2.id not in community.meta.moderators_ids
     end
   end
 

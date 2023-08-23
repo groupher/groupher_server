@@ -118,9 +118,9 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
     end
 
     @desc "add a moderator for a community"
-    field :add_moderator, :user do
-      arg(:community_id, non_null(:id))
-      arg(:user_id, non_null(:id))
+    field :add_moderator, :community do
+      arg(:community, non_null(:string))
+      arg(:user, non_null(:string))
       arg(:role, non_null(:string))
 
       middleware(M.Authorize, :login)
@@ -131,9 +131,9 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
     end
 
     @desc "unset a moderator from a community, the user's passport also deleted"
-    field :remove_moderator, :user do
-      arg(:community_id, non_null(:id))
-      arg(:user_id, non_null(:id))
+    field :remove_moderator, :community do
+      arg(:community, non_null(:string))
+      arg(:user, non_null(:string))
 
       middleware(M.Authorize, :login)
       middleware(M.PassportLoader, source: :community)
@@ -145,8 +145,8 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
     # TODO: remove, should remove both moderator and cms->passport
     @desc "update cms moderator's title, passport is not effected"
     field :update_cms_moderator, :user do
-      arg(:community_id, non_null(:id))
-      arg(:user_id, non_null(:id))
+      arg(:community, non_null(:string))
+      arg(:user, non_null(:string))
       arg(:role, non_null(:string))
 
       middleware(M.Authorize, :login)

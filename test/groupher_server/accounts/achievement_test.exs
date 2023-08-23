@@ -13,8 +13,10 @@ defmodule GroupherServer.Test.Accounts.Achievement do
 
   setup do
     {:ok, user} = db_insert(:user)
+    {:ok, user2} = db_insert(:user)
+    {:ok, user3} = db_insert(:user)
 
-    {:ok, ~m(user)a}
+    {:ok, ~m(user user2 user3)a}
   end
 
   describe "[Accounts Achievement communities]" do
@@ -25,21 +27,22 @@ defmodule GroupherServer.Test.Accounts.Achievement do
       assert results.total_count == 0
     end
 
-    test "community moderator should get a editable community list", ~m(user)a do
+    test "community moderator should get a editable community list",
+         ~m(user user2 user3)a do
+      community_attrs = mock_attrs(:community) |> Map.merge(%{user_id: user.id})
+      {:ok, community} = CMS.create_community(community_attrs)
+
+      community_attrs = mock_attrs(:community) |> Map.merge(%{user_id: user2.id})
+      {:ok, community2} = CMS.create_community(community_attrs)
+
       role = "moderator"
-      {:ok, community} = db_insert(:community)
-      {:ok, community2} = db_insert(:community)
 
-      {:ok, _} = CMS.add_moderator(community, role, user)
-      {:ok, _} = CMS.add_moderator(community2, role, user)
-
-      # bad boy
-      {:ok, community_x} = db_insert(:community)
-      {:ok, user_x} = db_insert(:user)
-      {:ok, _} = CMS.add_moderator(community_x, role, user_x)
+      {:ok, _} = CMS.add_moderator(community.slug, role, user3, user)
+      {:ok, _} = CMS.add_moderator(community2.slug, role, user3, user2)
+      {:ok, _} = CMS.add_moderator(community.slug, role, user2, user)
 
       {:ok, moderatorable_communities} =
-        Accounts.paged_moderatorable_communities(user, %{page: 1, size: 20})
+        Accounts.paged_moderatorable_communities(user3, %{page: 1, size: 20})
 
       assert moderatorable_communities.total_count == 2
       assert moderatorable_communities.entries |> Enum.any?(&(&1.id == community.id))

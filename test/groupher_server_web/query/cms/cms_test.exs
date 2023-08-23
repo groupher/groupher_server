@@ -8,10 +8,13 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
 
   setup do
     guest_conn = simu_conn(:guest)
-    {:ok, community} = db_insert(:community)
     {:ok, user} = db_insert(:user)
+    {:ok, user2} = db_insert(:user)
 
-    {:ok, ~m(guest_conn community user)a}
+    community_attrs = mock_attrs(:community) |> Map.merge(%{user_id: user.id})
+    {:ok, community} = CMS.create_community(community_attrs)
+
+    {:ok, ~m(guest_conn community user user2)a}
   end
 
   describe "apply community" do
@@ -120,7 +123,7 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
       assert results["id"] == aka_results["id"]
     end
 
-    test "can get threads count ", ~m(community guest_conn)a do
+    test "can get threads count (default include)", ~m(community guest_conn)a do
       {:ok, threads} = db_insert_multi(:thread, 5)
 
       Enum.map(threads, fn thread ->
@@ -130,7 +133,7 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
       variables = %{slug: community.slug}
       results = guest_conn |> query_result(@query, variables, "community")
 
-      assert results["threadsCount"] == 5
+      assert results["threadsCount"] == 10
     end
 
     test "can get tags count ", ~m(community guest_conn user)a do
@@ -272,13 +275,13 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
       }
     }
     """
-    test "can get whole threads", ~m(guest_conn)a do
+    test "can get whole threads (with default)", ~m(guest_conn)a do
       {:ok, _threads} = db_insert_multi(:thread, 5)
 
       variables = %{filter: %{page: 1, size: 20}}
       results = guest_conn |> query_result(@query, variables, "pagedThreads")
       assert results |> is_valid_pagination?
-      assert results["totalCount"] == 5
+      assert results["totalCount"] == 10
     end
 
     test "can get sorted thread based on index", ~m(guest_conn)a do
@@ -444,18 +447,19 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
       }
     }
     """
-    test "guest can get moderators count of a community", ~m(guest_conn community)a do
+    test "guest can get moderators count of a community", ~m(guest_conn community user)a do
       role = "moderator"
       {:ok, users} = db_insert_multi(:user, assert_v(:inner_page_size))
+      cur_user = user
 
-      Enum.each(users, &CMS.add_moderator(community, role, %User{id: &1.id}))
+      Enum.each(users, &CMS.add_moderator(community.slug, role, %User{id: &1.id}, user))
 
       variables = %{slug: community.slug}
       results = guest_conn |> query_result(@query, variables, "community")
       moderators_count = results["moderatorsCount"]
 
       assert results["id"] == to_string(community.id)
-      assert moderators_count == assert_v(:inner_page_size)
+      assert moderators_count == assert_v(:inner_page_size) + 1
     end
 
     @query """
@@ -471,11 +475,12 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
       }
     }
     """
-    test "guest user can get paged moderators", ~m(guest_conn community)a do
+    test "guest user can get paged moderators", ~m(guest_conn user community)a do
       role = "moderator"
       {:ok, users} = db_insert_multi(:user, 25)
 
-      Enum.each(users, &CMS.add_moderator(community, role, %User{id: &1.id}))
+      cur_user = user
+      Enum.each(users, &CMS.add_moderator(community.slug, role, %User{id: &1.id}, cur_user))
 
       variables = %{id: community.id, filter: %{page: 1, size: 10}}
       results = guest_conn |> query_result(@query, variables, "pagedCommunityModerators")

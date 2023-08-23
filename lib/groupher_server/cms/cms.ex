@@ -48,11 +48,10 @@ defmodule GroupherServer.CMS do
   # TODO: delete after prod seed
   defdelegate update_community_count_field(community, user_id, type, opt), to: CommunityCURD
   defdelegate update_community_count_field(community, thread), to: CommunityCURD
-  # >> moderator ..
-  defdelegate update_moderator(user, community, role), to: CommunityCURD
+
   # >> geo info ..
   defdelegate community_geo_info(community), to: CommunityCURD
-  # >> subscribers / moderators
+  # >> subscribers
   defdelegate community_members(type, community, filters), to: CommunityCURD
   defdelegate community_members(type, community, filters, user), to: CommunityCURD
   # >> category
@@ -75,8 +74,10 @@ defmodule GroupherServer.CMS do
   defdelegate set_category(community, category), to: CommunityOperation
   defdelegate unset_category(community, category), to: CommunityOperation
   # >> moderator
-  defdelegate add_moderator(community, role, user), to: CommunityOperation
-  defdelegate remove_moderator(community, user), to: CommunityOperation
+  defdelegate add_moderator(community, role, user, cur_user), to: CommunityOperation
+  defdelegate remove_moderator(community, user, cur_user), to: CommunityOperation
+  defdelegate update_moderator(community, role, user, cur_user), to: CommunityOperation
+
   # >> thread
   defdelegate set_thread(community, thread), to: CommunityOperation
   defdelegate unset_thread(community, thread), to: CommunityOperation
