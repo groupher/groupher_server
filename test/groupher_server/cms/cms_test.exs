@@ -116,6 +116,68 @@ defmodule GroupherServer.Test.CMS do
   end
 
   describe "[cms community moderators]" do
+    test "can update passport of community moderator", ~m(user user2 community)a do
+      role = "moderator"
+      cur_user = user
+      {:ok, _} = CMS.add_moderator(community.slug, role, user2, cur_user)
+
+      new_passport_rules = %{
+        "#{community.slug}" => %{
+          "post.article.delete" => false,
+          "post.tag.edit" => true
+        }
+      }
+
+      {:ok, _} =
+        CMS.update_moderator_passport(community.slug, new_passport_rules, user2, cur_user)
+
+      {:ok, passport} = CMS.get_passport(user2)
+
+      assert not get_in(passport, ["#{community.slug}", "post.article.delete"])
+      assert get_in(passport, ["#{community.slug}", "post.tag.edit"])
+    end
+
+    test "can not update passport of other community moderator", ~m(user user2 community)a do
+      role = "moderator"
+      cur_user = user
+      {:ok, _} = CMS.add_moderator(community.slug, role, user2, cur_user)
+
+      {:ok, other_community} = db_insert(:community)
+
+      new_passport_rules = %{
+        "#{other_community.slug}" => %{
+          "post.article.delete" => false
+        }
+      }
+
+      {:error, reason} =
+        CMS.update_moderator_passport(community.slug, new_passport_rules, user2, cur_user)
+
+      assert reason[:code] == ecode(:passport_community_not_match)
+    end
+
+    test "can not update multi community passport", ~m(user user2 community)a do
+      role = "moderator"
+      cur_user = user
+      {:ok, _} = CMS.add_moderator(community.slug, role, user2, cur_user)
+
+      {:ok, other_community} = db_insert(:community)
+
+      new_passport_rules = %{
+        "#{community.slug}" => %{
+          "post.article.delete" => false
+        },
+        "#{other_community.slug}" => %{
+          "post.article.delete" => false
+        }
+      }
+
+      {:error, reason} =
+        CMS.update_moderator_passport(community.slug, new_passport_rules, user2, cur_user)
+
+      assert reason[:code] == ecode(:one_community_only)
+    end
+
     test "can add multi moderators to a community", ~m(user user2 community)a do
       role = "moderator"
       cur_user = user

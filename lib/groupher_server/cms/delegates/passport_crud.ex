@@ -71,7 +71,8 @@ defmodule GroupherServer.CMS.Delegate.PassportCRUD do
   end
 
   defp reject_invalid_rules(rules) when is_map(rules) do
-    rules |> NestedFilter.drop_by_value([false]) |> reject_empty_values
+    # rules |> NestedFilter.drop_by_value([false]) |> reject_empty_values
+    rules |> reject_empty_values
   end
 
   defp reject_empty_values(map) when is_map(map) do

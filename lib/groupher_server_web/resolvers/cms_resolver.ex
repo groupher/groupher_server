@@ -271,9 +271,11 @@ defmodule GroupherServerWeb.Resolvers.CMS do
     end
   end
 
-  def update_moderator_passport(_root, ~m(community user role)a, %{context: %{cur_user: cur_user}}) do
+  def update_moderator_passport(_root, ~m(community user rules)a, %{
+        context: %{cur_user: cur_user}
+      }) do
     with {:ok, target_user} <- ORM.find_user(user) do
-      CMS.update_moderator_passport(community, role, %User{id: target_user.id}, cur_user)
+      CMS.update_moderator_passport(community, rules, %User{id: target_user.id}, cur_user)
     end
   end
 
@@ -465,17 +467,12 @@ defmodule GroupherServerWeb.Resolvers.CMS do
   ############
   ############
   ############
-
   def paged_comment_replies(_root, ~m(id filter)a, %{context: %{cur_user: user}}) do
     CMS.paged_comment_replies(id, filter, user)
   end
 
   def paged_comment_replies(_root, ~m(id filter)a, _info) do
     CMS.paged_comment_replies(id, filter)
-  end
-
-  def stamp_passport(_root, ~m(user_id rules)a, %{context: %{cur_user: _user}}) do
-    CMS.stamp_passport(rules, %User{id: user_id})
   end
 
   # #######################

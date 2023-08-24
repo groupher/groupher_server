@@ -51,17 +51,6 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Operation do
       resolve(&R.CMS.unset_thread/3)
     end
 
-    @desc "stamp rules on user's passport"
-    field :stamp_cms_passport, :idlike do
-      arg(:user_id, non_null(:id))
-      arg(:rules, non_null(:json))
-
-      middleware(M.Authorize, :login)
-      middleware(M.Passport, claim: "cms->community.stamp_passport")
-
-      resolve(&R.CMS.stamp_passport/3)
-    end
-
     @desc "subscribe a community so it can appear in sidebar"
     field :subscribe_community, :community do
       arg(:community_id, non_null(:id))

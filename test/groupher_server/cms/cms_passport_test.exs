@@ -30,7 +30,7 @@ defmodule GroupherServer.Test.CMS.Passport do
       assert passport.rules |> get_in(["javascript", "post.tag.edit"]) == true
     end
 
-    test "false rules will be delete from current passport", ~m(user)a do
+    test "false rules will not be delete from current passport", ~m(user)a do
       {:ok, passport} = CMS.stamp_passport(@valid_passport_rules, user)
 
       assert passport.rules |> get_in(["javascript", "post.article.delete"]) == true
@@ -46,7 +46,7 @@ defmodule GroupherServer.Test.CMS.Passport do
 
       assert updated_passport.user_id == user.id
       assert updated_passport.rules |> get_in(["javascript", "post.article.delete"]) == true
-      assert updated_passport.rules |> get_in(["javascript", "post.tag.edit"]) == nil
+      assert updated_passport.rules |> get_in(["javascript", "post.tag.edit"]) == false
     end
 
     test "get a user's passport", ~m(user)a do

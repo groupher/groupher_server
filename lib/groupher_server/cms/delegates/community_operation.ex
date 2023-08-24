@@ -5,6 +5,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
   import ShortMaps
 
   import Helper.Utils, only: [done: 1]
+  import Helper.ErrorCode
 
   alias Helper.{Certification, IP2City, ORM}
   alias GroupherServer.{Accounts, CMS, Repo}
@@ -88,24 +89,45 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
       |> result()
     else
       {:error, false} ->
-        {:error, "only root can set moderator"}
+        {:error,
+         [message: "only community root can add moderator", code: ecode(:community_root_only)]}
     end
   end
+
+  # @valid_passport_rules %{
+  #   "javascript" => %{
+  #     "post.article.delete" => true,
+  #     "post.tag.edit" => true
+  #   }
+  # }
 
   @doc """
   update community moderator
   """
-  def update_moderator_passport(community_slug, role, %User{id: user_id}, %User{} = cur_user) do
+  def update_moderator_passport(community_slug, rules, %User{id: user_id}, %User{} = cur_user) do
     with {:ok, community} <- CMS.read_community(community_slug),
-         {:ok, true} <- user_is_root?(community, cur_user) do
-      community_id = community.id
-
-      clauses = ~m(user_id community_id)a
-      CommunityModerator |> ORM.update_by(clauses, ~m(role)a)
-      User |> ORM.find(user_id)
+         {:ok, true} <- user_is_root?(community, cur_user),
+         {:ok, :match} <- match_passport_community(community_slug, rules),
+         {:ok, _} <- PassportCRUD.stamp_passport(rules, %User{id: user_id}) do
+      {:ok, community}
     else
       {:error, false} ->
-        {:error, "only root can set moderator"}
+        {:error,
+         [message: "only community root can update moderator", code: ecode(:community_root_only)]}
+
+      {:error, :passport_community_not_match} ->
+        {:error,
+         [
+           message: "can only update passport in #{community_slug}",
+           code: ecode(:passport_community_not_match)
+         ]}
+
+      {:error, :one_community_only} ->
+        {:error,
+         [message: "can only passport once community a time", code: ecode(:one_community_only)]}
+
+      _ ->
+        {:error, "update passport error"}
     end
   end
 
@@ -133,7 +155,8 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
       |> result()
     else
       {:error, false} ->
-        {:error, "only root can set moderator"}
+        {:error,
+         [message: "only community root can remove moderator", code: ecode(:community_root_only)]}
     end
   end
 
@@ -145,6 +168,20 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
     |> Enum.filter(&(&1.role == "root"))
     |> Enum.any?(&(to_string(&1.user_id) == to_string(cur_user.id)))
     |> done
+  end
+
+  defp match_passport_community(community_slug, rules) do
+    community_keys = Map.keys(rules)
+
+    with true <- length(community_keys) == 1 do
+      passport_community = community_keys |> List.first()
+
+      if passport_community == community_slug,
+        do: {:ok, :match},
+        else: {:error, :passport_community_not_match}
+    else
+      _ -> {:error, :one_community_only}
+    end
   end
 
   @doc """
