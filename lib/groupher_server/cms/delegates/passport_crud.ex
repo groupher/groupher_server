@@ -58,7 +58,7 @@ defmodule GroupherServer.CMS.Delegate.PassportCRUD do
     with {:ok, passport} <- ORM.find_by(UserPasport, user_id: user_id) do
       case pop_in(passport.rules, rules) do
         {nil, _} ->
-          {:error, "#{rules} not found"}
+          {:ok, passport}
 
         {_, lefts} ->
           passport |> ORM.update(%{rules: lefts})

@@ -89,12 +89,35 @@ defmodule GroupherServer.Test.CMS.Passport do
       assert nil == passport_after.rules |> get_in(["javascript", "post.article.delete"])
     end
 
-    test "ease a no-exsit rule in passport fails", ~m(user)a do
+    test "can ease a rule in passport by community slug", ~m(user)a do
+      multl_rules = %{
+        "javascript" => %{
+          "post.article.delete" => true,
+          "post.tag.edit" => true
+        },
+        "elixir" => %{
+          "post.article.delete" => true,
+          "post.tag.edit" => true
+        }
+      }
+
+      {:ok, passport} = CMS.stamp_passport(multl_rules, user)
+      assert passport.rules |> get_in(["javascript", "post.article.delete"]) == true
+
+      {:ok, passport_after} = CMS.erase_passport(["javascript"], user)
+
+      assert passport_after.rules == %{
+               "elixir" => %{"post.article.delete" => true, "post.tag.edit" => true}
+             }
+    end
+
+    @tag :wip
+    test "erase a no-exsit rule in passport is ok", ~m(user)a do
       {:ok, _} = CMS.stamp_passport(@valid_passport_rules, user)
 
-      {:error, _} = CMS.erase_passport(["javascript", "non-exsit"], user)
-      {:error, _} = CMS.erase_passport(["non-exsit", "post.article.delete"], user)
-      {:error, _} = CMS.erase_passport(["non-exsit", "non-exsit"], user)
+      {:ok, _} = CMS.erase_passport(["javascript", "non-exsit"], user)
+      {:ok, _} = CMS.erase_passport(["non-exsit", "post.article.delete"], user)
+      {:ok, _} = CMS.erase_passport(["non-exsit", "non-exsit"], user)
     end
   end
 end

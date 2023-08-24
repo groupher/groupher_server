@@ -140,6 +140,9 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
       community_id = community.id
 
       Multi.new()
+      |> Multi.run(:stamp_passport, fn _, _ ->
+        PassportCRUD.erase_passport([community_slug], %User{id: user_id})
+      end)
       |> Multi.run(:delete_moderator, fn _, _ ->
         ORM.findby_delete!(CommunityModerator, ~m(user_id community_id)a)
       end)
@@ -147,9 +150,6 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
         with {:ok, community} <- ORM.find(Community, community_id) do
           CommunityCRUD.update_community_count_field(community, user_id, :moderators_count, :dec)
         end
-      end)
-      |> Multi.run(:stamp_passport, fn _, _ ->
-        PassportCRUD.delete_passport(%User{id: user_id})
       end)
       |> Repo.transaction()
       |> result()

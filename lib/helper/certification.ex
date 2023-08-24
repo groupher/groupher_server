@@ -43,6 +43,7 @@ defmodule Helper.Certification do
 
   def passport_rules(cms: "moderator") do
     %{
+      ## TODO: remove those
       "post.article_tag.create" => true,
       "post.article_tag.edit" => true,
       "post.mark_delete" => true
