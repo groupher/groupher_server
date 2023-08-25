@@ -467,7 +467,6 @@ defmodule GroupherServer.Test.Mutation.CMS.CRUD do
       }
     }
     """
-    @tag :wip
     test "can get all passport rules", ~m(user)a do
       rule_conn = simu_conn(:user, user)
       result = rule_conn |> mutation_result(@all_rules_query, %{}, "allPassportRules")

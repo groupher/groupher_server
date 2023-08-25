@@ -79,8 +79,6 @@ defmodule GroupherServer.Test.CMS.Passport do
 
       {:ok, passports} = CMS.paged_passports("javascript", "post.article.delete")
 
-      IO.inspect(passports, label: "### passports")
-
       assert length(passports) == 1
       assert passports |> List.first() |> Map.get(:rules) |> Map.equal?(@valid_passport_rules)
     end
