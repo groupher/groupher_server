@@ -22,6 +22,15 @@ defmodule GroupherServer.Test.CMS.Passport do
         "post.tag.edit" => true
       }
     }
+    test "can get all passport rules" do
+      {:ok, rules} = CMS.all_passport_rules()
+
+      assert Map.keys(rules) |> length == 2
+      assert Map.keys(rules) == [:moderator, :root]
+      assert is_map(rules.root)
+      assert is_map(rules.moderator)
+    end
+
     test "can insert valid nested passport stucture", ~m(user)a do
       {:ok, passport} = CMS.stamp_passport(@valid_passport_rules, user)
 
@@ -46,7 +55,7 @@ defmodule GroupherServer.Test.CMS.Passport do
 
       assert updated_passport.user_id == user.id
       assert updated_passport.rules |> get_in(["javascript", "post.article.delete"]) == true
-      assert updated_passport.rules |> get_in(["javascript", "post.tag.edit"]) == false
+      assert updated_passport.rules |> get_in(["javascript", "post.tag.edit"]) == nil
     end
 
     test "get a user's passport", ~m(user)a do
@@ -69,6 +78,9 @@ defmodule GroupherServer.Test.CMS.Passport do
       {:ok, _} = CMS.stamp_passport(@valid_passport_rules2, user2)
 
       {:ok, passports} = CMS.paged_passports("javascript", "post.article.delete")
+
+      IO.inspect(passports, label: "### passports")
+
       assert length(passports) == 1
       assert passports |> List.first() |> Map.get(:rules) |> Map.equal?(@valid_passport_rules)
     end
@@ -111,7 +123,6 @@ defmodule GroupherServer.Test.CMS.Passport do
              }
     end
 
-    @tag :wip
     test "erase a no-exsit rule in passport is ok", ~m(user)a do
       {:ok, _} = CMS.stamp_passport(@valid_passport_rules, user)
 

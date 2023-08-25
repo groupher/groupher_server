@@ -234,6 +234,7 @@ defmodule GroupherServer.CMS do
   defdelegate erase_passport(rules, user), to: PassportCRUD
   defdelegate get_passport(user), to: PassportCRUD
   defdelegate paged_passports(community, key), to: PassportCRUD
+  defdelegate all_passport_rules(), to: PassportCRUD
   defdelegate delete_passport(user), to: PassportCRUD
 
   # search

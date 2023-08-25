@@ -6,7 +6,7 @@ defmodule GroupherServer.CMS.Delegate.PassportCRUD do
   import Ecto.Query, warn: false
   import ShortMaps
 
-  alias Helper.{NestedFilter, ORM}
+  alias Helper.{Certification, NestedFilter, ORM}
   alias GroupherServer.{Accounts, CMS, Repo}
 
   alias Accounts.Model.User
@@ -20,6 +20,14 @@ defmodule GroupherServer.CMS.Delegate.PassportCRUD do
     UserPasport
     |> where([p], fragment("(?->?->>?)::boolean = ?", p.rules, ^community, ^key, true))
     |> Repo.all()
+    |> done
+  end
+
+  def all_passport_rules() do
+    %{
+      root: Certification.passport_rules(cms: "root"),
+      moderator: Certification.passport_rules(cms: "moderator")
+    }
     |> done
   end
 
@@ -71,8 +79,7 @@ defmodule GroupherServer.CMS.Delegate.PassportCRUD do
   end
 
   defp reject_invalid_rules(rules) when is_map(rules) do
-    # rules |> NestedFilter.drop_by_value([false]) |> reject_empty_values
-    rules |> reject_empty_values
+    rules |> NestedFilter.drop_by_value([false]) |> reject_empty_values
   end
 
   defp reject_empty_values(map) when is_map(map) do

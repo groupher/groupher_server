@@ -156,7 +156,13 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
 
   object :community_moderator do
     field(:role, :string)
+    field(:passport_item_count, :integer)
     field(:user, :common_user)
+  end
+
+  object :all_rules do
+    field(:root, :string)
+    field(:moderator, :string)
   end
 
   object :community do

@@ -12,7 +12,7 @@ defmodule Helper.ORM do
   alias GroupherServer.Repo
   alias Helper.{QueryBuilder, SpecType}
 
-  alias GroupherServer.CMS.Model.CommunityDashboard
+  alias GroupherServer.CMS.Model.{Community, CommunityDashboard}
   alias GroupherServer.Accounts.Model.User
 
   @article_threads get_config(:article, :threads)
@@ -380,6 +380,16 @@ defmodule Helper.ORM do
 
   def find_user(login) when is_binary(login) do
     User |> find_by(%{login: login})
+  end
+
+  def find_community(slug) do
+    Community
+    # |> where([c], c.pending == ^@community_normal)
+    |> where([c], c.slug == ^slug or c.aka == ^slug)
+    |> preload(:dashboard)
+    |> preload(moderators: :user)
+    |> Repo.one()
+    |> done
   end
 
   defp extract_article_info(reaction, threads) do

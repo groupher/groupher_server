@@ -42,7 +42,6 @@ defmodule GroupherServer.Test.CMS.Community do
   end
 
   describe "[cms community apply]" do
-    # @tag :wip
     # test "apply a community should have pending and can not be read", ~m(user)a do
     #   attrs = mock_attrs(:community) |> Map.merge(%{user_id: user.id, apply_msg: "apply msg"})
     #   {:ok, community} = CMS.apply_community(attrs)
@@ -94,11 +93,11 @@ defmodule GroupherServer.Test.CMS.Community do
   describe "[cms community read]" do
     test "read community should inc views", ~m(community)a do
       {:ok, community} = CMS.read_community(community.slug)
+      assert community.views == 2
+      {:ok, community} = CMS.read_community(community.slug)
       assert community.views == 3
       {:ok, community} = CMS.read_community(community.slug)
       assert community.views == 4
-      {:ok, community} = CMS.read_community(community.slug)
-      assert community.views == 5
     end
 
     test "read subscribed community should have a flag", ~m(community user user2)a do
@@ -151,7 +150,7 @@ defmodule GroupherServer.Test.CMS.Community do
   end
 
   describe "[cms community moderator]" do
-    test "can set moderator to a community", ~m(user user2 community)a do
+    test "can add moderator to a community", ~m(user user2 community)a do
       cur_user = user
 
       role = "moderator"
@@ -162,7 +161,6 @@ defmodule GroupherServer.Test.CMS.Community do
       assert user2.id in community.meta.moderators_ids
     end
 
-    @tag :wip
     test "can unset moderator to a community", ~m(user user2 community)a do
       role = "moderator"
       cur_user = user

@@ -412,7 +412,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityCRUD do
   end
 
   defp do_read_community(slug) do
-    with {:ok, community_slug} <- find_community(slug),
+    with {:ok, community_slug} <- ORM.find_community(slug),
          {:ok, community} <- ensure_community_with_dashboard(community_slug),
          {:ok, community} <- read_moderators(community) do
       case community.meta do
@@ -442,16 +442,6 @@ defmodule GroupherServer.CMS.Delegate.CommunityCRUD do
       _ ->
         {:ok, community}
     end
-  end
-
-  defp find_community(slug) do
-    Community
-    # |> where([c], c.pending == ^@community_normal)
-    |> where([c], c.slug == ^slug or c.aka == ^slug)
-    |> preload(:dashboard)
-    |> preload(moderators: :user)
-    |> Repo.one()
-    |> done
   end
 
   defp viewer_has_states({:ok, community}, %User{id: user_id}) do

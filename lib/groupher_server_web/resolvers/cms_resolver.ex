@@ -256,7 +256,14 @@ defmodule GroupherServerWeb.Resolvers.CMS do
   # #######################
   # moderators ..
   # #######################
-  defp find() do
+  def all_passport_rules(_root, _, _) do
+    with {:ok, rules} <- CMS.all_passport_rules() do
+      {:ok,
+       %{
+         root: Jason.encode!(rules.root),
+         moderator: Jason.encode!(rules.moderator)
+       }}
+    end
   end
 
   def add_moderator(_root, ~m(community user role)a, %{context: %{cur_user: cur_user}}) do

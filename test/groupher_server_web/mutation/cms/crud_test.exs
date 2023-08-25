@@ -459,6 +459,26 @@ defmodule GroupherServer.Test.Mutation.CMS.CRUD do
   end
 
   describe "[mutation cms moderators]" do
+    @all_rules_query """
+    mutation {
+      allPassportRules {
+        root
+        moderator
+      }
+    }
+    """
+    @tag :wip
+    test "can get all passport rules", ~m(user)a do
+      rule_conn = simu_conn(:user, user)
+      result = rule_conn |> mutation_result(@all_rules_query, %{}, "allPassportRules")
+
+      assert is_binary(result["root"])
+      assert is_binary(result["moderator"])
+
+      assert is_map(Jason.decode!(result["root"]))
+      assert is_map(Jason.decode!(result["moderator"]))
+    end
+
     @set_moderator_query """
     mutation($community: String!, $user: String!, $role: String!){
       addModerator(community: $community, user: $user, role: $role) {
@@ -486,7 +506,6 @@ defmodule GroupherServer.Test.Mutation.CMS.CRUD do
       }
     }
     """
-    @tag :wip
     test "auth user can unset moderator AND passport from community", ~m(user community user2)a do
       role = "moderator"
 
@@ -516,6 +535,14 @@ defmodule GroupherServer.Test.Mutation.CMS.CRUD do
     mutation($community: String!, $user: String!, $rules: Json!){
       updateModeratorPassport(community: $community, user: $user, rules: $rules) {
         id
+        moderators {
+          role
+          passportItemCount
+          user {
+            login
+            nickname
+          }
+        }
       }
     }
     """
@@ -533,7 +560,9 @@ defmodule GroupherServer.Test.Mutation.CMS.CRUD do
         Jason.encode!(%{
           "#{community.slug}" => %{
             "post.article.delete" => false,
-            "post.tag.edit" => true
+            "post.tag.edit" => true,
+            "post.tag.edit2" => true,
+            "post.tag.edit3" => true
           }
         })
 
@@ -546,13 +575,14 @@ defmodule GroupherServer.Test.Mutation.CMS.CRUD do
                ecode(:community_root_only)
              )
 
-      root_rule_conn
-      |> mutation_result(@update_moderator_query, variables, "updateModeratorPassport")
+      result =
+        root_rule_conn
+        |> mutation_result(@update_moderator_query, variables, "updateModeratorPassport")
 
       {:ok, user2_passport} = CMS.get_passport(%User{id: user2.id})
-
-      assert not get_in(user2_passport, ["#{community.slug}", "post.article.delete"])
       assert get_in(user2_passport, ["#{community.slug}", "post.tag.edit"])
+
+      assert result["moderators"] |> List.first() |> get_in(["passportItemCount"]) == 3
     end
 
     test "unauth user add moderator fails", ~m(user_conn guest_conn user community)a do

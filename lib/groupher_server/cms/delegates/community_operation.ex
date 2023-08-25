@@ -65,11 +65,34 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
     end
   end
 
+  defp update_passport_item_count(%Community{id: community_id, slug: slug}, user_id, rules) do
+    with {:ok, community_moderator} <- ORM.find_by(CommunityModerator, ~m(community_id user_id)a) do
+      update_passport_item_count(community_moderator, slug, user_id, rules)
+    end
+  end
+
+  defp update_passport_item_count(
+         %CommunityModerator{} = moderator,
+         community_slug,
+         user_id,
+         rules
+       ) do
+    case Map.has_key?(rules, community_slug) do
+      true ->
+        {:ok, passport_rules} = PassportCRUD.get_passport(%User{id: user_id})
+        passport_item_count = get_in(passport_rules, [community_slug]) |> Map.keys() |> length
+        moderator |> ORM.update(%{passport_item_count: passport_item_count})
+
+      false ->
+        moderator |> ORM.update(%{passport_item_count: 0})
+    end
+  end
+
   @doc """
   set a community moderator
   """
   def add_moderator(community_slug, role, %User{id: user_id}, %User{} = cur_user) do
-    with {:ok, community} <- CMS.read_community(community_slug),
+    with {:ok, community} <- ORM.find_community(community_slug),
          {:ok, true} <- user_is_root?(community, cur_user) do
       community_id = community.id
 
@@ -81,8 +104,10 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
       |> Multi.run(:update_community_count, fn _, _ ->
         CommunityCRUD.update_community_count_field(community, user_id, :moderators_count, :inc)
       end)
-      |> Multi.run(:stamp_passport, fn _, _ ->
+      |> Multi.run(:stamp_passport, fn _, %{insert_moderator: community_moderator} ->
         rules = Certification.passport_rules(cms: role)
+
+        update_passport_item_count(community_moderator, community_slug, user_id, rules)
         PassportCRUD.stamp_passport(rules, %User{id: user_id})
       end)
       |> Repo.transaction()
@@ -94,22 +119,17 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
     end
   end
 
-  # @valid_passport_rules %{
-  #   "javascript" => %{
-  #     "post.article.delete" => true,
-  #     "post.tag.edit" => true
-  #   }
-  # }
-
   @doc """
   update community moderator
   """
   def update_moderator_passport(community_slug, rules, %User{id: user_id}, %User{} = cur_user) do
-    with {:ok, community} <- CMS.read_community(community_slug),
+    with {:ok, community} <- ORM.find_community(community_slug),
          {:ok, true} <- user_is_root?(community, cur_user),
          {:ok, :match} <- match_passport_community(community_slug, rules),
          {:ok, _} <- PassportCRUD.stamp_passport(rules, %User{id: user_id}) do
-      {:ok, community}
+      update_passport_item_count(community, user_id, rules)
+
+      CMS.read_community(community_slug)
     else
       {:error, false} ->
         {:error,
@@ -135,7 +155,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
   unset a community moderator
   """
   def remove_moderator(community_slug, %User{id: user_id}, %User{} = cur_user) do
-    with {:ok, community} <- CMS.read_community(community_slug),
+    with {:ok, community} <- ORM.find_community(community_slug),
          {:ok, true} <- user_is_root?(community, cur_user) do
       community_id = community.id
 

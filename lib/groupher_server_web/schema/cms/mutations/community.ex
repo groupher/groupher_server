@@ -117,6 +117,12 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
       resolve(&R.CMS.create_thread/3)
     end
 
+    field :all_passport_rules, :all_rules do
+      middleware(M.Authorize, :login)
+
+      resolve(&R.CMS.all_passport_rules/3)
+    end
+
     @desc "add a moderator for a community"
     field :add_moderator, :community do
       arg(:community, non_null(:string))
