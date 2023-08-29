@@ -259,7 +259,6 @@ defmodule GroupherServer.CMS.Delegate.CommunityCRUD do
         %{inner_id: inner_id}
       ) do
     thread_inner_id_key = :"#{plural(thread)}_inner_id_index"
-
     meta = community_meta |> Map.put(thread_inner_id_key, inner_id) |> strip_struct
 
     community
@@ -415,8 +414,8 @@ defmodule GroupherServer.CMS.Delegate.CommunityCRUD do
   end
 
   defp do_read_community(slug, opt) do
-    with {:ok, community_slug} <- ORM.find_community(slug),
-         {:ok, community} <- ensure_community_with_dashboard(community_slug),
+    with {:ok, community} <- ORM.find_community(slug),
+         {:ok, community} <- ensure_community_with_dashboard(community),
          {:ok, community} <- fill_meta(community),
          {:ok, community} <- read_moderators(community) do
       case get_in(opt, [:inc_views]) do
@@ -432,23 +431,18 @@ defmodule GroupherServer.CMS.Delegate.CommunityCRUD do
 
   defp fill_meta(%Community{} = community), do: {:ok, community}
 
-  # community here is already loaded moderators
   defp read_moderators(%Community{} = community) do
     community |> Map.merge(%{moderators: community.moderators}) |> done
   end
 
-  defp ensure_community_with_dashboard(%Community{} = community) do
-    case community.dashboard do
-      nil ->
-        community
-        |> Ecto.Changeset.change()
-        |> Ecto.Changeset.put_assoc(:dashboard, @default_dashboard)
-        |> Repo.update()
-
-      _ ->
-        {:ok, community}
-    end
+  defp ensure_community_with_dashboard(%Community{dashboard: nil} = community) do
+    community
+    |> Ecto.Changeset.change()
+    |> Ecto.Changeset.put_assoc(:dashboard, @default_dashboard)
+    |> Repo.update()
   end
+
+  defp ensure_community_with_dashboard(%Community{} = community), do: {:ok, community}
 
   defp viewer_has_states({:ok, community}, %User{id: user_id}) do
     viewer_has_states = %{
