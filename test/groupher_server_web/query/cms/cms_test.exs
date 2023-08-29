@@ -81,8 +81,8 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
 
   describe "[cms communities]" do
     @query """
-    query($slug: String) {
-      community(slug: $slug) {
+    query($slug: String!, $incViews: Boolean) {
+      community(slug: $slug, incViews: $incViews) {
         id
         title
         threadsCount
@@ -96,7 +96,6 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
       }
     }
     """
-
     test "views should work", ~m(guest_conn)a do
       {:ok, community} = db_insert(:community)
 
@@ -109,6 +108,20 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
 
       {:ok, community} = ORM.find(Community, community.id)
       assert community.views == 2
+    end
+
+    test "views should work with inc_views as false", ~m(guest_conn)a do
+      {:ok, community} = db_insert(:community)
+
+      variables = %{slug: community.slug, incViews: false}
+      guest_conn |> query_result(@query, variables, "community")
+
+      {:ok, community} = ORM.find(Community, community.id)
+      assert community.views == 0
+      guest_conn |> query_result(@query, variables, "community")
+
+      {:ok, community} = ORM.find(Community, community.id)
+      assert community.views == 0
     end
 
     test "can get from alias community name", ~m(guest_conn)a do

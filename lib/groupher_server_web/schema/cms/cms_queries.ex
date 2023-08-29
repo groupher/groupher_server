@@ -12,7 +12,14 @@ defmodule GroupherServerWeb.Schema.CMS.Queries do
       # arg(:id, non_null(:id))
       # arg(:title, :string)
       arg(:slug, non_null(:string))
+      arg(:inc_views, :boolean, default_value: true)
+
       resolve(&R.CMS.community/3)
+    end
+
+    field :all_passport_rules, :all_rules do
+      middleware(M.Authorize, :login)
+      resolve(&R.CMS.all_passport_rules/3)
     end
 
     @desc "if use has pending apply"

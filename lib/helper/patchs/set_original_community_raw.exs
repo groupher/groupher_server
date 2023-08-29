@@ -13,13 +13,8 @@ alias GroupherServer.CMS.Model.Post
 Enum.each(all_posts.entries, fn post ->
   post = Repo.preload(post, :original_community)
 
-  IO.inspect(post.title, label: "post")
-  IO.inspect(post.original_community.slug, label: "community")
-
   case post.original_community_slug do
     nil -> ORM.update(post, %{original_community_slug: post.original_community.slug})
     _ -> {:ok, :pass}
   end
-
-  IO.inspect("---")
 end)

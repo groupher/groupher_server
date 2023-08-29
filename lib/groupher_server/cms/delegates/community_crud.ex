@@ -44,8 +44,17 @@ defmodule GroupherServer.CMS.Delegate.CommunityCRUD do
 
   @default_apply_category Constant.apply_category(:web)
 
-  def read_community(slug, user), do: read_community(slug) |> viewer_has_states(user)
-  def read_community(slug), do: do_read_community(slug)
+  @default_read_opt [inc_views: true]
+
+  def read_community(slug, %User{} = user) do
+    read_community(slug, @default_read_opt) |> viewer_has_states(user)
+  end
+
+  def read_community(slug, %User{} = user, opt) do
+    read_community(slug, opt) |> viewer_has_states(user)
+  end
+
+  def read_community(slug, opt \\ @default_read_opt), do: do_read_community(slug, opt)
 
   def paged_communities(filter, %User{id: user_id, meta: meta}) do
     with {:ok, paged_communtiies} <- paged_communities(filter) do
@@ -77,7 +86,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityCRUD do
         CMS.set_thread(community, thread)
       end)
 
-      read_community(community.slug)
+      read_community(community.slug, inc_views: false)
     end
   end
 
@@ -174,12 +183,6 @@ defmodule GroupherServer.CMS.Delegate.CommunityCRUD do
     |> ORM.paginator(~m(page size)a)
     |> done
   end
-
-  # def set_community_root(user_id) do
-  #   with {:ok, user} <- ORM.find(User, user_id) do
-  #     IO.inspect(user, label: "set root user")
-  #   end
-  # end
 
   def apply_community(args) do
     with {:ok, community} <- create_community(Map.merge(args, %{pending: @community_applying})) do
@@ -287,7 +290,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityCRUD do
   update thread / article count in community meta
   """
   def update_community_count_field(%Community{meta: nil, slug: slug}, thread) do
-    with {:ok, community} = CMS.read_community(slug) do
+    with {:ok, community} = CMS.read_community(slug, inc_views: false) do
       update_community_count_field(community, thread)
     end
   end
@@ -411,20 +414,23 @@ defmodule GroupherServer.CMS.Delegate.CommunityCRUD do
     end
   end
 
-  defp do_read_community(slug) do
+  defp do_read_community(slug, opt) do
     with {:ok, community_slug} <- ORM.find_community(slug),
          {:ok, community} <- ensure_community_with_dashboard(community_slug),
+         {:ok, community} <- fill_meta(community),
          {:ok, community} <- read_moderators(community) do
-      case community.meta do
-        nil ->
-          {:ok, community} = ORM.update_meta(community, @default_meta)
-          community |> ORM.read(inc: :views)
-
-        _ ->
-          community |> ORM.read(inc: :views)
+      case get_in(opt, [:inc_views]) do
+        true -> ORM.read(community, inc: :views)
+        false -> {:ok, community}
       end
     end
   end
+
+  defp fill_meta(%Community{meta: nil} = community) do
+    ORM.update_meta(community, @default_meta)
+  end
+
+  defp fill_meta(%Community{} = community), do: {:ok, community}
 
   # community here is already loaded moderators
   defp read_moderators(%Community{} = community) do

@@ -54,7 +54,6 @@ defmodule Helper.Converter.EditorToHTML.Frags.Image do
   def get_item(:gallery, %{"src" => src, "index" => index} = data) do
     caption = get_caption(data)
 
-    # IO.inspect(index, label: "index -> ")
     ~s(<div class="#{@class["gallery_image_block"]}">
         <a href=#{src} class="glightbox" data-glightbox="type:image;description: #{caption}">
           <img class="#{@class["gallery_image"]}" src="#{src}" alt="image" data-index="#{index}" />

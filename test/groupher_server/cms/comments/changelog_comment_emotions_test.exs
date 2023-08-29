@@ -89,14 +89,12 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogCommentEmotions do
 
       {:ok, _} = CMS.emotion_to_comment(parent_comment.id, :downvote, user)
       {:ok, _} = CMS.emotion_to_comment(reply_comment.id, :downvote, user)
-      # IO.inspect(ff.emotions, label: "ff")
 
       filter = %{page: 1, size: 10}
 
       {:ok, %{entries: entries}} =
         CMS.paged_comments(:changelog, changelog.id, filter, :replies, user)
 
-      # IO.inspect(entries, label: "entries: ")
       parent = entries |> List.first()
       parent_emotion = parent |> Map.get(:emotions)
       reply_emotion = parent |> Map.get(:replies) |> List.first() |> Map.get(:emotions)
@@ -189,7 +187,6 @@ defmodule GroupherServer.Test.CMS.Comments.ChangelogCommentEmotions do
       {:ok, _} = CMS.emotion_to_comment(parent_comment.id, :beer, user3)
 
       {:ok, %{emotions: emotions}} = ORM.find(Comment, parent_comment.id)
-      # IO.inspect(emotions, label: "the parent_comment")
 
       assert emotions.beer_count == 3
       assert user_exist_in?(user, emotions.latest_beer_users)

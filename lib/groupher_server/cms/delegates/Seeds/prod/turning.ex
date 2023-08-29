@@ -34,7 +34,6 @@ defmodule GroupherServer.CMS.Delegate.Seeds.Prod.Turning do
     with {:ok, home_community} <- ORM.find_by(Community, %{slug: "home"}),
          {:ok, bot} <- seed_bot(),
          {:ok, threads} <- seed_threads(:home) do
-      # IO.inspect(home_community, label: "seed_home_tags home_community")
       threadify_communities([home_community], threads.entries)
       tagfy_threads([home_community], threads.entries, bot, :home)
     end

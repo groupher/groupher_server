@@ -119,8 +119,6 @@ defmodule GroupherServer.Test.AssertHelper do
       |> post("/graphiql", query: query, variables: variables)
       |> json_response(200)
 
-    # IO.inspect(resp, label: "debug")
-
     case resp |> Map.has_key?("errors") do
       true ->
         code == resp["errors"] |> List.first() |> Map.get("code")

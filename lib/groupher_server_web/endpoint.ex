@@ -60,6 +60,4 @@ defmodule GroupherServerWeb.Endpoint do
       {:ok, config}
     end
   end
-
-  #  defp inspect_conn(conn, _), do: IO.inspect(conn)
 end

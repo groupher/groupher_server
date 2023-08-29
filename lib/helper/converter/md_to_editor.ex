@@ -23,7 +23,6 @@ defmodule Helper.Converter.MdToEditor do
         acc ++ [parsed]
       end)
 
-    # IO.inspect(editor_blocks, label: "final editor_blocks")
     editor_blocks
   end
 
@@ -37,7 +36,6 @@ defmodule Helper.Converter.MdToEditor do
         acc <> parsed
       end)
 
-    # IO.inspect(content_text, label: "h-type content_text")
     [_, level] = String.split(type, "h")
     level = String.to_integer(level)
     level = if level >= 4, do: 3, else: level
@@ -118,7 +116,6 @@ defmodule Helper.Converter.MdToEditor do
         items =
           Enum.reduce(content, [], fn content_item, acc ->
             parsed = parse_inline(content_item)
-            IO.inspect(parsed, label: "the parsed")
 
             acc ++
               [

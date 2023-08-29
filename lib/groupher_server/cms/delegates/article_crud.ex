@@ -407,7 +407,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleCRUD do
 
     with {:ok, author} <- ensure_author_exists(%User{id: uid}),
          {:ok, info} <- match(thread),
-         {:ok, community} <- CMS.read_community(cslug) do
+         {:ok, community} <- CMS.read_community(cslug, inc_views: false) do
       Multi.new()
       |> Multi.run(:create_article, fn _, _ ->
         do_create_article(info.model, attrs, author, community)
@@ -687,7 +687,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleCRUD do
   # defp handle_existing_author({:ok, author}), do: {:ok, author}
 
   # defp handle_existing_author({:error, %Ecto.Changeset{changes: %{user_id: user_id}}}) do
-  #   ORM.find_by(Author, user_id: user_id) |> IO.inspect(label: "after f2")
+  #   ORM.find_by(Author, user_id: user_id)
   # end
 
   # defp handle_existing_author({:error, changeset}) do

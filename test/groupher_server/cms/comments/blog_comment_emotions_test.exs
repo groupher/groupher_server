@@ -148,7 +148,6 @@ defmodule GroupherServer.Test.CMS.Comments.BlogCommentEmotions do
       {:ok, _} = CMS.emotion_to_comment(parent_comment.id, :beer, user3)
 
       {:ok, %{emotions: emotions}} = ORM.find(Comment, parent_comment.id)
-      # IO.inspect(emotions, label: "the parent_comment")
 
       assert emotions.beer_count == 3
       assert user_exist_in?(user, emotions.latest_beer_users)

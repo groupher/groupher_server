@@ -129,7 +129,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
          {:ok, _} <- PassportCRUD.stamp_passport(rules, %User{id: user_id}) do
       update_passport_item_count(community, user_id, rules)
 
-      CMS.read_community(community_slug)
+      CMS.read_community(community_slug, inc_views: false)
     else
       {:error, false} ->
         {:error,

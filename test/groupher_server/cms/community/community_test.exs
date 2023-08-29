@@ -93,11 +93,20 @@ defmodule GroupherServer.Test.CMS.Community do
   describe "[cms community read]" do
     test "read community should inc views", ~m(community)a do
       {:ok, community} = CMS.read_community(community.slug)
+      assert community.views == 1
+      {:ok, community} = CMS.read_community(community.slug)
       assert community.views == 2
       {:ok, community} = CMS.read_community(community.slug)
       assert community.views == 3
-      {:ok, community} = CMS.read_community(community.slug)
-      assert community.views == 4
+    end
+
+    test "read community should not inc views if opt provide", ~m(community)a do
+      {:ok, community} = CMS.read_community(community.slug, inc_views: false)
+      assert community.views == 0
+      {:ok, community} = CMS.read_community(community.slug, inc_views: false)
+      assert community.views == 0
+      {:ok, community} = CMS.read_community(community.slug, inc_views: false)
+      assert community.views == 0
     end
 
     test "read subscribed community should have a flag", ~m(community user user2)a do

@@ -460,7 +460,7 @@ defmodule GroupherServer.Test.Mutation.CMS.CRUD do
 
   describe "[mutation cms moderators]" do
     @all_rules_query """
-    mutation {
+    query {
       allPassportRules {
         root
         moderator
@@ -469,7 +469,7 @@ defmodule GroupherServer.Test.Mutation.CMS.CRUD do
     """
     test "can get all passport rules", ~m(user)a do
       rule_conn = simu_conn(:user, user)
-      result = rule_conn |> mutation_result(@all_rules_query, %{}, "allPassportRules")
+      result = rule_conn |> query_result(@all_rules_query, %{}, "allPassportRules")
 
       assert is_binary(result["root"])
       assert is_binary(result["moderator"])
@@ -525,9 +525,6 @@ defmodule GroupherServer.Test.Mutation.CMS.CRUD do
 
       assert {:error, _} =
                CommunityModerator |> ORM.find_by(user_id: user2.id, community_id: community.id)
-
-      # Passport |> ORM.find_by(user_id: user2.id) |> IO.inspect(label: "ret")
-      # assert {:error, _} = Passport |> ORM.find_by(user_id: user2.id)
     end
 
     @update_moderator_query """

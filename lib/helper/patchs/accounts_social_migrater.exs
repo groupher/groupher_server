@@ -12,7 +12,6 @@ defmodule Helper.Patch.SocialMigrater do
 
     Social
     |> ORM.upsert_by([user_id: id], attrs)
-    |> IO.inspect(label: "result")
   end
 end
 

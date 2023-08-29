@@ -33,7 +33,9 @@ defmodule GroupherServer.CMS do
 
   # Community CRUD: moderators, thread, tag
   defdelegate read_community(args), to: CommunityCRUD
-  defdelegate read_community(args, user), to: CommunityCRUD
+  defdelegate read_community(args, opt), to: CommunityCRUD
+  defdelegate read_community(args, user, opt), to: CommunityCRUD
+
   defdelegate paged_communities(filter, user), to: CommunityCRUD
   defdelegate paged_communities(filter), to: CommunityCRUD
   defdelegate create_community(args), to: CommunityCRUD

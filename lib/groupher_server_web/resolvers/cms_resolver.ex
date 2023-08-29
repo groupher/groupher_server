@@ -17,12 +17,12 @@ defmodule GroupherServerWeb.Resolvers.CMS do
   # #######################
   # community ..
   # #######################
-  def community(_root, %{slug: slug}, %{context: %{cur_user: user}}) do
-    CMS.read_community(slug, user)
+  def community(_root, %{slug: slug, inc_views: inc_views}, %{context: %{cur_user: user}}) do
+    CMS.read_community(slug, user, inc_views: inc_views)
   end
 
-  def community(_root, %{slug: slug}, _info) do
-    CMS.read_community(slug)
+  def community(_root, %{slug: slug, inc_views: inc_views}, _info) do
+    CMS.read_community(slug, inc_views: inc_views)
   end
 
   def paged_communities(_root, ~m(filter)a, %{context: %{cur_user: user}}) do
