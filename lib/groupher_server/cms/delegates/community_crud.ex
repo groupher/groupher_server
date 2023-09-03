@@ -25,7 +25,6 @@ defmodule GroupherServer.CMS.Delegate.CommunityCRUD do
     CommunityDashboard,
     CommunityModerator,
     CommunitySubscriber,
-    CommunityRootUser,
     Thread
   }
 

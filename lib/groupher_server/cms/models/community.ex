@@ -13,7 +13,6 @@ defmodule GroupherServer.CMS.Model.Community do
   alias CMS.Model.{
     Embeds,
     CommunityDashboard,
-    CommunityRootUser,
     Category,
     CommunityThread,
     CommunitySubscriber,

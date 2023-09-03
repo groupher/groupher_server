@@ -27,8 +27,8 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
 
   describe "[mutation cms community]" do
     @update_info_query """
-    mutation($community: String!, $homepage: String, $title: String, $slug: String, $desc: String, $logo: String, $favicon: String) {
-      updateDashboardBaseInfo(community: $community, homepage: $homepage, title: $title, slug: $slug, desc: $desc, logo: $logo, favicon: $favicon) {
+    mutation($community: String!, $homepage: String, $title: String, $slug: String, $bio: String, $introduction: String, $logo: String, $favicon: String) {
+      updateDashboardBaseInfo(community: $community, homepage: $homepage, title: $title, slug: $slug, bio: $bio, introduction: $introduction, logo: $logo, favicon: $favicon) {
         id
         title
 
@@ -48,7 +48,24 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
         title: "groupher",
         slug: "groupher",
         homepage: "https://groupher.com",
-        desc: "great community",
+        bio: "thie community is awesome",
+        introduction: """
+        I feel very happy writing this post. After reading this post you might feel the same as me.
+
+        So let's know why NASA thanked India and China.
+
+        A new study shows that two countries with the world's largest population are leading the increase in greenery on land.
+
+        Putting photos, NASA said that there is more greenery on the Earth than 20 years ago, which has been credited by India and China.
+
+        In the last 20 years, India and China have planted quite a lot of trees, you can see it in the picture above.
+
+        India is breaking the world record in plantations, with 800,000 Indians planting 50 million trees in just 24 hours.
+
+        The most important conclusion from the data is that the increase in green areas on the planet is almost entirely due to human action.
+
+        But we do not have to stop now, I request everyone to plant some trees.
+        """,
         logo: "logo",
         favicon: "favicon"
       }
@@ -59,7 +76,9 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
 
       {:ok, found} = Community |> ORM.find(updated["id"], preload: :dashboard)
 
+      assert found.dashboard.base_info.introduction |> String.length() == 828
       assert found.dashboard.base_info.title == "groupher"
+      assert found.dashboard.base_info.bio == "thie community is awesome"
       assert found.dashboard.base_info.slug == "groupher"
     end
 
