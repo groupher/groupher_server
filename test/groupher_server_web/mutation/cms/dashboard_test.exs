@@ -27,14 +27,15 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
 
   describe "[mutation cms community]" do
     @update_info_query """
-    mutation($community: String!, $homepage: String, $title: String, $slug: String, $bio: String, $introduction: String, $logo: String, $favicon: String) {
-      updateDashboardBaseInfo(community: $community, homepage: $homepage, title: $title, slug: $slug, bio: $bio, introduction: $introduction, logo: $logo, favicon: $favicon) {
+    mutation($community: String!, $homepage: String, $title: String, $slug: String, $desc: String, $introduction: String, $logo: String, $favicon: String) {
+      updateDashboardBaseInfo(community: $community, homepage: $homepage, title: $title, slug: $slug, desc: $desc, introduction: $introduction, logo: $logo, favicon: $favicon) {
         id
         title
 
         dashboard {
           baseInfo {
             title
+            introduction
           }
         }
       }
@@ -48,7 +49,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
         title: "groupher",
         slug: "groupher",
         homepage: "https://groupher.com",
-        bio: "thie community is awesome",
+        desc: "thie community is awesome",
         introduction: """
         I feel very happy writing this post. After reading this post you might feel the same as me.
 
@@ -78,7 +79,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
 
       assert found.dashboard.base_info.introduction |> String.length() == 828
       assert found.dashboard.base_info.title == "groupher"
-      assert found.dashboard.base_info.bio == "thie community is awesome"
+      assert found.dashboard.base_info.desc == "thie community is awesome"
       assert found.dashboard.base_info.slug == "groupher"
     end
 

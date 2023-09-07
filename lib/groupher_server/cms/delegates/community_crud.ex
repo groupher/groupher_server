@@ -135,9 +135,36 @@ defmodule GroupherServer.CMS.Delegate.CommunityCRUD do
   @doc """
   update dashboard settings of a community
   """
-  def update_dashboard(community, key, args) do
-    with {:ok, community} <- ORM.find_by(Community, slug: community),
-         {:ok, community_dashboard} <- ensure_dashboard_exist(community),
+  def update_dashboard(community_slug, :base_info, args) do
+    main_fields = Map.take(args, [:title, :desc, :logo, :slug])
+
+    with {:ok, community} <- ORM.find_by(Community, slug: community_slug),
+         {:ok, community} <- update_community_if_need(community, main_fields) do
+      do_update_dashboard(community, :base_info, args)
+    end
+  end
+
+  def update_dashboard(%Community{} = community, key, args) do
+    do_update_dashboard(community, key, args)
+  end
+
+  def update_dashboard(community_slug, key, args) do
+    with {:ok, community} <- ORM.find_by(Community, slug: community_slug) do
+      do_update_dashboard(community, key, args)
+    end
+  end
+
+  # see https://elixirforum.com/t/pattern-match-on-empty-maps/33259/5
+  defp update_community_if_need(%Community{} = community, fields) when map_size(fields) == 0 do
+    {:ok, community}
+  end
+
+  defp update_community_if_need(%Community{} = community, fields) do
+    ORM.update(community, fields)
+  end
+
+  defp do_update_dashboard(%Community{} = community, key, args) do
+    with {:ok, community_dashboard} <- ensure_dashboard_exist(community),
          {:ok, _} <- ORM.update_dashboard(community_dashboard, key, args) do
       {:ok, community}
     end

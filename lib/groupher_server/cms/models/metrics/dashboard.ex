@@ -32,7 +32,7 @@ defmodule GroupherServer.CMS.Model.Metrics.Dashboard do
       [:title, :string, ""],
       [:logo, :string, ""],
       [:slug, :string, ""],
-      [:bio, :string, ""],
+      [:desc, :string, ""],
       [:introduction, :string, ""],
       [:homepage, :string, ""],
       [:city, :string, ""],

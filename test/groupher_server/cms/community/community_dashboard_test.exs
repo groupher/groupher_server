@@ -50,6 +50,21 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert find_community.dashboard.base_info.slug == "groupher"
     end
 
+    test "update baseinfo should update community's related fields", ~m(community_attrs)a do
+      {:ok, community} = CMS.create_community(community_attrs)
+
+      {:ok, _} =
+        CMS.update_dashboard(community.slug, :base_info, %{
+          title: "new title",
+          slug: "new slug"
+        })
+
+      {:ok, community} = ORM.find(Community, community.id)
+
+      assert community.title == "new title"
+      assert community.slug == "new slug"
+    end
+
     test "can update seo in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 

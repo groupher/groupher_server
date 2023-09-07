@@ -23,7 +23,7 @@ defmodule GroupherServer.Application do
         # Start the endpoint when the application starts
         supervisor(GroupherServerWeb.Endpoint, []),
         # Start your own worker by calling: GroupherServer.Worker.start_link(arg1, arg2, arg3)
-        worker(Helper.Scheduler, []),
+        # worker(Helper.Scheduler, []),
         {Rihanna.Supervisor, [postgrex: GroupherServer.Repo.config()]}
       ] ++ cache_workers()
 
