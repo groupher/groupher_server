@@ -12,7 +12,8 @@ defmodule Helper.ORM do
   alias GroupherServer.Repo
   alias Helper.{QueryBuilder, SpecType}
 
-  alias GroupherServer.CMS.Model.CommunityDashboard
+  alias GroupherServer.CMS.Model.{Community, CommunityDashboard}
+  alias GroupherServer.Accounts.Model.User
 
   @article_threads get_config(:article, :threads)
 
@@ -190,6 +191,7 @@ defmodule Helper.ORM do
   DO NOT use it directly
   """
   def delete(content), do: Repo.delete(content)
+  def delete!(content), do: Repo.delete!(content)
 
   def find_delete!(queryable, id) do
     with {:ok, content} <- find(queryable, id) do
@@ -374,6 +376,20 @@ defmodule Helper.ORM do
   def extract_articles(%{entries: entries} = paged_articles, threads \\ @article_threads) do
     paged_articles
     |> Map.put(:entries, Enum.map(entries, &extract_article_info(&1, threads)))
+  end
+
+  def find_user(login) when is_binary(login) do
+    User |> find_by(%{login: login})
+  end
+
+  def find_community(slug) do
+    Community
+    # |> where([c], c.pending == ^@community_normal)
+    |> where([c], c.slug == ^slug or c.aka == ^slug)
+    |> preload(:dashboard)
+    |> preload(moderators: :user)
+    |> Repo.one()
+    |> done
   end
 
   defp extract_article_info(reaction, threads) do

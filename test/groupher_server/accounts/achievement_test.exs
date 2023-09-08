@@ -13,37 +13,40 @@ defmodule GroupherServer.Test.Accounts.Achievement do
 
   setup do
     {:ok, user} = db_insert(:user)
+    {:ok, user2} = db_insert(:user)
+    {:ok, user3} = db_insert(:user)
 
-    {:ok, ~m(user)a}
+    {:ok, ~m(user user2 user3)a}
   end
 
   describe "[Accounts Achievement communities]" do
     test "normal user should have a empty editable communities list", ~m(user)a do
-      {:ok, results} = Accounts.paged_editable_communities(user, %{page: 1, size: 20})
+      {:ok, results} = Accounts.paged_moderatorable_communities(user, %{page: 1, size: 20})
 
       assert results |> is_valid_pagination?(:raw)
       assert results.total_count == 0
     end
 
-    test "community editor should get a editable community list", ~m(user)a do
-      title = "chief editor"
-      {:ok, community} = db_insert(:community)
-      {:ok, community2} = db_insert(:community)
+    test "community moderator should get a editable community list",
+         ~m(user user2 user3)a do
+      community_attrs = mock_attrs(:community) |> Map.merge(%{user_id: user.id})
+      {:ok, community} = CMS.create_community(community_attrs)
 
-      {:ok, _} = CMS.set_editor(community, title, user)
-      {:ok, _} = CMS.set_editor(community2, title, user)
+      community_attrs = mock_attrs(:community) |> Map.merge(%{user_id: user2.id})
+      {:ok, community2} = CMS.create_community(community_attrs)
 
-      # bad boy
-      {:ok, community_x} = db_insert(:community)
-      {:ok, user_x} = db_insert(:user)
-      {:ok, _} = CMS.set_editor(community_x, title, user_x)
+      role = "moderator"
 
-      {:ok, editable_communities} =
-        Accounts.paged_editable_communities(user, %{page: 1, size: 20})
+      {:ok, _} = CMS.add_moderator(community.slug, role, user3, user)
+      {:ok, _} = CMS.add_moderator(community2.slug, role, user3, user2)
+      {:ok, _} = CMS.add_moderator(community.slug, role, user2, user)
 
-      assert editable_communities.total_count == 2
-      assert editable_communities.entries |> Enum.any?(&(&1.id == community.id))
-      assert editable_communities.entries |> Enum.any?(&(&1.id == community2.id))
+      {:ok, moderatorable_communities} =
+        Accounts.paged_moderatorable_communities(user3, %{page: 1, size: 20})
+
+      assert moderatorable_communities.total_count == 2
+      assert moderatorable_communities.entries |> Enum.any?(&(&1.id == community.id))
+      assert moderatorable_communities.entries |> Enum.any?(&(&1.id == community2.id))
     end
   end
 

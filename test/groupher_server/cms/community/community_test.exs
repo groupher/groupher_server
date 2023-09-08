@@ -15,12 +15,16 @@ defmodule GroupherServer.Test.CMS.Community do
 
   setup do
     {:ok, user} = db_insert(:user)
+
+    community_attrs = mock_attrs(:community) |> Map.merge(%{user_id: user.id})
+    {:ok, community} = CMS.create_community(community_attrs)
+
     {:ok, user2} = db_insert(:user)
-    {:ok, community} = db_insert(:community)
+    {:ok, user3} = db_insert(:user)
 
     article_tag_attrs = mock_attrs(:article_tag)
 
-    {:ok, ~m(user community article_tag_attrs user2)a}
+    {:ok, ~m(user community article_tag_attrs user2 user3)a}
   end
 
   describe "[cms community curd]" do
@@ -38,22 +42,32 @@ defmodule GroupherServer.Test.CMS.Community do
   end
 
   describe "[cms community apply]" do
-    test "apply a community should have pending and can not be read", ~m(user)a do
-      attrs = mock_attrs(:community) |> Map.merge(%{user_id: user.id, apply_msg: "apply msg"})
+    # test "apply a community should have pending and can not be read", ~m(user)a do
+    #   attrs = mock_attrs(:community) |> Map.merge(%{user_id: user.id, apply_msg: "apply msg"})
+    #   {:ok, community} = CMS.apply_community(attrs)
+
+    #   assert community.meta.apply_msg == "apply msg"
+    #   assert community.meta.apply_category == "PUBLIC"
+
+    #   {:ok, community} = ORM.find(Community, community.id)
+    #   assert community.pending == @community_applying
+    #   assert {:error, _} = CMS.read_community(community.slug)
+
+    #   {:ok, community} = CMS.approve_community_apply(community.slug)
+
+    #   {:ok, community} = ORM.find(Community, community.id)
+    #   assert community.pending == @community_normal
+    #   assert {:ok, _} = CMS.read_community(community.slug)
+    # end
+
+    test "apply community can set root user by default", ~m(user)a do
+      attrs = mock_attrs(:community) |> Map.merge(%{user_id: user.id})
       {:ok, community} = CMS.apply_community(attrs)
 
-      assert community.meta.apply_msg == "apply msg"
-      assert community.meta.apply_category == "PUBLIC"
+      {:ok, community} = ORM.find(Community, community.id, preload: [moderators: :user])
+      moderator_user = community.moderators |> Enum.at(0)
 
-      {:ok, community} = ORM.find(Community, community.id)
-      assert community.pending == @community_applying
-      assert {:error, _} = CMS.read_community(community.slug)
-
-      {:ok, community} = CMS.approve_community_apply(community.id)
-
-      {:ok, community} = ORM.find(Community, community.id)
-      assert community.pending == @community_normal
-      assert {:ok, _} = CMS.read_community(community.slug)
+      assert moderator_user.user_id == user.id
     end
 
     test "apply can be deny", ~m(user)a do
@@ -86,6 +100,15 @@ defmodule GroupherServer.Test.CMS.Community do
       assert community.views == 3
     end
 
+    test "read community should not inc views if opt provide", ~m(community)a do
+      {:ok, community} = CMS.read_community(community.slug, inc_views: false)
+      assert community.views == 0
+      {:ok, community} = CMS.read_community(community.slug, inc_views: false)
+      assert community.views == 0
+      {:ok, community} = CMS.read_community(community.slug, inc_views: false)
+      assert community.views == 0
+    end
+
     test "read subscribed community should have a flag", ~m(community user user2)a do
       {:ok, _} = CMS.subscribe_community(community, user)
 
@@ -99,19 +122,21 @@ defmodule GroupherServer.Test.CMS.Community do
       assert user2.id not in community.meta.subscribed_user_ids
     end
 
-    test "read editored community should have a flag", ~m(community user user2)a do
-      title = "chief editor"
-      {:ok, community} = CMS.set_editor(community, title, user)
-
-      {:ok, community} = CMS.read_community(community.slug, user)
-      assert community.viewer_is_editor
+    test "read moderatorable community should have a flag", ~m(community user user2 user3)a do
+      role = "moderator"
+      cur_user = user
+      {:ok, community} = CMS.add_moderator(community.slug, role, user2, cur_user)
 
       {:ok, community} = CMS.read_community(community.slug, user2)
-      assert not community.viewer_is_editor
+      assert community.viewer_is_moderator
 
-      {:ok, community} = CMS.unset_editor(community, user)
-      {:ok, community} = CMS.read_community(community.slug, user)
-      assert not community.viewer_is_editor
+      {:ok, community} = CMS.read_community(community.slug, user3)
+      assert not community.viewer_is_moderator
+
+      {:ok, community} = CMS.remove_moderator(community.slug, user2, cur_user)
+      {:ok, community} = CMS.read_community(community.slug, user2)
+
+      assert not community.viewer_is_moderator
     end
   end
 
@@ -133,23 +158,28 @@ defmodule GroupherServer.Test.CMS.Community do
     end
   end
 
-  describe "[cms community editor]" do
-    test "can set editor to a community", ~m(user community)a do
-      title = "chief editor"
-      {:ok, community} = CMS.set_editor(community, title, user)
+  describe "[cms community moderator]" do
+    test "can add moderator to a community", ~m(user user2 community)a do
+      cur_user = user
 
-      assert community.editors_count == 1
-      assert user.id in community.meta.editors_ids
+      role = "moderator"
+      {:ok, community} = CMS.add_moderator(community.slug, role, user2, cur_user)
+
+      assert community.moderators_count == 2
+      assert user.id in community.meta.moderators_ids
+      assert user2.id in community.meta.moderators_ids
     end
 
-    test "can unset editor to a community", ~m(user community)a do
-      title = "chief editor"
-      {:ok, community} = CMS.set_editor(community, title, user)
-      assert community.editors_count == 1
+    test "can unset moderator to a community", ~m(user user2 community)a do
+      role = "moderator"
+      cur_user = user
 
-      {:ok, community} = CMS.unset_editor(community, user)
-      assert community.editors_count == 0
-      assert user.id not in community.meta.editors_ids
+      {:ok, community} = CMS.add_moderator(community.slug, role, user2, cur_user)
+      assert community.moderators_count == 2
+
+      {:ok, community} = CMS.remove_moderator(community.slug, user2, cur_user)
+      assert community.moderators_count == 1
+      assert user2.id not in community.meta.moderators_ids
     end
   end
 

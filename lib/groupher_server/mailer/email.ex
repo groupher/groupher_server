@@ -45,8 +45,6 @@ defmodule GroupherServer.Email do
   end
 
   def thanks_donation(%User{email: email} = user, %BillRecord{} = record) do
-    # IO.inspect(email, label: "thanks_donation")
-
     base_mail()
     |> to(email)
     |> subject("感谢你的打赏")

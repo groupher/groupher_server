@@ -12,7 +12,6 @@ thread_ids = threads.entries |> Enum.map(& &1.id)
 
 # thread_ids =
 # Enum.reduce(1..length(threads), [], fn cnt, acc ->
-# IO.inspect(cnt, label: "cnt")
 
 # {:ok, thread} =
 # db_insert(:thread, %{

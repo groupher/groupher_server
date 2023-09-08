@@ -1,6 +1,6 @@
-defmodule GroupherServer.CMS.Delegate.ArticleCURD do
+defmodule GroupherServer.CMS.Delegate.ArticleCRUD do
   @moduledoc """
-  CURD operation on post/job ...
+  CRUD operation on post/job ...
   """
   import Ecto.Query, warn: false
 
@@ -31,9 +31,9 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
 
   alias CMS.Delegate.{
     ArticleCommunity,
-    CommentCURD,
+    CommentCRUD,
     ArticleTag,
-    CommunityCURD,
+    CommunityCRUD,
     Document,
     Hooks
   }
@@ -241,7 +241,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
 
   def set_post_cat(%Post{} = post, cat) do
     with {:ok, updated} <- ORM.update(post, %{cat: cat}) do
-      CommentCURD.batch_update_question_flag(post, cat == @article_cat.question)
+      CommentCRUD.batch_update_question_flag(post, cat == @article_cat.question)
 
       updated |> covert_cat_state_ifneed |> done
     end
@@ -407,7 +407,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
 
     with {:ok, author} <- ensure_author_exists(%User{id: uid}),
          {:ok, info} <- match(thread),
-         {:ok, community} <- CMS.read_community(cslug) do
+         {:ok, community} <- CMS.read_community(cslug, inc_views: false) do
       Multi.new()
       |> Multi.run(:create_article, fn _, _ ->
         do_create_article(info.model, attrs, author, community)
@@ -425,14 +425,14 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
         ORM.update(article, %{active_at: article.inserted_at})
       end)
       |> Multi.run(:update_community_article_count, fn _, _ ->
-        CommunityCURD.update_community_count_field(community, thread)
+        CommunityCRUD.update_community_count_field(community, thread)
       end)
       |> Multi.run(:update_community_inner_id, fn _,
                                                   %{
                                                     create_article: article,
                                                     update_community_article_count: community
                                                   } ->
-        CommunityCURD.update_community_inner_id(community, thread, article)
+        CommunityCRUD.update_community_inner_id(community, thread, article)
       end)
       |> Multi.run(:update_user_published_meta, fn _, _ ->
         Accounts.update_published_states(uid, thread)
@@ -564,7 +564,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
         ORM.update(article, %{mark_delete: true})
       end)
       |> Multi.run(:update_community_article_count, fn _, _ ->
-        CommunityCURD.update_community_count_field(article.communities, thread)
+        CommunityCRUD.update_community_count_field(article.communities, thread)
       end)
       |> Repo.transaction()
       |> result()
@@ -584,7 +584,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
         ORM.update(article, %{mark_delete: false})
       end)
       |> Multi.run(:update_community_article_count, fn _, _ ->
-        CommunityCURD.update_community_count_field(article.communities, thread)
+        CommunityCRUD.update_community_count_field(article.communities, thread)
       end)
       |> Repo.transaction()
       |> result()
@@ -625,7 +625,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
           |> Enum.map(& &1.communities)
           |> Enum.at(0)
 
-        CommunityCURD.update_community_count_field(communities, thread)
+        CommunityCRUD.update_community_count_field(communities, thread)
       end)
       |> Repo.transaction()
       |> result()
@@ -644,7 +644,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
       article |> ORM.delete()
     end)
     |> Multi.run(:update_community_article_count, fn _, _ ->
-      CommunityCURD.update_community_count_field(article.communities, thread)
+      CommunityCRUD.update_community_count_field(article.communities, thread)
     end)
     |> Multi.run(:update_user_published_meta, fn _, _ ->
       Accounts.update_published_states(article.author.user.id, thread)
@@ -687,7 +687,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleCURD do
   # defp handle_existing_author({:ok, author}), do: {:ok, author}
 
   # defp handle_existing_author({:error, %Ecto.Changeset{changes: %{user_id: user_id}}}) do
-  #   ORM.find_by(Author, user_id: user_id) |> IO.inspect(label: "after f2")
+  #   ORM.find_by(Author, user_id: user_id)
   # end
 
   # defp handle_existing_author({:error, changeset}) do

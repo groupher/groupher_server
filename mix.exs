@@ -115,7 +115,8 @@ defmodule GroupherServer.Mixfile do
       {:floki, "~> 0.30.1"},
       {:httpoison, "~> 1.8"},
       # rss feed parser
-      {:fiet, "~> 0.3"}
+      {:fiet, "~> 0.3"},
+      {:ogp, "~> 1.0.0"}
     ]
   end
 

@@ -1,4 +1,4 @@
-defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.BlogTagCURD do
+defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.PostTagCRUD do
   @moduledoc false
 
   use GroupherServer.TestTools
@@ -39,19 +39,18 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.BlogTagCURD do
       }
     }
     """
-
-    test "create tag with valid attrs, has default BLOG thread and default blogs",
+    test "create tag with valid attrs, has default POST thread and default posts",
          ~m(community)a do
       variables = %{
         title: "tag title",
         slug: "tag_raw",
         community: community.slug,
-        thread: "BLOG",
+        thread: "POST",
         color: "GREEN",
         group: "awesome"
       }
 
-      passport_rules = %{community.title => %{"blog.article_tag.create" => true}}
+      passport_rules = %{community.title => %{"post.article_tag.create" => true}}
       rule_conn = simu_conn(:user, cms: passport_rules)
 
       created = rule_conn |> mutation_result(@create_tag_query, variables, "createArticleTag")
@@ -61,7 +60,7 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.BlogTagCURD do
       {:ok, found} = ArticleTag |> ORM.find(created["id"])
 
       assert created["id"] == to_string(found.id)
-      assert found.thread == "BLOG"
+      assert found.thread == "POST"
       assert found.group == "awesome"
       assert belong_community["id"] == to_string(community.id)
     end
@@ -71,13 +70,13 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.BlogTagCURD do
         title: "tag title",
         slug: "tag",
         community: community.slug,
-        thread: "BLOG",
+        thread: "POST",
         color: "GREEN",
         group: "awesome",
         extra: ["menuID", "menuID2"]
       }
 
-      passport_rules = %{community.title => %{"blog.article_tag.create" => true}}
+      passport_rules = %{community.title => %{"post.article_tag.create" => true}}
       rule_conn = simu_conn(:user, cms: passport_rules)
 
       created = rule_conn |> mutation_result(@create_tag_query, variables, "createArticleTag")
@@ -90,7 +89,7 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.BlogTagCURD do
         title: "tag title",
         slug: "tag",
         community: community.slug,
-        thread: "BLOG",
+        thread: "POST",
         color: "GREEN"
       }
 
@@ -105,56 +104,61 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.BlogTagCURD do
     end
 
     @update_tag_query """
-    mutation($id: ID!, $color: RainbowColor, $title: String, $slug: String, $community: String!, $thread: Thread, $extra: [String], $icon: String) {
-      updateArticleTag(id: $id, color: $color, title: $title, slug: $slug, community: $community, thread: $thread, extra: $extra, icon: $icon) {
+    mutation($id: ID!, $color: RainbowColor, $title: String, $desc: String, $slug: String, $community: String!, $extra: [String], $icon: String, $group: String) {
+      updateArticleTag(id: $id, color: $color, title: $title, desc: $desc, slug: $slug, community: $community, extra: $extra, icon: $icon, group: $group) {
         id
         title
+        desc
         color
+        group
         extra
         icon
       }
     }
     """
     test "auth user can update a tag", ~m(article_tag_attrs community user)a do
-      {:ok, article_tag} = CMS.create_article_tag(community, :blog, article_tag_attrs, user)
+      {:ok, article_tag} = CMS.create_article_tag(community, :post, article_tag_attrs, user)
 
       variables = %{
         id: article_tag.id,
         color: "YELLOW",
         title: "new title",
+        desc: "this tag is awesome",
         slug: "new_title",
         community: community.slug,
+        group: "new group",
         extra: ["newMenuID"],
-        icon: "icon",
-        thread: "BLOG"
+        icon: "icon"
       }
 
-      passport_rules = %{community.title => %{"blog.article_tag.update" => true}}
+      passport_rules = %{community.title => %{"post.article_tag.update" => true}}
       rule_conn = simu_conn(:user, cms: passport_rules)
 
       updated = rule_conn |> mutation_result(@update_tag_query, variables, "updateArticleTag")
 
       assert updated["color"] == "YELLOW"
       assert updated["title"] == "new title"
+      assert updated["desc"] == "this tag is awesome"
+      assert updated["group"] == "new group"
       assert updated["extra"] == ["newMenuID"]
       assert updated["icon"] == "icon"
     end
 
     @delete_tag_query """
-    mutation($id: ID!, $community: String!, $thread: Thread){
-      deleteArticleTag(id: $id, community: $community, thread: $thread) {
+    mutation($id: ID!, $community: String!){
+      deleteArticleTag(id: $id, community: $community) {
         id
       }
     }
     """
     test "auth user can delete tag", ~m(article_tag_attrs community user)a do
-      {:ok, article_tag} = CMS.create_article_tag(community, :blog, article_tag_attrs, user)
+      {:ok, article_tag} = CMS.create_article_tag(community, :post, article_tag_attrs, user)
 
-      variables = %{id: article_tag.id, community: community.slug, thread: "BLOG"}
+      variables = %{id: article_tag.id, community: community.slug}
 
       rule_conn =
         simu_conn(:user,
-          cms: %{community.title => %{"blog.article_tag.delete" => true}}
+          cms: %{community.title => %{"post.article_tag.delete" => true}}
         )
 
       deleted = rule_conn |> mutation_result(@delete_tag_query, variables, "deleteArticleTag")
@@ -164,7 +168,7 @@ defmodule GroupherServer.Test.Mutation.CMS.ArticleArticleTags.BlogTagCURD do
 
     test "unauth user delete tag fails",
          ~m(article_tag_attrs community user_conn guest_conn user)a do
-      {:ok, article_tag} = CMS.create_article_tag(community, :blog, article_tag_attrs, user)
+      {:ok, article_tag} = CMS.create_article_tag(community, :post, article_tag_attrs, user)
 
       variables = %{id: article_tag.id, community: community.slug}
       rule_conn = simu_conn(:user, cms: %{"what.ever" => true})

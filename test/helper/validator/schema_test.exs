@@ -54,8 +54,6 @@ defmodule GroupherServer.Test.Helper.Validator.Schema do
       data = %{"text" => ""}
       assert {:error, error} = Schema.cast(schema, data)
       assert [%{field: "text", message: "empty is not allowed", value: ""}] == error
-
-      # IO.inspect(Schema.cast(schema, data), label: "schema result")
     end
 
     test "number with options" do
@@ -91,9 +89,6 @@ defmodule GroupherServer.Test.Helper.Validator.Schema do
       data = %{"no_exsit" => 1}
       {:error, error} = Schema.cast(schema, data)
       assert error == [%{field: "text", message: "should be: number", value: nil}]
-
-      # IO.inspect(Schema.cast(schema, data), label: "schema result")
-      # hello world
     end
 
     test "number with wrong option" do
@@ -150,8 +145,6 @@ defmodule GroupherServer.Test.Helper.Validator.Schema do
       data = %{"text" => []}
       {:error, error} = Schema.cast(schema, data)
       assert [%{field: "text", message: "empty is not allowed", value: []}] == error
-
-      # IO.inspect(Schema.cast(schema, data), label: "schema result")
     end
 
     test "boolean with options" do
@@ -182,9 +175,6 @@ defmodule GroupherServer.Test.Helper.Validator.Schema do
       schema = %{"text" => [enum: [1, 2, 3]]}
       data = %{"text" => 1}
       assert {:ok, _} = Schema.cast(schema, data)
-
-      # IO.inspect(Schema.cast(schema, data), label: "schema result")
-      # hello world
     end
 
     test "schema invalid option should got error" do

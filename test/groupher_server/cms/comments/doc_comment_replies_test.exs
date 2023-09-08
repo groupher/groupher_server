@@ -61,8 +61,6 @@ defmodule GroupherServer.Test.CMS.Comments.DocCommentReplies do
 
       {:ok, parent_comment} = ORM.find(Comment, parent_comment.id)
 
-      # IO.inspect(parent_comment.replies, label: "parent_comment.replies")
-
       assert exist_in?(replyed_comment_1, parent_comment.replies)
       assert exist_in?(replyed_comment_2, parent_comment.replies)
       assert exist_in?(replyed_comment_3, parent_comment.replies)

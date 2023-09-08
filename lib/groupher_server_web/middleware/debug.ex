@@ -11,10 +11,7 @@ defmodule GroupherServerWeb.Middleware.Debug do
   import Helper.Utils, only: [handle_absinthe_error: 3]
   import Helper.ErrorCode
 
-  def call(%{context: %{cur_user: _}} = resolution, _info) do
-    IO.inspect(resolution.value.original_community.viewer_has_subscribed, label: "## resolution")
-    resolution
-  end
+  def call(%{context: %{cur_user: _}} = resolution, _info), do: resolution
 
   def call(resolution, _) do
     resolution

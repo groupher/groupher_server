@@ -18,7 +18,7 @@ defmodule GroupherServer.Test.Mutation.Comments.BlogComment do
     {:ok, ~m(user_conn user guest_conn owner_conn community blog)a}
   end
 
-  describe "[article comment CURD]" do
+  describe "[article comment CRUD]" do
     @write_comment_query """
     mutation($thread: Thread!, $id: ID!, $body: String!) {
       createComment(thread: $thread,id: $id, body: $body) {

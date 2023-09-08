@@ -13,10 +13,12 @@ defmodule GroupherServer.Test.Query.Account.Achievement do
 
   setup do
     {:ok, user} = db_insert(:user)
+    {:ok, user2} = db_insert(:user)
+    {:ok, user3} = db_insert(:user)
     guest_conn = simu_conn(:guest)
     user_conn = simu_conn(:user, user)
 
-    {:ok, ~m(user_conn guest_conn user)a}
+    {:ok, ~m(user_conn guest_conn user user2 user3)a}
   end
 
   describe "[account get acheiveements]" do
@@ -48,7 +50,7 @@ defmodule GroupherServer.Test.Query.Account.Achievement do
   describe "[account editable-communities]" do
     @query """
     query($login: String, $filter: PagedFilter!) {
-      editableCommunities(login: $login, filter: $filter) {
+      moderatorableCommunities(login: $login, filter: $filter) {
         entries {
           id
           logo
@@ -64,21 +66,25 @@ defmodule GroupherServer.Test.Query.Account.Achievement do
     """
     test "can get user's empty editable communities list", ~m(guest_conn user)a do
       variables = %{login: user.login, filter: %{page: 1, size: 20}}
-      results = guest_conn |> query_result(@query, variables, "editableCommunities")
+      results = guest_conn |> query_result(@query, variables, "moderatorableCommunities")
 
       assert results |> is_valid_pagination?(:empty)
     end
 
-    test "can get user's editable communities list when user is editor", ~m(guest_conn user)a do
-      {:ok, community} = db_insert(:community)
-      {:ok, community2} = db_insert(:community)
+    test "can get user's  communities list when user is editor",
+         ~m(guest_conn user user2 user3)a do
+      community_attrs = mock_attrs(:community) |> Map.merge(%{user_id: user.id})
+      {:ok, community} = CMS.create_community(community_attrs)
 
-      title = "chief editor"
-      {:ok, _} = CMS.set_editor(community, title, user)
-      {:ok, _} = CMS.set_editor(community2, title, user)
+      community_attrs2 = mock_attrs(:community) |> Map.merge(%{user_id: user2.id})
+      {:ok, community2} = CMS.create_community(community_attrs2)
 
-      variables = %{login: user.login, filter: %{page: 1, size: 20}}
-      results = guest_conn |> query_result(@query, variables, "editableCommunities")
+      role = "moderator"
+      {:ok, _} = CMS.add_moderator(community.slug, role, user3, user)
+      {:ok, _} = CMS.add_moderator(community2.slug, role, user3, user2)
+
+      variables = %{login: user3.login, filter: %{page: 1, size: 20}}
+      results = guest_conn |> query_result(@query, variables, "moderatorableCommunities")
 
       assert results["totalCount"] == 2
       assert results["entries"] |> Enum.any?(&(&1["id"] == to_string(community.id)))

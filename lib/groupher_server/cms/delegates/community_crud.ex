@@ -1,4 +1,4 @@
-defmodule GroupherServer.CMS.Delegate.CommunityCURD do
+defmodule GroupherServer.CMS.Delegate.CommunityCRUD do
   @moduledoc """
   community curd
   """
@@ -7,7 +7,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
   import Helper.Utils,
     only: [done: 1, strip_struct: 1, get_config: 2, plural: 1, ensure: 2]
 
-  import GroupherServer.CMS.Delegate.ArticleCURD, only: [ensure_author_exists: 1]
+  import GroupherServer.CMS.Delegate.ArticleCRUD, only: [ensure_author_exists: 1]
   import GroupherServer.CMS.Helper.Matcher
   import ShortMaps
 
@@ -23,7 +23,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
     Category,
     Community,
     CommunityDashboard,
-    CommunityEditor,
+    CommunityModerator,
     CommunitySubscriber,
     Thread
   }
@@ -32,6 +32,8 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
 
   @default_meta Embeds.CommunityMeta.default_meta()
   @default_dashboard CommunityDashboard.default()
+  @default_community_settings %{meta: @default_meta, dashboard: @default_dashboard}
+
   @article_threads get_config(:article, :threads)
   @community_default_threads get_config(:general, :community_default_threads)
 
@@ -39,10 +41,19 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
   @community_normal Constant.pending(:normal)
   @community_applying Constant.pending(:applying)
 
-  @default_apply_category Constant.apply_category(:public)
+  @default_apply_category Constant.apply_category(:web)
 
-  def read_community(slug, user), do: read_community(slug) |> viewer_has_states(user)
-  def read_community(slug), do: do_read_community(slug)
+  @default_read_opt [inc_views: true]
+
+  def read_community(slug, %User{} = user) do
+    read_community(slug, @default_read_opt) |> viewer_has_states(user)
+  end
+
+  def read_community(slug, %User{} = user, opt) do
+    read_community(slug, opt) |> viewer_has_states(user)
+  end
+
+  def read_community(slug, opt \\ @default_read_opt), do: do_read_community(slug, opt)
 
   def paged_communities(filter, %User{id: user_id, meta: meta}) do
     with {:ok, paged_communtiies} <- paged_communities(filter) do
@@ -68,26 +79,27 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
   """
   def create_community(args) do
     with {:ok, community} <- do_create_community(args),
+         {:ok, _} <- init_community_root(community.slug, args.user_id),
          {:ok, threads} = create_default_threads_ifneed() do
       Enum.map(threads, fn thread ->
         CMS.set_thread(community, thread)
       end)
 
-      {:ok, community}
+      read_community(community.slug, inc_views: false)
     end
   end
 
   defp do_create_community(%{user_id: user_id} = args) do
     with {:ok, author} <- ensure_author_exists(%User{id: user_id}) do
-      default_settings = %{meta: @default_meta, dashboard: @default_dashboard}
-
       args =
-        args
-        |> Map.merge(%{user_id: author.user_id})
-        |> Map.merge(default_settings)
+        args |> Map.merge(%{user_id: author.user_id}) |> Map.merge(@default_community_settings)
 
       Community |> ORM.create(args)
     end
+  end
+
+  defp init_community_root(community_slug, user_id, role \\ "root") do
+    CMS.add_moderator(community_slug, role, %User{id: user_id}, %User{id: user_id})
   end
 
   def create_default_threads_ifneed() do
@@ -123,9 +135,36 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
   @doc """
   update dashboard settings of a community
   """
-  def update_dashboard(community, key, args) do
-    with {:ok, community} <- ORM.find_by(Community, slug: community),
-         {:ok, community_dashboard} <- ensure_dashboard_exist(community),
+  def update_dashboard(community_slug, :base_info, args) do
+    main_fields = Map.take(args, [:title, :desc, :logo, :slug])
+
+    with {:ok, community} <- ORM.find_by(Community, slug: community_slug),
+         {:ok, community} <- update_community_if_need(community, main_fields) do
+      do_update_dashboard(community, :base_info, args)
+    end
+  end
+
+  def update_dashboard(%Community{} = community, key, args) do
+    do_update_dashboard(community, key, args)
+  end
+
+  def update_dashboard(community_slug, key, args) do
+    with {:ok, community} <- ORM.find_by(Community, slug: community_slug) do
+      do_update_dashboard(community, key, args)
+    end
+  end
+
+  # see https://elixirforum.com/t/pattern-match-on-empty-maps/33259/5
+  defp update_community_if_need(%Community{} = community, fields) when map_size(fields) == 0 do
+    {:ok, community}
+  end
+
+  defp update_community_if_need(%Community{} = community, fields) do
+    ORM.update(community, fields)
+  end
+
+  defp do_update_dashboard(%Community{} = community, key, args) do
+    with {:ok, community_dashboard} <- ensure_dashboard_exist(community),
          {:ok, _} <- ORM.update_dashboard(community_dashboard, key, args) do
       {:ok, community}
     end
@@ -181,9 +220,9 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
     end
   end
 
-  def approve_community_apply(id) do
+  def approve_community_apply(slug) do
     # TODO: create community with thread, category and tags
-    with {:ok, community} <- ORM.find(Community, id) do
+    with {:ok, community} <- ORM.find_by(Community, slug: slug) do
       ORM.update(community, %{pending: @community_normal})
     end
   end
@@ -198,25 +237,25 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
   end
 
   @doc """
-  update editors_count of a community
+  update moderators_count of a community
   """
-  def update_community_count_field(%Community{} = community, user_id, :editors_count, opt) do
-    {:ok, editors_count} =
-      from(s in CommunityEditor, where: s.community_id == ^community.id)
+  def update_community_count_field(%Community{} = community, user_id, :moderators_count, opt) do
+    {:ok, moderators_count} =
+      from(s in CommunityModerator, where: s.community_id == ^community.id)
       |> ORM.count()
 
     community_meta = if is_nil(community.meta), do: @default_meta, else: community.meta
 
-    editors_ids =
+    moderators_ids =
       case opt do
-        :inc -> (community_meta.editors_ids ++ [user_id]) |> Enum.uniq()
-        :dec -> (community_meta.editors_ids -- [user_id]) |> Enum.uniq()
+        :inc -> (community_meta.moderators_ids ++ [user_id]) |> Enum.uniq()
+        :dec -> (community_meta.moderators_ids -- [user_id]) |> Enum.uniq()
       end
 
-    meta = community_meta |> Map.put(:editors_ids, editors_ids) |> strip_struct
+    meta = community_meta |> Map.put(:moderators_ids, moderators_ids) |> strip_struct
 
     community
-    |> ORM.update_embed(:meta, meta, %{editors_count: editors_count})
+    |> ORM.update_embed(:meta, meta, %{moderators_count: moderators_count})
   end
 
   @doc """
@@ -246,7 +285,6 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
         %{inner_id: inner_id}
       ) do
     thread_inner_id_key = :"#{plural(thread)}_inner_id_index"
-
     meta = community_meta |> Map.put(thread_inner_id_key, inner_id) |> strip_struct
 
     community
@@ -277,7 +315,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
   update thread / article count in community meta
   """
   def update_community_count_field(%Community{meta: nil, slug: slug}, thread) do
-    with {:ok, community} = CMS.read_community(slug) do
+    with {:ok, community} = CMS.read_community(slug, inc_views: false) do
       update_community_count_field(community, thread)
     end
   end
@@ -305,14 +343,14 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
   @doc """
   return paged community subscribers
   """
-  def community_members(:editors, %Community{id: id} = community, filters)
+  def community_members(:moderators, %Community{id: id} = community, filters)
       when not is_nil(id) do
-    load_community_members(community, CommunityEditor, filters)
+    load_community_members(community, CommunityModerator, filters)
   end
 
-  def community_members(:editors, %Community{slug: slug} = community, filters)
+  def community_members(:moderators, %Community{slug: slug} = community, filters)
       when not is_nil(slug) do
-    load_community_members(community, CommunityEditor, filters)
+    load_community_members(community, CommunityModerator, filters)
   end
 
   def community_members(:subscribers, %Community{id: id} = community, filters, %User{meta: meta})
@@ -339,17 +377,6 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
   def community_members(:subscribers, %Community{slug: slug} = community, filters)
       when not is_nil(slug) do
     load_community_members(community, CommunitySubscriber, filters)
-  end
-
-  @doc """
-  update community editor
-  """
-  def update_editor(%Community{id: community_id}, title, %User{id: user_id}) do
-    clauses = ~m(user_id community_id)a
-
-    with {:ok, _} <- CommunityEditor |> ORM.update_by(clauses, ~m(title)a) do
-      User |> ORM.find(user_id)
-    end
   end
 
   def create_category(attrs, %User{id: user_id}) do
@@ -412,46 +439,41 @@ defmodule GroupherServer.CMS.Delegate.CommunityCURD do
     end
   end
 
-  defp do_read_community(slug) do
-    with {:ok, community_slug} <- find_community(slug),
-         {:ok, community} <- ensure_community_with_dashboard(community_slug) do
-      case community.meta do
-        nil ->
-          {:ok, community} = ORM.update_meta(community, @default_meta)
-          community |> ORM.read(inc: :views)
-
-        _ ->
-          community |> ORM.read(inc: :views)
+  defp do_read_community(slug, opt) do
+    with {:ok, community} <- ORM.find_community(slug),
+         {:ok, community} <- ensure_community_with_dashboard(community),
+         {:ok, community} <- fill_meta(community),
+         {:ok, community} <- read_moderators(community) do
+      case get_in(opt, [:inc_views]) do
+        true -> ORM.read(community, inc: :views)
+        false -> {:ok, community}
       end
     end
   end
 
-  defp ensure_community_with_dashboard(%Community{} = community) do
-    case community.dashboard do
-      nil ->
-        community
-        |> Ecto.Changeset.change()
-        |> Ecto.Changeset.put_assoc(:dashboard, @default_dashboard)
-        |> Repo.update()
-
-      _ ->
-        {:ok, community}
-    end
+  defp fill_meta(%Community{meta: nil} = community) do
+    ORM.update_meta(community, @default_meta)
   end
 
-  defp find_community(slug) do
-    Community
-    |> where([c], c.pending == ^@community_normal)
-    |> where([c], c.slug == ^slug or c.aka == ^slug)
-    |> preload(:dashboard)
-    |> Repo.one()
-    |> done
+  defp fill_meta(%Community{} = community), do: {:ok, community}
+
+  defp read_moderators(%Community{} = community) do
+    community |> Map.merge(%{moderators: community.moderators}) |> done
   end
+
+  defp ensure_community_with_dashboard(%Community{dashboard: nil} = community) do
+    community
+    |> Ecto.Changeset.change()
+    |> Ecto.Changeset.put_assoc(:dashboard, @default_dashboard)
+    |> Repo.update()
+  end
+
+  defp ensure_community_with_dashboard(%Community{} = community), do: {:ok, community}
 
   defp viewer_has_states({:ok, community}, %User{id: user_id}) do
     viewer_has_states = %{
       viewer_has_subscribed: user_id in community.meta.subscribed_user_ids,
-      viewer_is_editor: user_id in community.meta.editors_ids
+      viewer_is_moderator: user_id in community.meta.moderators_ids
     }
 
     {:ok, Map.merge(community, viewer_has_states)}

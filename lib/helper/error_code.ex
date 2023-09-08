@@ -8,6 +8,7 @@ defmodule Helper.ErrorCode do
   @account_base 4300
   @comment_base 4400
   @article_base 4500
+  @community_base 5500
 
   @spec raise_error(Atom.t(), String.t()) :: {:error, [message: String.t(), code: Integer.t()]}
   def raise_error(code_atom, msg) do
@@ -59,6 +60,10 @@ defmodule Helper.ErrorCode do
   # def ecode(:already_solved), do: @article_base + 10
   def ecode(:already_upvoted), do: @article_base + 14
   def ecode(:pending), do: @article_base + 15
+
+  def ecode(:community_root_only), do: @community_base + 1
+  def ecode(:passport_community_not_match), do: @community_base + 2
+  def ecode(:one_community_only), do: @community_base + 3
 
   def ecode, do: @default_base
   # def ecode(_), do: @default_base

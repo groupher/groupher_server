@@ -1,4 +1,4 @@
-defmodule GroupherServer.CMS.Delegate.PassportCURD do
+defmodule GroupherServer.CMS.Delegate.PassportCRUD do
   @moduledoc """
   passport curd
   """
@@ -6,7 +6,7 @@ defmodule GroupherServer.CMS.Delegate.PassportCURD do
   import Ecto.Query, warn: false
   import ShortMaps
 
-  alias Helper.{NestedFilter, ORM}
+  alias Helper.{Certification, NestedFilter, ORM}
   alias GroupherServer.{Accounts, CMS, Repo}
 
   alias Accounts.Model.User
@@ -20,6 +20,14 @@ defmodule GroupherServer.CMS.Delegate.PassportCURD do
     UserPasport
     |> where([p], fragment("(?->?->>?)::boolean = ?", p.rules, ^community, ^key, true))
     |> Repo.all()
+    |> done
+  end
+
+  def all_passport_rules() do
+    %{
+      root: Certification.passport_rules(cms: "root"),
+      moderator: Certification.passport_rules(cms: "moderator")
+    }
     |> done
   end
 
@@ -58,7 +66,7 @@ defmodule GroupherServer.CMS.Delegate.PassportCURD do
     with {:ok, passport} <- ORM.find_by(UserPasport, user_id: user_id) do
       case pop_in(passport.rules, rules) do
         {nil, _} ->
-          {:error, "#{rules} not found"}
+          {:ok, passport}
 
         {_, lefts} ->
           passport |> ORM.update(%{rules: lefts})

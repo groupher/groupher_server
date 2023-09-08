@@ -17,12 +17,12 @@ defmodule GroupherServerWeb.Resolvers.CMS do
   # #######################
   # community ..
   # #######################
-  def community(_root, %{slug: slug}, %{context: %{cur_user: user}}) do
-    CMS.read_community(slug, user)
+  def community(_root, %{slug: slug, inc_views: inc_views}, %{context: %{cur_user: user}}) do
+    CMS.read_community(slug, user, inc_views: inc_views)
   end
 
-  def community(_root, %{slug: slug}, _info) do
-    CMS.read_community(slug)
+  def community(_root, %{slug: slug, inc_views: inc_views}, _info) do
+    CMS.read_community(slug, inc_views: inc_views)
   end
 
   def paged_communities(_root, ~m(filter)a, %{context: %{cur_user: user}}) do
@@ -59,8 +59,8 @@ defmodule GroupherServerWeb.Resolvers.CMS do
     CMS.apply_community(args)
   end
 
-  def approve_community_apply(_root, %{id: id}, _) do
-    CMS.approve_community_apply(id)
+  def approve_community_apply(_root, %{community: community}, _) do
+    CMS.approve_community_apply(community)
   end
 
   def deny_community_apply(_root, %{id: id}, _) do
@@ -254,22 +254,40 @@ defmodule GroupherServerWeb.Resolvers.CMS do
   end
 
   # #######################
-  # editors ..
+  # moderators ..
   # #######################
-  def set_editor(_root, ~m(community_id user_id title)a, _) do
-    CMS.set_editor(%Community{id: community_id}, title, %User{id: user_id})
+  def all_passport_rules(_root, _, _) do
+    with {:ok, rules} <- CMS.all_passport_rules() do
+      {:ok,
+       %{
+         root: Jason.encode!(rules.root),
+         moderator: Jason.encode!(rules.moderator)
+       }}
+    end
   end
 
-  def unset_editor(_root, ~m(community_id user_id)a, _) do
-    CMS.unset_editor(%Community{id: community_id}, %User{id: user_id})
+  def add_moderator(_root, ~m(community user role)a, %{context: %{cur_user: cur_user}}) do
+    with {:ok, target_user} <- ORM.find_user(user) do
+      CMS.add_moderator(community, role, %User{id: target_user.id}, cur_user)
+    end
   end
 
-  def update_editor(_root, ~m(community_id user_id title)a, _) do
-    CMS.update_editor(%Community{id: community_id}, title, %User{id: user_id})
+  def remove_moderator(_root, ~m(community user)a, %{context: %{cur_user: cur_user}}) do
+    with {:ok, target_user} <- ORM.find_user(user) do
+      CMS.remove_moderator(community, %User{id: target_user.id}, cur_user)
+    end
   end
 
-  def paged_community_editors(_root, ~m(id filter)a, _info) do
-    CMS.community_members(:editors, %Community{id: id}, filter)
+  def update_moderator_passport(_root, ~m(community user rules)a, %{
+        context: %{cur_user: cur_user}
+      }) do
+    with {:ok, target_user} <- ORM.find_user(user) do
+      CMS.update_moderator_passport(community, rules, %User{id: target_user.id}, cur_user)
+    end
+  end
+
+  def paged_community_moderators(_root, ~m(id filter)a, _info) do
+    CMS.community_members(:moderators, %Community{id: id}, filter)
   end
 
   # #######################
@@ -456,17 +474,12 @@ defmodule GroupherServerWeb.Resolvers.CMS do
   ############
   ############
   ############
-
   def paged_comment_replies(_root, ~m(id filter)a, %{context: %{cur_user: user}}) do
     CMS.paged_comment_replies(id, filter, user)
   end
 
   def paged_comment_replies(_root, ~m(id filter)a, _info) do
     CMS.paged_comment_replies(id, filter)
-  end
-
-  def stamp_passport(_root, ~m(user_id rules)a, %{context: %{cur_user: _user}}) do
-    CMS.stamp_passport(rules, %User{id: user_id})
   end
 
   # #######################

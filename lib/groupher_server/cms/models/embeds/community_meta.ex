@@ -38,7 +38,7 @@ defmodule GroupherServer.CMS.Model.Embeds.CommunityMeta do
   @article_threads get_config(:article, :threads)
 
   @general_options %{
-    editors_ids: [],
+    moderators_ids: [],
     subscribed_user_ids: [],
     contributes_digest: [],
     apply_msg: "",
@@ -67,7 +67,7 @@ defmodule GroupherServer.CMS.Model.Embeds.CommunityMeta do
     thread_count_fields()
     thread_inner_id_index_fields()
 
-    field(:editors_ids, {:array, :integer}, default: [])
+    field(:moderators_ids, {:array, :integer}, default: [])
     # 关注相关
     field(:subscribed_user_ids, {:array, :integer}, default: [])
     field(:contributes_digest, {:array, :integer}, default: [])

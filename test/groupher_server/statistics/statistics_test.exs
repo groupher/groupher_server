@@ -213,7 +213,6 @@ defmodule GroupherServer.Test.Statistics do
     test "Rihanna should work in test sandbox" do
       _res = Rihanna.enqueue({IO, :puts, ["Work, work, work, work, work."]})
       Process.sleep(1000)
-      # IO.inspect(res, label: "res")
     end
 
     test "cache should be update after make contributes", ~m(community)a do
@@ -224,7 +223,6 @@ defmodule GroupherServer.Test.Statistics do
 
       # res = Later.run({IO, :puts, ["Work, work, work, work, work."]})
       # Process.sleep(1000)
-      # IO.inspect(res, label: "res")
 
       # assert {:ok, _} = Cache.get(:common, scope)
     end

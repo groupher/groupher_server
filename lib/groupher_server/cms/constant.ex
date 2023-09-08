@@ -14,7 +14,7 @@ defmodule GroupherServer.CMS.Constant do
   @community_normal 0
   @community_applying 1
 
-  @apply_public "PUBLIC"
+  @apply_web "WEB"
 
   @article_cat_map %{
     feature: 1,
@@ -47,7 +47,7 @@ defmodule GroupherServer.CMS.Constant do
   def pending(:normal), do: @community_normal
   def pending(:applying), do: @community_applying
 
-  def apply_category(:public), do: @apply_public
+  def apply_category(:web), do: @apply_web
 
   def article_cat, do: @article_cat_map
 

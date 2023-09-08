@@ -1,6 +1,6 @@
 defmodule GroupherServer.CMS.Delegate.CommentEmotion do
   @moduledoc """
-  CURD and operations for article comments
+  CRUD and operations for article comments
   """
   import Ecto.Query, warn: false
 

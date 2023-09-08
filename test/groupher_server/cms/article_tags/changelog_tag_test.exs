@@ -17,7 +17,7 @@ defmodule GroupherServer.Test.CMS.ArticleTag.ChangelogTag do
     {:ok, ~m(user community changelog changelog_attrs article_tag_attrs article_tag_attrs2)a}
   end
 
-  describe "[changelog tag CURD]" do
+  describe "[changelog tag CRUD]" do
     test "create article tag with valid data", ~m(community article_tag_attrs user)a do
       {:ok, article_tag} = CMS.create_article_tag(community, :changelog, article_tag_attrs, user)
       assert article_tag.title == article_tag_attrs.title

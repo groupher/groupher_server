@@ -19,7 +19,7 @@ defmodule GroupherServer.Test.Mutation.Accounts.CollectFolder do
     {:ok, ~m(user_conn guest_conn user post blog)a}
   end
 
-  describe "[Accounts CollectFolder CURD]" do
+  describe "[Accounts CollectFolder CRUD]" do
     @query """
     mutation($title: String!, $desc: String, $private: Boolean) {
       createCollectFolder(title: $title, desc: $desc, private: $private) {

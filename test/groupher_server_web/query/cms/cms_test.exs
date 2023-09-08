@@ -8,10 +8,13 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
 
   setup do
     guest_conn = simu_conn(:guest)
-    {:ok, community} = db_insert(:community)
     {:ok, user} = db_insert(:user)
+    {:ok, user2} = db_insert(:user)
 
-    {:ok, ~m(guest_conn community user)a}
+    community_attrs = mock_attrs(:community) |> Map.merge(%{user_id: user.id})
+    {:ok, community} = CMS.create_community(community_attrs)
+
+    {:ok, ~m(guest_conn community user user2)a}
   end
 
   describe "apply community" do
@@ -78,8 +81,8 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
 
   describe "[cms communities]" do
     @query """
-    query($slug: String) {
-      community(slug: $slug) {
+    query($slug: String!, $incViews: Boolean) {
+      community(slug: $slug, incViews: $incViews) {
         id
         title
         threadsCount
@@ -93,7 +96,6 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
       }
     }
     """
-
     test "views should work", ~m(guest_conn)a do
       {:ok, community} = db_insert(:community)
 
@@ -108,6 +110,20 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
       assert community.views == 2
     end
 
+    test "views should work with inc_views as false", ~m(guest_conn)a do
+      {:ok, community} = db_insert(:community)
+
+      variables = %{slug: community.slug, incViews: false}
+      guest_conn |> query_result(@query, variables, "community")
+
+      {:ok, community} = ORM.find(Community, community.id)
+      assert community.views == 0
+      guest_conn |> query_result(@query, variables, "community")
+
+      {:ok, community} = ORM.find(Community, community.id)
+      assert community.views == 0
+    end
+
     test "can get from alias community name", ~m(guest_conn)a do
       {:ok, _community} = db_insert(:community, %{slug: "kubernetes", aka: "k8s"})
 
@@ -120,7 +136,7 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
       assert results["id"] == aka_results["id"]
     end
 
-    test "can get threads count ", ~m(community guest_conn)a do
+    test "can get threads count (default include)", ~m(community guest_conn)a do
       {:ok, threads} = db_insert_multi(:thread, 5)
 
       Enum.map(threads, fn thread ->
@@ -130,7 +146,7 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
       variables = %{slug: community.slug}
       results = guest_conn |> query_result(@query, variables, "community")
 
-      assert results["threadsCount"] == 5
+      assert results["threadsCount"] == 10
     end
 
     test "can get tags count ", ~m(community guest_conn user)a do
@@ -272,13 +288,13 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
       }
     }
     """
-    test "can get whole threads", ~m(guest_conn)a do
+    test "can get whole threads (with default)", ~m(guest_conn)a do
       {:ok, _threads} = db_insert_multi(:thread, 5)
 
       variables = %{filter: %{page: 1, size: 20}}
       results = guest_conn |> query_result(@query, variables, "pagedThreads")
       assert results |> is_valid_pagination?
-      assert results["totalCount"] == 5
+      assert results["totalCount"] == 10
     end
 
     test "can get sorted thread based on index", ~m(guest_conn)a do
@@ -435,33 +451,33 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
     end
   end
 
-  describe "[cms community editors]" do
+  describe "[cms community moderators]" do
     @query """
     query($slug: String!) {
       community(slug: $slug) {
         id
-        editorsCount
+        moderatorsCount
       }
     }
     """
-
-    test "guest can get editors count of a community", ~m(guest_conn community)a do
-      title = "chief editor"
+    test "guest can get moderators count of a community", ~m(guest_conn community user)a do
+      role = "moderator"
       {:ok, users} = db_insert_multi(:user, assert_v(:inner_page_size))
+      cur_user = user
 
-      Enum.each(users, &CMS.set_editor(community, title, %User{id: &1.id}))
+      Enum.each(users, &CMS.add_moderator(community.slug, role, %User{id: &1.id}, user))
 
       variables = %{slug: community.slug}
       results = guest_conn |> query_result(@query, variables, "community")
-      editors_count = results["editorsCount"]
+      moderators_count = results["moderatorsCount"]
 
       assert results["id"] == to_string(community.id)
-      assert editors_count == assert_v(:inner_page_size)
+      assert moderators_count == assert_v(:inner_page_size) + 1
     end
 
     @query """
     query($id: ID!, $filter: PagedFilter!) {
-      pagedCommunityEditors(id: $id, filter: $filter) {
+      pagedCommunityModerators(id: $id, filter: $filter) {
         entries {
           nickname
         }
@@ -472,15 +488,15 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
       }
     }
     """
-
-    test "guest user can get paged editors", ~m(guest_conn community)a do
-      title = "chief editor"
+    test "guest user can get paged moderators", ~m(guest_conn user community)a do
+      role = "moderator"
       {:ok, users} = db_insert_multi(:user, 25)
 
-      Enum.each(users, &CMS.set_editor(community, title, %User{id: &1.id}))
+      cur_user = user
+      Enum.each(users, &CMS.add_moderator(community.slug, role, %User{id: &1.id}, cur_user))
 
       variables = %{id: community.id, filter: %{page: 1, size: 10}}
-      results = guest_conn |> query_result(@query, variables, "pagedCommunityEditors")
+      results = guest_conn |> query_result(@query, variables, "pagedCommunityModerators")
 
       assert results |> is_valid_pagination?
     end

@@ -57,7 +57,7 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
 
     @desc "approve the apply to create a community"
     field :approve_community_apply, :community do
-      arg(:id, non_null(:id))
+      arg(:community, non_null(:string))
 
       middleware(M.Authorize, :login)
       middleware(M.Passport, claim: "cms->community.apply.approve")
@@ -117,43 +117,43 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
       resolve(&R.CMS.create_thread/3)
     end
 
-    @desc "add a editor for a community"
-    field :set_editor, :user do
-      arg(:community_id, non_null(:id))
-      arg(:user_id, non_null(:id))
-      arg(:title, non_null(:string))
+    @desc "add a moderator for a community"
+    field :add_moderator, :community do
+      arg(:community, non_null(:string))
+      arg(:user, non_null(:string))
+      arg(:role, non_null(:string))
 
       middleware(M.Authorize, :login)
       middleware(M.PassportLoader, source: :community)
-      middleware(M.Passport, claim: "cms->editor.set")
+      middleware(M.Passport, claim: "cms->moderator.set")
 
-      resolve(&R.CMS.set_editor/3)
+      resolve(&R.CMS.add_moderator/3)
     end
 
-    @desc "unset a editor from a community, the user's passport also deleted"
-    field :unset_editor, :user do
-      arg(:community_id, non_null(:id))
-      arg(:user_id, non_null(:id))
+    # TODO: remove, should remove both moderator and cms->passport
+    @desc "unset a moderator from a community, the user's passport also deleted"
+    field :remove_moderator, :community do
+      arg(:community, non_null(:string))
+      arg(:user, non_null(:string))
 
       middleware(M.Authorize, :login)
       middleware(M.PassportLoader, source: :community)
-      middleware(M.Passport, claim: "cms->editor.unset")
+      middleware(M.Passport, claim: "cms->moderator.unset")
 
-      resolve(&R.CMS.unset_editor/3)
+      resolve(&R.CMS.remove_moderator/3)
     end
 
-    # TODO: remove, should remove both editor and cms->passport
-    @desc "update cms editor's title, passport is not effected"
-    field :update_cms_editor, :user do
-      arg(:community_id, non_null(:id))
-      arg(:user_id, non_null(:id))
-      arg(:title, non_null(:string))
+    @desc "update cms moderator's title, passport is not effected"
+    field :update_moderator_passport, :community do
+      arg(:community, non_null(:string))
+      arg(:user, non_null(:string))
+      arg(:rules, non_null(:json))
 
       middleware(M.Authorize, :login)
       middleware(M.PassportLoader, source: :community)
-      middleware(M.Passport, claim: "cms->editor.update")
+      # middleware(M.Passport, claim: "cms->moderator.update")
 
-      resolve(&R.CMS.update_editor/3)
+      resolve(&R.CMS.update_moderator_passport/3)
     end
 
     @desc "create a tag"
@@ -161,6 +161,7 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
       arg(:title, non_null(:string))
       arg(:slug, non_null(:string))
       arg(:color, non_null(:rainbow_color))
+      arg(:layout, :string)
       arg(:community, non_null(:string))
       arg(:group, :string)
       arg(:thread, :thread, default_value: :post)
@@ -179,6 +180,8 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Community do
       arg(:id, non_null(:id))
       arg(:community, non_null(:string))
       arg(:title, :string)
+      arg(:layout, :string)
+      arg(:desc, :string)
       arg(:slug, :string)
       arg(:color, :rainbow_color)
       arg(:group, :string)

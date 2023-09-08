@@ -74,7 +74,6 @@ defmodule GroupherServer.Test.Query.Comments.PostComment do
     variables = %{id: comment.id}
     results = guest_conn |> query_result(@query, variables, "oneComment")
 
-    # IO.inspect(results, label: "oneComment")
     assert results["id"] == to_string(comment.id)
   end
 
@@ -87,7 +86,6 @@ defmodule GroupherServer.Test.Query.Comments.PostComment do
     variables = %{id: comment.id}
     results = user_conn |> query_result(@query, variables, "oneComment")
 
-    # IO.inspect(results, label: "oneComment")
     assert results["id"] == to_string(comment.id)
     assert results["viewerHasUpvoted"]
     assert results["emotions"]["viewerHasDownvoteed"]

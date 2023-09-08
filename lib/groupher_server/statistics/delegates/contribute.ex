@@ -13,7 +13,7 @@ defmodule GroupherServer.Statistics.Delegate.Contribute do
   alias CMS.Model.Community
   alias Statistics.Model.{CommunityContribute, UserContribute}
 
-  alias CMS.Delegate.CommunityCURD
+  alias CMS.Delegate.CommunityCRUD
 
   alias Helper.{Cache, Later, ORM, QueryBuilder}
   alias Ecto.Multi
@@ -63,7 +63,7 @@ defmodule GroupherServer.Statistics.Delegate.Contribute do
         |> do_get_contributes()
         |> to_counts_digest(days: @community_contribute_days)
 
-      CommunityCURD.update_community(id, %{contributes_digest: contributes_digest})
+      CommunityCRUD.update_community(id, %{contributes_digest: contributes_digest})
     end)
     |> Repo.transaction()
     |> result()

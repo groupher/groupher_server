@@ -233,7 +233,6 @@ defmodule GroupherServer.Test.CMS.Hooks.CitePost do
       Hooks.Cite.handle(blog)
 
       {:ok, result} = CMS.paged_citing_contents("POST", post2.id, %{page: 1, size: 10})
-      # IO.inspect(result, label: "the result")
 
       assert result.total_count == 2
 
