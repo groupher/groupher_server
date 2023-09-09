@@ -10,7 +10,7 @@ defmodule GroupherServerWeb.Resolvers.CMS do
   alias CMS.Model.{Community, Category, Thread}
 
   alias CMS.Constant
-  alias Helper.ORM
+  alias Helper.{ORM, OgInfo}
 
   @article_cat Constant.article_cat()
   @article_state Constant.article_state()
@@ -58,6 +58,8 @@ defmodule GroupherServerWeb.Resolvers.CMS do
 
     CMS.update_dashboard(community, key, dashboard_args)
   end
+
+  def open_graph_info(_root, %{url: url}, _info), do: OgInfo.get(url)
 
   def delete_community(_root, %{id: id}, _info), do: Community |> ORM.find_delete!(id)
 

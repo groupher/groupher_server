@@ -566,5 +566,31 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
 
       assert results |> is_valid_pagination?
     end
+
+    @query """
+    query($url: String!) {
+      openGraphInfo(url: $url) {
+        title
+        favicon
+        url
+        siteName
+      }
+    }
+    """
+    test "can get opengraph info by url", ~m(user)a do
+      user_conn = simu_conn(:user, user)
+
+      result =
+        user_conn
+        |> query_result(@check_community_pending_query, %{}, "hasPendingCommunityApply")
+
+      variables = %{url: "https://www.ifanr.com/1561465"}
+
+      results = user_conn |> query_result(@query, variables, "openGraphInfo")
+
+      assert not is_nil(results["title"])
+      assert not is_nil(results["favicon"])
+      assert not is_nil(results["siteName"])
+    end
   end
 end

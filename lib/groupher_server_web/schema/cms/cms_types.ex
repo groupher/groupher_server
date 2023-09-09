@@ -403,4 +403,11 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
     field(:og_title, :string)
     field(:og_description, :string)
   end
+
+  object :open_graph do
+    field(:title, :string)
+    field(:url, :string)
+    field(:favicon, :string)
+    field(:site_name, :string)
+  end
 end
