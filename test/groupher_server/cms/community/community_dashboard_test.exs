@@ -341,6 +341,73 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert third.group_index == 3
     end
 
+    test "can update media reports in community dashboard", ~m(community_attrs)a do
+      {:ok, community} = CMS.create_community(community_attrs)
+
+      {:ok, _} =
+        CMS.update_dashboard(community.slug, :media_reports, [
+          %{
+            title: "report title",
+            favicon: "https://favicon.com",
+            site_name: "site name",
+            url: "https://whatever.com"
+          }
+        ])
+
+      {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
+
+      first = find_community.dashboard.media_reports |> Enum.at(0)
+
+      assert first.title == "report title"
+      assert first.favicon == "https://favicon.com"
+      assert first.site_name == "site name"
+      assert first.url == "https://whatever.com"
+    end
+
+    test "should overwirte all media reportss in community dashboard everytime",
+         ~m(community_attrs)a do
+      {:ok, community} = CMS.create_community(community_attrs)
+
+      {:ok, _} =
+        CMS.update_dashboard(community.slug, :media_reports, [
+          %{
+            title: "report title",
+            favicon: "https://favicon.com",
+            site_name: "site name",
+            url: "https://whatever.com"
+          }
+        ])
+
+      {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
+
+      first = find_community.dashboard.media_reports |> Enum.at(0)
+
+      assert first.title == "report title"
+
+      {:ok, _} =
+        CMS.update_dashboard(community.slug, :media_reports, [
+          %{
+            title: "report title 2",
+            favicon: "https://favicon.com",
+            site_name: "site name",
+            url: "https://whatever.com"
+          },
+          %{
+            title: "report title 3",
+            favicon: "https://favicon.com",
+            site_name: "site name",
+            url: "https://whatever.com"
+          }
+        ])
+
+      {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
+      assert find_community.dashboard.media_reports |> length == 2
+
+      first = find_community.dashboard.media_reports |> Enum.at(0)
+
+      assert first.title == "report title 2"
+    end
+
     test "can update faqs in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 

@@ -49,8 +49,8 @@ defmodule GroupherServerWeb.Schema.CMS.Metrics do
     value(:header_links)
     value(:footer_links)
     value(:social_links)
+    value(:media_reports)
     value(:faqs)
-    ## ...
   end
 
   enum :content do
@@ -301,6 +301,10 @@ defmodule GroupherServerWeb.Schema.CMS.Metrics do
 
   input_object :dashboard_social_link_map do
     dashboard_gq_fields(:social_link)
+  end
+
+  input_object :dashboard_media_report_map do
+    dashboard_gq_fields(:media_report)
   end
 
   input_object :dashboard_faq_map do

@@ -29,6 +29,7 @@ defmodule GroupherServer.CMS.Model.CommunityDashboard do
       header_links: Embeds.DashboardHeaderLink.default(),
       footer_links: Embeds.DashboardFooterLink.default(),
       social_links: Embeds.DashboardSocialLink.default(),
+      media_reports: Embeds.DashboardMediaReport.default(),
       faqs: Embeds.DashboardFAQ.default()
     }
   end
@@ -44,6 +45,7 @@ defmodule GroupherServer.CMS.Model.CommunityDashboard do
     embeds_many(:header_links, Embeds.DashboardHeaderLink, on_replace: :delete)
     embeds_many(:footer_links, Embeds.DashboardFooterLink, on_replace: :delete)
     embeds_many(:social_links, Embeds.DashboardSocialLink, on_replace: :delete)
+    embeds_many(:media_reports, Embeds.DashboardMediaReport, on_replace: :delete)
     embeds_many(:faqs, Embeds.DashboardFAQ, on_replace: :delete)
 
     # posts_block_list ...
