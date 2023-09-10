@@ -5,7 +5,7 @@ defmodule Helper.OgInfo do
 
   def get(url) do
     with {:ok, location, resp} <- SiteFavicon.find_page(url),
-         og <- OpenGraph.parse(resp.body),
+         {:ok, og} <- parse_open_graph(resp.body, url),
          true <- is_valid_og?(og),
          %URI{host: host} <- URI.parse(url),
          favicon <- SiteFavicon.parse_favicon(resp.body, location) do
@@ -27,6 +27,18 @@ defmodule Helper.OgInfo do
         {:error, "og info parse error"}
     end
   end
+
+  defp parse_open_graph(html, url) do
+    OpenGraph.parse(html)
+    |> fmt_og_info(url)
+    |> done
+  end
+
+  defp fmt_og_info(%{url: nil} = og, url) do
+    %{og | url: url}
+  end
+
+  defp fmt_og_info(og, _url), do: og
 
   defp fmt_field(og, "sspai.com"), do: %{og | site_name: "少数派"}
   defp fmt_field(og, "36kr.com"), do: %{og | site_name: "36kr"}

@@ -4,8 +4,6 @@ defmodule GroupherServer.Test.Helper.OgInfo do
 
   alias Helper.OgInfo
 
-  @pool :common
-
   describe "[oginfo test]" do
     test "can get valid open graph info with valid url.." do
       # Good example
@@ -29,6 +27,7 @@ defmodule GroupherServer.Test.Helper.OgInfo do
 
       assert not is_nil(ret.title)
       assert not is_nil(ret.favicon)
+      assert not is_nil(ret.url)
       assert ret.site_name == "36kr"
     end
 
