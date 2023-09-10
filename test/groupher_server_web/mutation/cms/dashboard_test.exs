@@ -415,6 +415,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
         community: community.slug,
         mediaReports: [
           %{
+            index: 233_344,
             title: "title",
             url: "url"
           }
@@ -430,6 +431,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       {:ok, found} = Community |> ORM.find(updated["id"], preload: :dashboard)
       link = found.dashboard.media_reports |> Enum.at(0)
 
+      assert link.index == 233_344
       assert link.title == "title"
       assert link.url == "url"
     end
