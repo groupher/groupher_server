@@ -10,7 +10,7 @@ defmodule GroupherServerWeb.Resolvers.CMS do
   alias CMS.Model.{Community, Category, Thread}
 
   alias CMS.Constant
-  alias Helper.ORM
+  alias Helper.{ORM, OgInfo}
 
   @article_cat Constant.article_cat()
   @article_state Constant.article_state()
@@ -44,13 +44,22 @@ defmodule GroupherServerWeb.Resolvers.CMS do
 
   def update_dashboard(_root, %{dashboard_section: key, community: community} = args, _info) do
     dashboard_args =
-      case key in [:header_links, :footer_links, :name_alias, :social_links, :faqs] do
+      case key in [
+             :header_links,
+             :footer_links,
+             :name_alias,
+             :social_links,
+             :media_reports,
+             :faqs
+           ] do
         true -> Map.drop(args, [:community, :dashboard_section]) |> Map.get(key)
         false -> Map.drop(args, [:community, :dashboard_section])
       end
 
     CMS.update_dashboard(community, key, dashboard_args)
   end
+
+  def open_graph_info(_root, %{url: url}, _info), do: OgInfo.get(url)
 
   def delete_community(_root, %{id: id}, _info), do: Community |> ORM.find_delete!(id)
 

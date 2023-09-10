@@ -293,11 +293,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
 
       updated =
         rule_conn
-        |> mutation_result(
-          @update_header_links_query,
-          variables,
-          "updateDashboardHeaderLinks"
-        )
+        |> mutation_result(@update_header_links_query, variables, "updateDashboardHeaderLinks")
 
       assert updated["dashboard"]["headerLinks"] |> List.first() |> Map.get("groupIndex") == 1
       {:ok, found} = Community |> ORM.find(updated["id"], preload: :dashboard)
@@ -386,11 +382,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
 
       updated =
         rule_conn
-        |> mutation_result(
-          @update_social_links_query,
-          variables,
-          "updateDashboardSocialLinks"
-        )
+        |> mutation_result(@update_social_links_query, variables, "updateDashboardSocialLinks")
 
       assert updated["dashboard"]["socialLinks"] |> List.first() |> Map.get("type") == "twitter"
 
@@ -400,6 +392,48 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
 
       assert link.type == "twitter"
       assert link.link == "link"
+    end
+
+    @update_media_reports_query """
+    mutation($community: String!, $mediaReports: [dashboardMediaReportMap]) {
+      updateDashboardMediaReports(community: $community, mediaReports: $mediaReports) {
+        id
+        title
+        dashboard {
+          mediaReports {
+            title
+            url
+          }
+        }
+      }
+    }
+    """
+    test "update community dashboard media reports info", ~m(community)a do
+      rule_conn = simu_conn(:user, cms: %{"community.update" => true})
+
+      variables = %{
+        community: community.slug,
+        mediaReports: [
+          %{
+            index: 233_344,
+            title: "title",
+            url: "url"
+          }
+        ]
+      }
+
+      updated =
+        rule_conn
+        |> mutation_result(@update_media_reports_query, variables, "updateDashboardMediaReports")
+
+      assert updated["dashboard"]["mediaReports"] |> List.first() |> Map.get("title") == "title"
+
+      {:ok, found} = Community |> ORM.find(updated["id"], preload: :dashboard)
+      link = found.dashboard.media_reports |> Enum.at(0)
+
+      assert link.index == 233_344
+      assert link.title == "title"
+      assert link.url == "url"
     end
 
     @update_faqs_query """

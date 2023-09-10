@@ -143,4 +143,15 @@ defmodule GroupherServer.CMS.Model.Metrics.Dashboard do
       [:index, :integer, 0]
     ]
   end
+
+  def macro_schema(:media_report) do
+    [
+      [:index, :integer, 0],
+      [:title, :string, ""],
+      [:favicon, :string, ""],
+      [:site_name, :string, ""],
+      [:description, :string, ""],
+      [:url, :string, ""]
+    ]
+  end
 end

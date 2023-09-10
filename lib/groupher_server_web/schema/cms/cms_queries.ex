@@ -172,6 +172,14 @@ defmodule GroupherServerWeb.Schema.CMS.Queries do
       resolve(&R.CMS.grouped_kanban_posts/3)
     end
 
+    @desc "get open graph info by url"
+    field :open_graph_info, :open_graph do
+      arg(:url, non_null(:string))
+
+      middleware(M.Authorize, :login)
+      resolve(&R.CMS.open_graph_info/3)
+    end
+
     @desc "kanban posts grouped by todo/wip/done"
     field :paged_kanban_posts, :paged_posts do
       arg(:community, non_null(:string))
