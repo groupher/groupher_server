@@ -80,7 +80,6 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert find_community.dashboard.seo.og_description == "forum sass provider"
     end
 
-    @tag :wip
     test "can update wallpaper in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
