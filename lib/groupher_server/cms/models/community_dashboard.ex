@@ -16,11 +16,12 @@ defmodule GroupherServer.CMS.Model.CommunityDashboard do
   }
 
   @required_fields ~w(community_id)a
-  @optional_fields ~w(base_info seo layout enable rss header_links footer_links social_links faqs)a
+  @optional_fields ~w(base_info wallpaper seo layout enable rss header_links footer_links social_links faqs)a
 
   def default() do
     %{
       base_info: Embeds.DashboardBaseInfo.default(),
+      wallpaper: Embeds.DashboardWallpaper.default(),
       seo: Embeds.DashboardSEO.default(),
       layout: Embeds.DashboardLayout.default(),
       enable: Embeds.DashboardEnable.default(),
@@ -37,6 +38,7 @@ defmodule GroupherServer.CMS.Model.CommunityDashboard do
   schema "community_dashboards" do
     belongs_to(:community, Community)
     embeds_one(:base_info, Embeds.DashboardBaseInfo, on_replace: :delete)
+    embeds_one(:wallpaper, Embeds.DashboardWallpaper, on_replace: :delete)
     embeds_one(:seo, Embeds.DashboardSEO, on_replace: :delete)
     embeds_one(:layout, Embeds.DashboardLayout, on_replace: :delete)
     embeds_one(:enable, Embeds.DashboardEnable, on_replace: :delete)
@@ -57,6 +59,7 @@ defmodule GroupherServer.CMS.Model.CommunityDashboard do
     community_dashboard
     |> cast(attrs, @required_fields)
     |> cast_embed(:base_info, with: &Embeds.DashboardBaseInfo.changeset/2)
+    |> cast_embed(:wallpaper, with: &Embeds.DashboardWallpaper.changeset/2)
     |> cast_embed(:seo, with: &Embeds.DashboardSEO.changeset/2)
     |> cast_embed(:layout, with: &Embeds.DashboardLayout.changeset/2)
     |> cast_embed(:enable, with: &Embeds.DashboardEnable.changeset/2)

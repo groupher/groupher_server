@@ -64,12 +64,17 @@ defmodule GroupherServer.CMS.Model.Metrics.Dashboard do
       [:broadcast_article_enable, :boolean, false],
       [:changelog_layout, :string, ""],
       [:footer_layout, :string, ""],
-      [:header_layout, :string, ""]
+      [:header_layout, :string, ""],
+      ## glow
+      [:glow_type, :string, ""],
+      [:glow_fixed, :boolean, false],
+      [:glow_opacity, :string, ""]
     ]
   end
 
   def macro_schema(:seo) do
     [
+      [:seo_enable, :boolean, true],
       [:og_site_name, :string, ""],
       [:og_title, :string, ""],
       [:og_description, :string, ""],
@@ -152,6 +157,26 @@ defmodule GroupherServer.CMS.Model.Metrics.Dashboard do
       [:site_name, :string, ""],
       [:description, :string, ""],
       [:url, :string, ""]
+    ]
+  end
+
+  def macro_schema(:wallpaper) do
+    [
+      [:wallpaper_type, :string, "gradient"],
+      [:wallpaper, :string, "pink"],
+
+      # (custom) gradient
+      [:has_pattern, :boolean, true],
+      [:direction, :string, "bottom"],
+      [:custom_color_value, :string, ""],
+
+      # updated
+      [:bg_size, :string, "cover"],
+      [:upload_bg_image, :string, ""],
+
+      # common
+      [:has_blur, :boolean, false],
+      [:has_shadow, :boolean, false]
     ]
   end
 end

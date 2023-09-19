@@ -41,6 +41,7 @@ defmodule GroupherServerWeb.Schema.CMS.Metrics do
 
   enum :dashboard_section do
     value(:seo)
+    value(:wallpaper)
     value(:enable)
     value(:layout)
     value(:base_info)
