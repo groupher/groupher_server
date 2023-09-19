@@ -116,8 +116,30 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
     end
 
     @update_wallpaper_query """
-    mutation($community: String!, $wallpaper: String, $wallpaperType: String) {
-      updateDashboardWallpaper(community: $community, wallpaper: $wallpaper, wallpaperType: $wallpaperType) {
+    mutation (
+      $community: String!
+      $wallpaper: String
+      $wallpaperType: String
+      $direction: String
+      $customColorValue: String
+      $bgSize: String
+      $uploadBgImage: String
+      $hasPattern: Boolean
+      $hasBlur: Boolean
+      $hasShadow: Boolean
+      ) {
+      updateDashboardWallpaper(
+        community: $community
+        wallpaper: $wallpaper
+        wallpaperType: $wallpaperType
+        direction: $direction
+        customColorValue: $customColorValue
+        bgSize: $bgSize
+        uploadBgImage: $uploadBgImage
+        hasPattern: $hasPattern
+        hasBlur: $hasBlur
+        hasShadow: $hasShadow
+      ) {
         id
         title
         dashboard {
