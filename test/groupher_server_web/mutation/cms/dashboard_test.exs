@@ -189,8 +189,8 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
     end
 
     @update_layout_query """
-    mutation($community: Stirng!, $postLayout: String, $kanbanLayout: String, $footerLayout: String, $broadcastEnable: Boolean, $kanbanBgColors: [String], $glowType: String, $glowFixed: Boolean, $glowOpacity: String) {
-      updateDashboardLayout(community: $community, postLayout: $postLayout, kanbanLayout: $kanbanLayout, footerLayout: $footerLayout, broadcastEnable: $broadcastEnable, kanbanBgColors: $kanbanBgColors, glowType: $glowType, glowFixed: $glowFixed, glowOpacity: $glowOpacity) {
+    mutation($community: Stirng!, $primaryColor: String $postLayout: String, $kanbanLayout: String, $footerLayout: String, $broadcastEnable: Boolean, $kanbanBgColors: [String], $glowType: String, $glowFixed: Boolean, $glowOpacity: String) {
+      updateDashboardLayout(community: $community, primaryColor: $primaryColor, postLayout: $postLayout, kanbanLayout: $kanbanLayout, footerLayout: $footerLayout, broadcastEnable: $broadcastEnable, kanbanBgColors: $kanbanBgColors, glowType: $glowType, glowFixed: $glowFixed, glowOpacity: $glowOpacity) {
         id
         title
         dashboard {
@@ -204,11 +204,13 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       }
     }
     """
+    @tag :wip
     test "update community dashboard layout info", ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
 
       variables = %{
         community: community.slug,
+        primaryColor: "PURPLE",
         postLayout: "new layout",
         broadcastEnable: true,
         kanbanLayout: "full",
@@ -225,6 +227,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
 
       {:ok, found} = Community |> ORM.find(updated["id"], preload: :dashboard)
 
+      assert found.dashboard.layout.primary_color == "PURPLE"
       assert found.dashboard.layout.post_layout == "new layout"
       assert found.dashboard.layout.kanban_layout == "full"
       assert found.dashboard.layout.broadcast_enable == true
