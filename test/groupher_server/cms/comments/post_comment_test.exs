@@ -7,7 +7,7 @@ defmodule GroupherServer.Test.CMS.Comments.PostComment do
   alias Helper.ORM
   alias GroupherServer.{Accounts, CMS, Repo}
   alias Accounts.Model.User
-  alias CMS.Model.{Comment, PinnedComment, Embeds, Post}
+  alias CMS.Model.{Comment, CommunitySubscriber, PinnedComment, Embeds, Post}
 
   alias CMS.Constant
 
@@ -44,6 +44,26 @@ defmodule GroupherServer.Test.CMS.Comments.PostComment do
       assert state.participants |> length == 1
       assert not state.is_viewer_joined
     end
+
+    # pls uncomment the comment_crud:L338
+    # test "should subscribe community if not", ~m(user post)a do
+    #   {:error, _subscriber} =
+    #     ORM.find_by(CommunitySubscriber, %{
+    #       community_id: post.original_community_id,
+    #       user_id: user.id
+    #     })
+
+    #   {:ok, _} = CMS.create_comment(:post, post.id, mock_comment(), user)
+
+    #   {:ok, subscriber} =
+    #     ORM.find_by(CommunitySubscriber, %{
+    #       community_id: post.original_community_id,
+    #       user_id: user.id
+    #     })
+
+    #   assert subscriber.user_id === user.id
+    #   assert subscriber.community_id === post.original_community_id
+    # end
 
     test "can get viewer joined state", ~m(user post)a do
       {:ok, _} = CMS.create_comment(:post, post.id, mock_comment(), user)

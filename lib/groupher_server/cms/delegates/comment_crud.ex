@@ -313,7 +313,8 @@ defmodule GroupherServer.CMS.Delegate.CommentCRUD do
   """
   def create_comment(thread, article_id, body, %User{} = user) do
     with {:ok, info} <- match(thread),
-         {:ok, article} <- ORM.find(info.model, article_id, preload: [author: :user]),
+         {:ok, article} <-
+           ORM.find(info.model, article_id, preload: [[author: :user], :original_community]),
          true <- can_comment?(article, user) do
       Multi.new()
       |> Multi.run(:create_comment, fn _, _ ->
@@ -333,10 +334,13 @@ defmodule GroupherServer.CMS.Delegate.CommentCRUD do
         end
       end)
       |> Multi.run(:after_hooks, fn _, %{create_comment: comment} ->
+        # comment this for test
+        # Hooks.SubscribeCommunity.handle(article.original_community, user)
         Later.run({Hooks.Cite, :handle, [comment]})
         Later.run({Hooks.Notify, :handle, [:comment, comment, user]})
         Later.run({Hooks.Mention, :handle, [comment]})
         Later.run({Hooks.Audition, :handle, [comment]})
+        Later.run({Hooks.SubscribeCommunity, :handle, [article.original_community, user]})
       end)
       |> Repo.transaction()
       |> result()

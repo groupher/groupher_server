@@ -330,6 +330,13 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
     end
   end
 
+  def subscribe_community_ifnot(%Community{} = community, %User{} = user) do
+    with {:error, _} <-
+           ORM.find_by(CommunitySubscriber, %{community_id: community.id, user_id: user.id}) do
+      subscribe_community(community, user)
+    end
+  end
+
   @doc """
   if user is new subscribe home community by default
   """

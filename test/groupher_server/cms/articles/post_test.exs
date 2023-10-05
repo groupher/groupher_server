@@ -8,7 +8,7 @@ defmodule GroupherServer.Test.CMS.Articles.Post do
   alias Helper.Converter.{EditorToHTML, HtmlSanitizer}
 
   alias EditorToHTML.{Class, Validator}
-  alias CMS.Model.{Author, ArticleDocument, Community, Post, PostDocument}
+  alias CMS.Model.{Author, ArticleDocument, Community, Post, PostDocument, CommunitySubscriber}
 
   @root_class Class.article()
   @last_year Timex.shift(Timex.beginning_of_year(Timex.now()), days: -3, seconds: -1)
@@ -136,6 +136,25 @@ defmodule GroupherServer.Test.CMS.Articles.Post do
       assert user.id in created.meta.viewed_user_ids
       assert user2.id in created.meta.viewed_user_ids
     end
+
+    ## comment article_upvote:L60 if run this test
+    # test "should auto subscribe article's original community after upvote",
+    #      ~m(post_attrs community user)a do
+    #   {:error, _subscriber} =
+    #     ORM.find_by(CommunitySubscriber, %{community_id: community.id, user_id: user.id})
+
+    #   {:ok, post} = CMS.create_article(community, :post, post_attrs, user)
+    #   {:ok, _} = CMS.upvote_article(:post, post.id, user)
+
+    #   {:ok, subscriber} =
+    #     ORM.find_by(CommunitySubscriber, %{community_id: community.id, user_id: user.id})
+
+    #   assert subscriber.user_id === user.id
+    #   assert subscriber.community_id === community.id
+
+    #   {:ok, community} = ORM.find(Community, community.id)
+    #   assert community.subscribers_count == 1
+    # end
 
     test "read post should contains viewer_has_xxx state", ~m(post_attrs community user user2)a do
       {:ok, post} = CMS.create_article(community, :post, post_attrs, user)
