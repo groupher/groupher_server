@@ -21,7 +21,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleUpvote do
 
   alias Accounts.Model.User
   alias CMS.Model.ArticleUpvote
-  alias CMS.Delegate.{CommunityOperation, Hooks}
+  alias CMS.Delegate.Hooks
 
   alias Ecto.Multi
 
