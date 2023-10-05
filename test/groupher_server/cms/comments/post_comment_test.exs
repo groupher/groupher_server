@@ -7,7 +7,7 @@ defmodule GroupherServer.Test.CMS.Comments.PostComment do
   alias Helper.ORM
   alias GroupherServer.{Accounts, CMS, Repo}
   alias Accounts.Model.User
-  alias CMS.Model.{Comment, CommunitySubscriber, PinnedComment, Embeds, Post}
+  alias CMS.Model.{Comment, CommunitySubscriber, PinnedComment, Embeds, Post, CommunitySubscriber}
 
   alias CMS.Constant
 
@@ -220,6 +220,32 @@ defmodule GroupherServer.Test.CMS.Comments.PostComment do
       assert 1 == length(comment.upvotes)
       assert List.first(comment.upvotes).user_id == user.id
     end
+
+    # pls uncomment the comment_action:L194
+    # test "should auto subscribe community upvote a post comment", ~m(user post)a do
+    #   {:error, _subscriber} =
+    #     ORM.find_by(CommunitySubscriber, %{
+    #       community_id: post.original_community_id,
+    #       user_id: user.id
+    #     })
+
+    #   {:ok, comment} = CMS.create_comment(:post, post.id, mock_comment(), user)
+    #   CMS.upvote_comment(comment.id, user)
+
+    #   {:ok, subscriber} =
+    #     ORM.find_by(CommunitySubscriber, %{
+    #       community_id: post.original_community_id,
+    #       user_id: user.id
+    #     })
+
+    #   assert subscriber.user_id === user.id
+    #   assert subscriber.community_id === post.original_community_id
+
+    #   {:ok, comment} = ORM.find(Comment, comment.id, preload: :upvotes)
+
+    #   assert 1 == length(comment.upvotes)
+    #   assert List.first(comment.upvotes).user_id == user.id
+    # end
 
     test "user can upvote a post comment twice is fine", ~m(user post)a do
       {:ok, comment} = CMS.create_comment(:post, post.id, mock_comment(), user)

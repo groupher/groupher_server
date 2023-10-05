@@ -58,8 +58,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleUpvote do
       end)
       |> Multi.run(:after_hooks, fn _, _ ->
         # comment this for test
-        Hooks.SubscribeCommunity.handle(article.original_community, from_user)
-
+        # Hooks.SubscribeCommunity.handle(article.original_community, from_user)
         Later.run({Hooks.Notify, :handle, [:upvote, article, from_user]})
         Later.run({Hooks.SubscribeCommunity, :handle, [article.original_community, from_user]})
       end)

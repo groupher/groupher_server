@@ -138,13 +138,14 @@ defmodule GroupherServer.Test.CMS.Articles.Post do
     end
 
     ## comment article_upvote:L60 if run this test
-    # test "should auto subscribe article's original community after upvote",
+    # test "should auto subscribe article's original community after upvote.",
     #      ~m(post_attrs community user)a do
     #   {:error, _subscriber} =
     #     ORM.find_by(CommunitySubscriber, %{community_id: community.id, user_id: user.id})
 
     #   {:ok, post} = CMS.create_article(community, :post, post_attrs, user)
     #   {:ok, _} = CMS.upvote_article(:post, post.id, user)
+    #   {:error, _} = CMS.upvote_article(:post, post.id, user)
 
     #   {:ok, subscriber} =
     #     ORM.find_by(CommunitySubscriber, %{community_id: community.id, user_id: user.id})
