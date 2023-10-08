@@ -25,7 +25,7 @@ defmodule GroupherServer.Test.Query.Hooks.ChangelogCiting do
   describe "[query paged_changelogs filter pagination]" do
     # id
     @query """
-    query($content: Content!, $id: ID!, $filter: PageFilter!) {
+    query($content: Content!, $id: ID!, $filter: PagiFilter!) {
       pagedCitingContents(id: $id, content: $content, filter: $filter) {
         entries {
           id

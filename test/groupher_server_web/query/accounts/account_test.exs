@@ -19,7 +19,7 @@ defmodule GroupherServer.Test.Query.Account.Basic do
 
   describe "[account basic]" do
     @query """
-    query($login: String) {
+    query($login: String!) {
       user(login: $login) {
         id
         nickname
@@ -212,7 +212,7 @@ defmodule GroupherServer.Test.Query.Account.Basic do
 
   describe "[account subscrube]" do
     @query """
-    query($filter: PagedFilter!) {
+    query($filter: PagiFilter!) {
       subscribedCommunities(filter: $filter) {
         entries {
           title
@@ -248,7 +248,7 @@ defmodule GroupherServer.Test.Query.Account.Basic do
     end
 
     @query """
-    query($login: String, $filter: PagedFilter!) {
+    query($login: String, $filter: PagiFilter!) {
       subscribedCommunities(login: $login, filter: $filter) {
         entries {
           title

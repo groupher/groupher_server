@@ -49,7 +49,7 @@ defmodule GroupherServer.Test.Query.Account.Achievement do
 
   describe "[account editable-communities]" do
     @query """
-    query($login: String, $filter: PagedFilter!) {
+    query($login: String, $filter: PagiFilter!) {
       moderatorableCommunities(login: $login, filter: $filter) {
         entries {
           id

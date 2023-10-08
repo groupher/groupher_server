@@ -48,7 +48,7 @@ defmodule GroupherServerWeb.Schema.CMS.Queries do
     field :paged_community_subscribers, :paged_users do
       arg(:id, :id)
       arg(:community, :string)
-      arg(:filter, :paged_filter)
+      arg(:filter, :pagi_filter)
 
       middleware(M.PageSizeProof)
       resolve(&R.CMS.paged_community_subscribers/3)
@@ -57,7 +57,7 @@ defmodule GroupherServerWeb.Schema.CMS.Queries do
     @desc "paged subscribers of a community"
     field :paged_community_moderators, :paged_users do
       arg(:id, non_null(:id))
-      arg(:filter, :paged_filter)
+      arg(:filter, :pagi_filter)
 
       middleware(M.PageSizeProof)
       resolve(&R.CMS.paged_community_moderators/3)
@@ -73,7 +73,7 @@ defmodule GroupherServerWeb.Schema.CMS.Queries do
 
     @desc "get all categories"
     field :paged_categories, :paged_categories do
-      arg(:filter, :paged_filter)
+      arg(:filter, :pagi_filter)
 
       middleware(M.PageSizeProof)
       resolve(&R.CMS.paged_categories/3)
@@ -126,7 +126,7 @@ defmodule GroupherServerWeb.Schema.CMS.Queries do
     field :paged_comments_participants, :paged_users do
       arg(:id, non_null(:id))
       arg(:thread, :thread, default_value: :post)
-      arg(:filter, :paged_filter)
+      arg(:filter, :pagi_filter)
 
       middleware(M.PageSizeProof)
       resolve(&R.CMS.paged_comments_participants/3)
@@ -152,7 +152,7 @@ defmodule GroupherServerWeb.Schema.CMS.Queries do
     field :paged_citing_contents, :paged_citings do
       arg(:id, non_null(:id))
       arg(:content, :content, default_value: :post)
-      arg(:filter, :paged_filter)
+      arg(:filter, :pagi_filter)
 
       resolve(&R.CMS.paged_citing_contents/3)
     end

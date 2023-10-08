@@ -18,7 +18,7 @@ defmodule GroupherServer.Test.Query.Accounts.Published.Changelogs do
 
   describe "[published changelogs]" do
     @query """
-    query($login: String!, $filter: PagedFilter!) {
+    query($login: String!, $filter: PagiFilter!) {
       pagedPublishedChangelogs(login: $login, filter: $filter) {
         entries {
           id
@@ -51,7 +51,7 @@ defmodule GroupherServer.Test.Query.Accounts.Published.Changelogs do
 
   describe "[account published comments on changelog]" do
     @query """
-    query($login: String!, $thread: Thread, $filter: PagedFilter!) {
+    query($login: String!, $thread: Thread, $filter: PagiFilter!) {
       pagedPublishedComments(login: $login, thread: $thread, filter: $filter) {
         entries {
           id

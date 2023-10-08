@@ -188,7 +188,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
     end
 
     @update_layout_query """
-    mutation($community: Stirng!, $primaryColor: String $postLayout: String, $kanbanLayout: String, $footerLayout: String, $broadcastEnable: Boolean, $kanbanBgColors: [String], $glowType: String, $glowFixed: Boolean, $glowOpacity: String) {
+    mutation($community: String!, $primaryColor: String $postLayout: String, $kanbanLayout: String, $footerLayout: String, $broadcastEnable: Boolean, $kanbanBgColors: [String], $glowType: String, $glowFixed: Boolean, $glowOpacity: String) {
       updateDashboardLayout(community: $community, primaryColor: $primaryColor, postLayout: $postLayout, kanbanLayout: $kanbanLayout, footerLayout: $footerLayout, broadcastEnable: $broadcastEnable, kanbanBgColors: $kanbanBgColors, glowType: $glowType, glowFixed: $glowFixed, glowOpacity: $glowOpacity) {
         id
         title
@@ -299,14 +299,13 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
     end
 
     @update_alias_query """
-    mutation($community: String!, $nameAlias: [dashboardAliasMap]) {
+    mutation($community: String!, $nameAlias: [DashboardAliasMap]) {
       updateDashboardNameAlias(community: $community, nameAlias: $nameAlias) {
         id
         title
       }
     }
     """
-
     test "update community dashboard name alias info", ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
 
@@ -336,7 +335,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
     end
 
     @update_header_links_query """
-    mutation($community: String!, $headerLinks: [dashboardLinkMap]) {
+    mutation($community: String!, $headerLinks: [DashboardLinkMap]) {
       updateDashboardHeaderLinks(community: $community, headerLinks: $headerLinks) {
         id
         title
@@ -348,7 +347,6 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       }
     }
     """
-
     test "update community dashboard header links info", ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
 
@@ -383,7 +381,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
     end
 
     @update_footer_links_query """
-    mutation($community: String!, $footerLinks: [dashboardLinkMap]) {
+    mutation($community: String!, $footerLinks: [DashboardLinkMap]) {
       updateDashboardFooterLinks(community: $community, footerLinks: $footerLinks) {
         id
         title
@@ -430,7 +428,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
     end
 
     @update_social_links_query """
-    mutation($community: String!, $socialLinks: [dashboardSocialLinkMap]) {
+    mutation($community: String!, $socialLinks: [DashboardSocialLinkMap]) {
       updateDashboardSocialLinks(community: $community, socialLinks: $socialLinks) {
         id
         title
@@ -458,7 +456,11 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
 
       updated =
         rule_conn
-        |> mutation_result(@update_social_links_query, variables, "updateDashboardSocialLinks")
+        |> mutation_result(
+          @update_social_links_query,
+          variables,
+          "updateDashboardSocialLinks"
+        )
 
       assert updated["dashboard"]["socialLinks"] |> List.first() |> Map.get("type") == "twitter"
 
@@ -471,7 +473,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
     end
 
     @update_media_reports_query """
-    mutation($community: String!, $mediaReports: [dashboardMediaReportMap]) {
+    mutation($community: String!, $mediaReports: [DashboardMediaReportMap]) {
       updateDashboardMediaReports(community: $community, mediaReports: $mediaReports) {
         id
         title
@@ -513,7 +515,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
     end
 
     @update_faqs_query """
-    mutation($community: String!, $faqs: [dashboardFaqMap]) {
+    mutation($community: String!, $faqs: [DashboardFaqMap]) {
       updateDashboardFaqs(community: $community, faqs: $faqs) {
         id
         title

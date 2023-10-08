@@ -7,7 +7,7 @@ defmodule GroupherServerWeb.Schema.Billing.Queries do
   object :billing_queries do
     @desc "get all bills"
     field :paged_bill_records, non_null(:paged_bills) do
-      arg(:filter, non_null(:paged_filter))
+      arg(:filter, non_null(:pagi_filter))
 
       middleware(M.Authorize, :login)
       middleware(M.PageSizeProof)

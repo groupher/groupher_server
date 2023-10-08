@@ -30,7 +30,6 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
     field(:login, :string)
     field(:avatar, :string)
     field(:nickname, :string)
-    field(:avatar, :string)
     field(:bio, :string)
     field(:shortbio, :string)
   end

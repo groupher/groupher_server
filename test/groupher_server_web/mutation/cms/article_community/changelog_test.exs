@@ -112,7 +112,7 @@ defmodule GroupherServer.Test.Mutation.ArticleCommunity.Changelog do
     end
 
     @mirror_to_home """
-    mutation($id: ID!, $thread: Thread, $articleTags: [Id]) {
+    mutation($id: ID!, $thread: Thread, $articleTags: [ID]) {
       mirrorToHome(id: $id, thread: $thread, articleTags: $articleTags) {
         id
       }
@@ -135,7 +135,7 @@ defmodule GroupherServer.Test.Mutation.ArticleCommunity.Changelog do
     end
 
     @move_to_blackhole """
-    mutation($id: ID!, $thread: Thread, $articleTags: [Id]) {
+    mutation($id: ID!, $thread: Thread, $articleTags: [ID]) {
       moveToBlackhole(id: $id, thread: $thread, articleTags: $articleTags) {
         id
       }
@@ -161,7 +161,7 @@ defmodule GroupherServer.Test.Mutation.ArticleCommunity.Changelog do
     end
 
     @move_article_query """
-    mutation($id: ID!, $thread: Thread, $communityId: ID!, $articleTags: [Id]) {
+    mutation($id: ID!, $thread: Thread, $communityId: ID!, $articleTags: [ID]) {
       moveArticle(id: $id, thread: $thread, communityId: $communityId, articleTags: $articleTags) {
         id
       }

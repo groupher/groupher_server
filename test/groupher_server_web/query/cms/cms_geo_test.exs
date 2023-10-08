@@ -16,7 +16,7 @@ defmodule GroupherServer.Test.Query.CMS.GEO do
   end
 
   @query """
-  query($id: ID) {
+  query($id: ID!) {
     communityGeoInfo(id: $id) {
       city
       long

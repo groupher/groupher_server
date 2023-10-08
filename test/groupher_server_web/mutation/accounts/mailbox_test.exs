@@ -16,13 +16,12 @@ defmodule GroupherServer.Test.Mutaion.Accounts.Mailbox do
 
   describe "[mark_read/all]" do
     @query """
-    mutation($type: MailboxType, $ids: [Id]) {
+    mutation($type: MailboxType, $ids: [ID]) {
       markRead(ids: $ids, type: $type) {
         done
       }
     }
     """
-    #
     test "can mark read a mention", ~m(user_conn user user2)a do
       {:ok, _} = mock_mention_for(user, user2)
 

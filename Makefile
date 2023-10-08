@@ -211,8 +211,6 @@ dashboard.help:
 dashboard:
 	$(call dashboard.help)
 	@echo "\n"
-dashboard.apollo:
-	$(call browse,"$(DASHBOARD_APOLLO_LINK)")
 dashboard.pm2:
 	$(call browse,"$(DASHBOARD_PM2_LINK)")
 dashboard.errors:

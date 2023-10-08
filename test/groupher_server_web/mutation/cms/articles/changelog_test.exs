@@ -26,7 +26,7 @@ defmodule GroupherServer.Test.Mutation.Articles.Changelog do
       $title: String!
       $body: String!
       $communityId: ID!
-      $articleTags: [Id]
+      $articleTags: [ID]
       $linkAddr: String
     ) {
       createChangelog(
@@ -193,7 +193,7 @@ defmodule GroupherServer.Test.Mutation.Articles.Changelog do
     end
 
     @query """
-    mutation($id: ID!, $title: String, $body: String, $articleTags: [Id]){
+    mutation($id: ID!, $title: String, $body: String, $articleTags: [ID]){
       updateChangelog(id: $id, title: $title, body: $body, articleTags: $articleTags) {
         id
         title

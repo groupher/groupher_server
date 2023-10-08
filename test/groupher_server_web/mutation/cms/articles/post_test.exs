@@ -24,7 +24,7 @@ defmodule GroupherServer.Test.Mutation.Articles.Post do
     @set_cat_query """
     mutation(
       $id: ID!
-      $cat: articleCatEnum!
+      $cat: ArticleCatEnum!
     ) {
       setPostCat(
         id: $id
@@ -35,7 +35,6 @@ defmodule GroupherServer.Test.Mutation.Articles.Post do
       }
     }
     """
-
     test "can set cat for a exsiting post", ~m(community)a do
       {:ok, user} = db_insert(:user)
       user_conn = simu_conn(:user, user)
@@ -52,7 +51,7 @@ defmodule GroupherServer.Test.Mutation.Articles.Post do
     @set_state_query """
     mutation(
       $id: ID!
-      $state: articleStateEnum!
+      $state: ArticleStateEnum!
     ) {
       setPostState(
         id: $id
@@ -63,7 +62,6 @@ defmodule GroupherServer.Test.Mutation.Articles.Post do
       }
     }
     """
-
     test "can set state for a exsiting post", ~m(community)a do
       {:ok, user} = db_insert(:user)
       user_conn = simu_conn(:user, user)
@@ -84,7 +82,7 @@ defmodule GroupherServer.Test.Mutation.Articles.Post do
       $title: String!
       $body: String!
       $communityId: ID!
-      $articleTags: [Id]
+      $articleTags: [ID]
       $linkAddr: String
     ) {
       createPost(
@@ -243,7 +241,7 @@ defmodule GroupherServer.Test.Mutation.Articles.Post do
     end
 
     @query """
-    mutation($id: ID!, $title: String, $body: String, $copyRight: String, $articleTags: [Id]){
+    mutation($id: ID!, $title: String, $body: String, $copyRight: String, $articleTags: [ID]){
       updatePost(id: $id, title: $title, body: $body, copyRight: $copyRight, articleTags: $articleTags) {
         id
         title

@@ -138,11 +138,6 @@ defmodule GroupherServerWeb.Schema.CMS.Metrics do
     value(:timeline)
   end
 
-  @desc "inline members-like filter for dataloader usage"
-  input_object :members_filter do
-    field(:first, :integer, default_value: @default_inner_page_size)
-  end
-
   input_object :comments_filter do
     pagination_args()
     field(:sort, :inserted_sort_enum, default_value: :asc_inserted)
@@ -172,7 +167,7 @@ defmodule GroupherServerWeb.Schema.CMS.Metrics do
     field(:index, :integer)
   end
 
-  input_object :paged_filter do
+  input_object :pagi_filter do
     @desc "limit of records (default 20), if first > 30, only return 30 at most"
     pagination_args()
     field(:sort, :sort_enum)

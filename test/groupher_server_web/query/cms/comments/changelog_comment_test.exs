@@ -667,7 +667,7 @@ defmodule GroupherServer.Test.Query.Comments.ChangelogComment do
 
   describe "paged participants" do
     @query """
-      query($id: ID!, $thread: Thread, $filter: PagedFilter!) {
+      query($id: ID!, $thread: Thread, $filter: PagiFilter!) {
         pagedCommentsParticipants(id: $id, thread: $thread, filter: $filter) {
           entries {
             id

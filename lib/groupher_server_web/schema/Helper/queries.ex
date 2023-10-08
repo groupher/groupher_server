@@ -18,7 +18,7 @@ defmodule GroupherServerWeb.Schema.Helper.Queries do
         field unquote(:"paged_published_#{plural(thread)}"),
               unquote(:"paged_#{plural(thread)}") do
           arg(:login, non_null(:string))
-          arg(:filter, non_null(:paged_filter))
+          arg(:filter, non_null(:pagi_filter))
           arg(:thread, unquote(:"#{thread}_thread"), default_value: unquote(thread))
 
           middleware(M.PageSizeProof)
@@ -79,7 +79,7 @@ defmodule GroupherServerWeb.Schema.Helper.Queries do
       field unquote(:"#{action}ed_users"), :paged_users do
         arg(:id, non_null(:id))
         arg(:thread, :thread, default_value: :post)
-        arg(:filter, non_null(:paged_filter))
+        arg(:filter, non_null(:pagi_filter))
 
         middleware(M.PageSizeProof)
         resolve(unquote(resolver))
