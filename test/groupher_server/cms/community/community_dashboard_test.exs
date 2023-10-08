@@ -80,6 +80,23 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert find_community.dashboard.seo.og_description == "forum sass provider"
     end
 
+    test "can update wallpaper in community dashboard", ~m(community_attrs)a do
+      {:ok, community} = CMS.create_community(community_attrs)
+
+      {:ok, _} =
+        CMS.update_dashboard(community.slug, :wallpaper, %{
+          wallpaper_type: "custom",
+          wallpaper: "orange",
+          has_blur: true
+        })
+
+      {:ok, find_community} = ORM.find(Community, community.id, preload: :dashboard)
+
+      assert find_community.dashboard.wallpaper.wallpaper == "orange"
+      assert find_community.dashboard.wallpaper.wallpaper_type == "custom"
+      assert find_community.dashboard.wallpaper.has_blur == true
+    end
+
     test "can update layout in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 

@@ -128,6 +128,7 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
 
   object(:dasbboard_rss, do: dashboard_gq_fields(:rss))
   object(:dasbboard_seo, do: dashboard_gq_fields(:seo))
+  object(:dasbboard_wallpaper, do: dashboard_gq_fields(:wallpaper))
 
   object :dasbboard_layout do
     dashboard_gq_fields(:layout)
@@ -144,6 +145,7 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
 
   object :dashboard do
     field(:seo, :dasbboard_seo)
+    field(:wallpaper, :dasbboard_wallpaper)
     field(:layout, :dasbboard_layout)
     field(:enable, :dasbboard_enable)
     field(:base_info, :dasbboard_base_info)

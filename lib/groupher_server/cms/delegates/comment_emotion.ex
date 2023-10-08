@@ -13,9 +13,10 @@ defmodule GroupherServer.CMS.Delegate.CommentEmotion do
       sync_embed_replies: 1
     ]
 
-  alias Helper.ORM
+  alias Helper.{ORM, Later}
   alias GroupherServer.{Accounts, CMS, Repo}
 
+  alias CMS.Delegate.Hooks
   alias Accounts.Model.User
   alias CMS.Model.{Comment, CommentUserEmotion}
 
@@ -50,6 +51,11 @@ defmodule GroupherServer.CMS.Delegate.CommentEmotion do
              {:ok, comment} <- sync_embed_replies(comment) do
           mark_viewer_emotion_states(comment, user) |> done
         end
+      end)
+      |> Multi.run(:after_hooks, fn _, _ ->
+        # comment this for test
+        # Hooks.SubscribeCommunity.handle(comment, user)
+        Later.run({Hooks.SubscribeCommunity, :handle, [comment, user]})
       end)
       |> Repo.transaction()
       |> result

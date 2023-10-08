@@ -27,8 +27,8 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
 
   describe "[mutation cms community]" do
     @update_info_query """
-    mutation($community: String!, $homepage: String, $title: String, $slug: String, $desc: String, $introduction: String, $logo: String, $favicon: String) {
-      updateDashboardBaseInfo(community: $community, homepage: $homepage, title: $title, slug: $slug, desc: $desc, introduction: $introduction, logo: $logo, favicon: $favicon) {
+    mutation($community: String!, $homepage: String, $title: String, $slug: String, $desc: String, $introduction: String, $logo: String, $favicon: String, $city: String, $techstack: String) {
+      updateDashboardBaseInfo(community: $community, homepage: $homepage, title: $title, slug: $slug, desc: $desc, introduction: $introduction, logo: $logo, favicon: $favicon, city: $city, techstack: $techstack) {
         id
         title
 
@@ -68,7 +68,9 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
         But we do not have to stop now, I request everyone to plant some trees.
         """,
         logo: "logo",
-        favicon: "favicon"
+        favicon: "favicon",
+        city: "chengdu,shanghai",
+        techstack: "Javascript,Elixir"
       }
 
       updated =
@@ -81,25 +83,88 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       assert found.dashboard.base_info.title == "groupher"
       assert found.dashboard.base_info.desc == "thie community is awesome"
       assert found.dashboard.base_info.slug == "groupher"
+
+      assert found.dashboard.base_info.city == "chengdu,shanghai"
+      assert found.dashboard.base_info.techstack == "Javascript,Elixir"
     end
 
     @update_seo_query """
-    mutation($community: String!, $ogTitle: String, $ogDescription: String) {
-      updateDashboardSeo(community: $community, ogTitle: $ogTitle, ogDescription: $ogDescription) {
+    mutation($community: String!, $ogTitle: String, $ogDescription: String, $seoEnable: Boolean) {
+      updateDashboardSeo(community: $community, ogTitle: $ogTitle, ogDescription: $ogDescription, seoEnable: $seoEnable) {
         id
         title
+        dashboard {
+          seo {
+            seoEnable
+          }
+        }
       }
     }
     """
     test "update community dashboard seo info", ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
-      variables = %{community: community.slug, ogTitle: "new title"}
+      variables = %{community: community.slug, ogTitle: "new title", seoEnable: false}
 
       updated = rule_conn |> mutation_result(@update_seo_query, variables, "updateDashboardSeo")
+
+      assert get_in(updated, ["dashboard", "seo", "seoEnable"]) == false
 
       {:ok, found} = Community |> ORM.find(updated["id"], preload: :dashboard)
 
       assert found.dashboard.seo.og_title == "new title"
+      assert found.dashboard.seo.seo_enable == false
+    end
+
+    @update_wallpaper_query """
+    mutation (
+      $community: String!
+      $wallpaper: String
+      $wallpaperType: String
+      $direction: String
+      $customColorValue: String
+      $bgSize: String
+      $uploadBgImage: String
+      $hasPattern: Boolean
+      $hasBlur: Boolean
+      $hasShadow: Boolean
+      ) {
+      updateDashboardWallpaper(
+        community: $community
+        wallpaper: $wallpaper
+        wallpaperType: $wallpaperType
+        direction: $direction
+        customColorValue: $customColorValue
+        bgSize: $bgSize
+        uploadBgImage: $uploadBgImage
+        hasPattern: $hasPattern
+        hasBlur: $hasBlur
+        hasShadow: $hasShadow
+      ) {
+        id
+        title
+        dashboard {
+          wallpaper {
+            wallpaperType
+            wallpaper
+          }
+        }
+      }
+    }
+    """
+    test "update community dashboard wallpaper", ~m(community)a do
+      rule_conn = simu_conn(:user, cms: %{"community.update" => true})
+      variables = %{community: community.slug, wallpaper: "orange", wallpaperType: "custom"}
+
+      updated =
+        rule_conn
+        |> mutation_result(@update_wallpaper_query, variables, "updateDashboardWallpaper")
+
+      assert get_in(updated, ["dashboard", "wallpaper", "wallpaper"]) == "orange"
+
+      {:ok, found} = Community |> ORM.find(updated["id"], preload: :dashboard)
+
+      assert found.dashboard.wallpaper.wallpaper == "orange"
+      assert found.dashboard.wallpaper.wallpaper_type == "custom"
     end
 
     @update_enable_query """
@@ -109,7 +174,6 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       }
     }
     """
-
     test "update community dashboard enable info", ~m(community)a do
       rule_conn = simu_conn(:user, cms: %{"community.update" => true})
       variables = %{community: community.slug, post: false, changelog: true}
@@ -124,13 +188,16 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
     end
 
     @update_layout_query """
-    mutation($community: Stirng!, $postLayout: String, $kanbanLayout: String, $footerLayout: String, $broadcastEnable: Boolean, $kanbanBgColors: [String]) {
-      updateDashboardLayout(community: $community, postLayout: $postLayout, kanbanLayout: $kanbanLayout, footerLayout: $footerLayout, broadcastEnable: $broadcastEnable, kanbanBgColors: $kanbanBgColors) {
+    mutation($community: Stirng!, $primaryColor: String $postLayout: String, $kanbanLayout: String, $footerLayout: String, $broadcastEnable: Boolean, $kanbanBgColors: [String], $glowType: String, $glowFixed: Boolean, $glowOpacity: String) {
+      updateDashboardLayout(community: $community, primaryColor: $primaryColor, postLayout: $postLayout, kanbanLayout: $kanbanLayout, footerLayout: $footerLayout, broadcastEnable: $broadcastEnable, kanbanBgColors: $kanbanBgColors, glowType: $glowType, glowFixed: $glowFixed, glowOpacity: $glowOpacity) {
         id
         title
         dashboard {
           layout {
             footerLayout
+            glowType
+            glowFixed
+            glowOpacity
           }
         }
       }
@@ -141,11 +208,15 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
 
       variables = %{
         community: community.slug,
+        primaryColor: "PURPLE",
         postLayout: "new layout",
         broadcastEnable: true,
         kanbanLayout: "full",
         footerLayout: "simple",
-        kanbanBgColors: ["#111", "#222"]
+        kanbanBgColors: ["#111", "#222"],
+        glowType: "PINK",
+        glowFixed: true,
+        glowOpacity: "30"
       }
 
       updated =
@@ -154,11 +225,16 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
 
       {:ok, found} = Community |> ORM.find(updated["id"], preload: :dashboard)
 
+      assert found.dashboard.layout.primary_color == "PURPLE"
       assert found.dashboard.layout.post_layout == "new layout"
       assert found.dashboard.layout.kanban_layout == "full"
       assert found.dashboard.layout.broadcast_enable == true
       assert found.dashboard.layout.kanban_bg_colors == ["#111", "#222"]
       assert found.dashboard.layout.footer_layout == "simple"
+
+      assert found.dashboard.layout.glow_type == "PINK"
+      assert found.dashboard.layout.glow_fixed == true
+      assert found.dashboard.layout.glow_opacity == "30"
     end
 
     test "update community dashboard layout should not overwrite existing settings",

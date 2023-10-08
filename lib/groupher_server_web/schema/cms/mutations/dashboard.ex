@@ -37,6 +37,21 @@ defmodule GroupherServerWeb.Schema.CMS.Mutations.Dashboard do
       resolve(&R.CMS.update_dashboard/3)
     end
 
+    @desc "update wallpaper in dashboard"
+    field :update_dashboard_wallpaper, :community do
+      arg(:community, non_null(:string))
+      arg(:dashboard_section, :dashboard_section, default_value: :wallpaper)
+
+      dashboard_args(:wallpaper)
+
+      middleware(M.Authorize, :login)
+      # middleware(M.Passport, claim: "cms->community.update")
+
+      # middleware(M.PublishThrottle)
+      # middleware(M.PublishThrottle, interval: 3, hour_limit: 15, day_limit: 30)
+      resolve(&R.CMS.update_dashboard/3)
+    end
+
     @desc "update enable in dashboard"
     field :update_dashboard_enable, :community do
       arg(:community, non_null(:string))

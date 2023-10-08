@@ -6,7 +6,7 @@ defmodule GroupherServer.Test.CMS.Comments.PostCommentEmotions do
   alias Helper.ORM
   alias GroupherServer.CMS
 
-  alias CMS.Model.{Comment, Embeds, CommentUserEmotion}
+  alias CMS.Model.{Comment, Embeds, CommentUserEmotion, CommunitySubscriber}
 
   @default_emotions Embeds.CommentEmotion.default_emotions()
 
@@ -99,6 +99,27 @@ defmodule GroupherServer.Test.CMS.Comments.PostCommentEmotions do
       assert parent_emotion.viewer_has_downvoteed
       assert reply_emotion.viewer_has_downvoteed
     end
+
+    # pls uncomment the comment_emotion:L56
+    # test "should subscribe community if need", ~m(post user user2)a do
+    #   {:error, _subscriber} =
+    #     ORM.find_by(CommunitySubscriber, %{
+    #       community_id: post.original_community_id,
+    #       user_id: user.id
+    #     })
+
+    #   {:ok, comment} = CMS.create_comment(:post, post.id, mock_comment(), user)
+    #   {:ok, _} = CMS.emotion_to_comment(comment.id, :downvote, user)
+
+    #   {:ok, subscriber} =
+    #     ORM.find_by(CommunitySubscriber, %{
+    #       community_id: post.original_community_id,
+    #       user_id: user.id
+    #     })
+
+    #   assert subscriber.user_id === user.id
+    #   assert subscriber.community_id === post.original_community_id
+    # end
   end
 
   describe "[basic article comment emotion]" do

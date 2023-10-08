@@ -190,6 +190,9 @@ defmodule GroupherServer.CMS.Delegate.CommentAction do
         sync_embed_replies(comment)
       end)
       |> Multi.run(:after_hooks, fn _, _ ->
+        # IO.inspect(comment, label: "for upvote comment")
+        # Hooks.SubscribeCommunity.handle(comment, from_user)
+        Later.run({Hooks.SubscribeCommunity, :handle, [comment, from_user]})
         Later.run({Hooks.Notify, :handle, [:upvote, comment, from_user]})
       end)
       |> Repo.transaction()

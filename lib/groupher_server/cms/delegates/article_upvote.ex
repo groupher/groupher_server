@@ -32,7 +32,8 @@ defmodule GroupherServer.CMS.Delegate.ArticleUpvote do
   @doc "upvote to a article-like content"
   def upvote_article(thread, article_id, %User{id: user_id} = from_user) do
     with {:ok, info} <- match(thread),
-         {:ok, article} <- ORM.find(info.model, article_id, preload: [author: :user]) do
+         {:ok, article} <-
+           ORM.find(info.model, article_id, preload: [[author: :user], :original_community]) do
       Multi.new()
       |> Multi.run(:update_upvotes_count, fn _, _ ->
         update_article_reactions_count(info, article, :upvotes_count, :inc)
@@ -56,7 +57,10 @@ defmodule GroupherServer.CMS.Delegate.ArticleUpvote do
         end
       end)
       |> Multi.run(:after_hooks, fn _, _ ->
+        # comment this for test
+        # Hooks.SubscribeCommunity.handle(article.original_community, from_user)
         Later.run({Hooks.Notify, :handle, [:upvote, article, from_user]})
+        Later.run({Hooks.SubscribeCommunity, :handle, [article.original_community, from_user]})
       end)
       |> Repo.transaction()
       |> result()
