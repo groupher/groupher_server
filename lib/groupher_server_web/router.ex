@@ -26,7 +26,6 @@ defmodule GroupherServerWeb.Router do
       Absinthe.Plug.GraphiQL,
       schema: GroupherServerWeb.Schema,
       json_codec: Jason,
-      pipeline: {ApolloTracing.Pipeline, :plug},
       interface: :playground,
       context: %{pubsub: GroupherServerWeb.Endpoint}
     )

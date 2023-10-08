@@ -20,7 +20,7 @@ defmodule GroupherServer.Test.Query.Billing.Basic do
 
   describe "[biling basic]" do
     @query """
-    query($filter: PagedFilter!) {
+    query($filter: PagiFilter!) {
       pagedBillRecords(filter: $filter) {
         entries {
           id

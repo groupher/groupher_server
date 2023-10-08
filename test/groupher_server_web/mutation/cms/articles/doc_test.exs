@@ -26,7 +26,7 @@ defmodule GroupherServer.Test.Mutation.Articles.Doc do
       $title: String!
       $body: String!
       $communityId: ID!
-      $articleTags: [Id]
+      $articleTags: [ID]
       $linkAddr: String
     ) {
       createDoc(
@@ -190,7 +190,7 @@ defmodule GroupherServer.Test.Mutation.Articles.Doc do
     end
 
     @query """
-    mutation($id: ID!, $title: String, $body: String, $articleTags: [Id]){
+    mutation($id: ID!, $title: String, $body: String, $articleTags: [ID]){
       updateDoc(id: $id, title: $title, body: $body, articleTags: $articleTags) {
         id
         title

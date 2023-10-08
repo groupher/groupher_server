@@ -29,7 +29,7 @@ defmodule GroupherServerWeb.Schema.Account.Queries do
     @desc "anyone can get anyone's subscribed communities"
     field :subscribed_communities, :paged_communities do
       arg(:login, :string)
-      arg(:filter, non_null(:paged_filter))
+      arg(:filter, non_null(:pagi_filter))
 
       middleware(M.PageSizeProof)
       resolve(&R.Accounts.subscribed_communities/3)
@@ -56,7 +56,7 @@ defmodule GroupherServerWeb.Schema.Account.Queries do
     @desc "get user's follower"
     field :paged_followers, :paged_users do
       arg(:login, non_null(:string))
-      arg(:filter, non_null(:paged_filter))
+      arg(:filter, non_null(:pagi_filter))
 
       middleware(M.PageSizeProof)
       resolve(&R.Accounts.paged_followers/3)
@@ -65,7 +65,7 @@ defmodule GroupherServerWeb.Schema.Account.Queries do
     @desc "get user's follower"
     field :paged_followings, :paged_users do
       arg(:login, non_null(:string))
-      arg(:filter, non_null(:paged_filter))
+      arg(:filter, non_null(:pagi_filter))
 
       middleware(M.PageSizeProof)
       resolve(&R.Accounts.paged_followings/3)
@@ -100,7 +100,7 @@ defmodule GroupherServerWeb.Schema.Account.Queries do
     @desc "paged communities which the user it's the editor"
     field :moderatorable_communities, :paged_communities do
       arg(:login, :string)
-      arg(:filter, non_null(:paged_filter))
+      arg(:filter, non_null(:pagi_filter))
 
       middleware(M.PageSizeProof)
       resolve(&R.Accounts.moderatorable_communities/3)
@@ -123,7 +123,7 @@ defmodule GroupherServerWeb.Schema.Account.Queries do
     @desc "get paged published article comments"
     field :paged_published_comments, :paged_comments do
       arg(:login, non_null(:string))
-      arg(:filter, non_null(:paged_filter))
+      arg(:filter, non_null(:pagi_filter))
       arg(:thread, :thread, default_value: :post)
 
       middleware(M.PageSizeProof)

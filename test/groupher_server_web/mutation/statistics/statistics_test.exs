@@ -22,7 +22,7 @@ defmodule GroupherServer.Test.Mutation.Statistics do
       $title: String!
       $body: String!
       $communityId: ID!
-      $articleTags: [Ids]
+      $articleTags: [ID]
     ) {
       createPost(
         title: $title
@@ -61,7 +61,7 @@ defmodule GroupherServer.Test.Mutation.Statistics do
       $title: String!
       $body: String!
       $communityId: ID!
-      $articleTags: [Id]
+      $articleTags: [ID]
       $linkAddr: String
     ) {
       createBlog(

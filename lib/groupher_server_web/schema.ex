@@ -3,7 +3,6 @@ defmodule GroupherServerWeb.Schema do
   scham index
   """
   use Absinthe.Schema
-  # use ApolloTracing
   import GroupherServerWeb.Schema.Helper.Imports
 
   alias GroupherServerWeb.Middleware, as: M
@@ -65,7 +64,7 @@ defmodule GroupherServerWeb.Schema do
   end
 
   def middleware(middleware, _field, %{identifier: :query}) do
-    [ApolloTracing.Middleware.Caching] ++ middleware ++ [M.GeneralError]
+    middleware ++ [M.GeneralError]
   end
 
   def middleware(middleware, _field, %{identifier: :mutation}) do
@@ -73,8 +72,7 @@ defmodule GroupherServerWeb.Schema do
   end
 
   def middleware(middleware, _field, _object) do
-    # [ApolloTracing.Middleware.Tracing, ApolloTracing.Middleware.Caching] ++ middleware
-    [ApolloTracing.Middleware.Tracing] ++ middleware
+    middleware
   end
 
   def plugins do

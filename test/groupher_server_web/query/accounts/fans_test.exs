@@ -13,7 +13,7 @@ defmodule GroupherServer.Test.Query.Account.Fans do
 
   describe "[account followers]" do
     @query """
-    query($login: String!, $filter: PagedFilter!) {
+    query($login: String!, $filter: PagiFilter!) {
       pagedFollowers(login: $login, filter: $filter) {
         entries {
           id
@@ -60,7 +60,7 @@ defmodule GroupherServer.Test.Query.Account.Fans do
     end
 
     @query """
-    query($login: String!, $filter: PagedFilter!) {
+    query($login: String!, $filter: PagiFilter!) {
       pagedFollowings(login: $login, filter: $filter) {
         entries {
           id

@@ -5,7 +5,6 @@ OS := ${shell uname}
 BELONG = "coderplanets"
 REPO = "coderplanets_server"
 
-DASHBOARD_APOLLO_LINK = "https://engine.apollographql.com/account/gh.mydearxym/services"
 DASHBOARD_PM2_LINK = "https://app.pm2.io"
 DASHBOARD_ALIYUN_LINK = "https://home.console.aliyun.com/new"
 DASHBOARD_SENTRY_LINK = "https://sentry.io/groupher-stack/cps_server_prod"
@@ -190,9 +189,6 @@ define dashboard.help
 	@echo "\n"
 	@echo "  [valid dashboard commands]"
 	@echo "  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-	@echo "  dashboard.apollo : graphql api status provide by apollo engine"
-	@echo "                   | $(DASHBOARD_APOLLO_LINK)"
-	@echo "  ................................................................................."
 	@echo "  dashboard.pm2    : pm2 running status"
 	@echo "                   | $(DASHBOARD_PM2_LINK)"
 	@echo "  ................................................................................."

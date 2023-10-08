@@ -318,7 +318,7 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
 
   describe "[cms query categories]" do
     @query """
-    query($filter: PagedFilter!) {
+    query($filter: PagiFilter!) {
       pagedCategories(filter: $filter) {
         entries {
           id
@@ -476,7 +476,7 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
     end
 
     @query """
-    query($id: ID!, $filter: PagedFilter!) {
+    query($id: ID!, $filter: PagiFilter!) {
       pagedCommunityModerators(id: $id, filter: $filter) {
         entries {
           nickname
@@ -525,7 +525,7 @@ defmodule GroupherServer.Test.Query.CMS.Basic do
     end
 
     @query """
-    query($id: ID, $community: String, $filter: PagedFilter!) {
+    query($id: ID, $community: String, $filter: PagiFilter!) {
       pagedCommunitySubscribers(id: $id, community: $community, filter: $filter) {
         entries {
           id

@@ -20,7 +20,7 @@ defmodule GroupherServer.Test.Query.Collects.ChangelogCollect do
     query(
       $id: ID!
       $thread: Thread
-      $filter: PagedFilter!
+      $filter: PagiFilter!
     ) {
       collectedUsers(id: $id, thread: $thread, filter: $filter) {
         entries {

@@ -26,7 +26,7 @@ defmodule GroupherServer.Test.Mutation.Articles.Blog do
       $title: String!
       $body: String!
       $communityId: ID!
-      $articleTags: [Id]
+      $articleTags: [ID]
       $linkAddr: String
     ) {
       createBlog(
@@ -189,7 +189,7 @@ defmodule GroupherServer.Test.Mutation.Articles.Blog do
     end
 
     @query """
-    mutation($id: ID!, $title: String, $body: String, $articleTags: [Id]){
+    mutation($id: ID!, $title: String, $body: String, $articleTags: [ID]){
       updateBlog(id: $id, title: $title, body: $body, articleTags: $articleTags) {
         id
         title
@@ -209,7 +209,6 @@ defmodule GroupherServer.Test.Mutation.Articles.Blog do
       }
     }
     """
-
     test "update a blog without login user fails", ~m(guest_conn blog)a do
       unique_num = System.unique_integer([:positive, :monotonic])
 

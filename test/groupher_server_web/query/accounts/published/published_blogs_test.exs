@@ -18,7 +18,7 @@ defmodule GroupherServer.Test.Query.Accounts.Published.Blogs do
 
   describe "[published blogs]" do
     @query """
-    query($login: String!, $filter: PagedFilter!) {
+    query($login: String!, $filter: PagiFilter!) {
       pagedPublishedBlogs(login: $login, filter: $filter) {
         entries {
           id
@@ -51,7 +51,7 @@ defmodule GroupherServer.Test.Query.Accounts.Published.Blogs do
 
   describe "[account published comments on blog]" do
     @query """
-    query($login: String!, $thread: Thread, $filter: PagedFilter!) {
+    query($login: String!, $thread: Thread, $filter: PagiFilter!) {
       pagedPublishedComments(login: $login, thread: $thread, filter: $filter) {
         entries {
           id
