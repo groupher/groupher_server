@@ -116,7 +116,8 @@ defmodule GroupherServer.Mixfile do
       {:httpoison, "~> 1.8"},
       # rss feed parser
       {:fiet, "~> 0.3"},
-      {:ogp, "~> 1.0.0"}
+      {:ogp, "~> 1.0.0"},
+      {:ex_aliyun_openapi, "0.8.4"}
     ]
   end
 

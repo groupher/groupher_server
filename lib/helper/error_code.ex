@@ -37,6 +37,7 @@ defmodule Helper.ErrorCode do
   def ecode(:bill_action), do: @default_base + 13
   def ecode(:editor_data_parse), do: @default_base + 14
   def ecode(:community_exist), do: @default_base + 15
+  def ecode(:oss_sts_token), do: @default_base + 16
   # throttle
   def ecode(:throttle_inverval), do: @throttle_base + 1
   def ecode(:throttle_hour), do: @throttle_base + 2

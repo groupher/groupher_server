@@ -25,7 +25,8 @@ defmodule GroupherServer.CMS do
     CommunityOperation,
     PassportCRUD,
     Search,
-    Seeds
+    Seeds,
+    ThirdPart
   }
 
   # do not pattern match in delegating func, do it on one delegating inside
@@ -258,4 +259,5 @@ defmodule GroupherServer.CMS do
   defdelegate clean_up_articles(community, type), to: Seeds
 
   # defdelegate seed_bot, to: Seeds
+  defdelegate upload_tokens(), to: ThirdPart
 end

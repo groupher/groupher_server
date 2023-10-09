@@ -4,47 +4,38 @@ defmodule Helper.OSS do
   refer: https://lbs.amap.com/api/webservice/guide/api/ipconfig/?sug_index=0
   """
   use Tesla, only: [:get]
-  import Helper.Utils, only: [get_config: 2]
 
-  alias Helper.Cache
+  import Helper.ErrorCode
 
-  @endpoint "https://plausible.io"
-  @realtime_visitors_query "/api/v1/stats/realtime/visitors"
+  @role_arn "acs:ram::1974251283640986:role/groupheross"
+  @role_session_name "GroupherOSS"
+
   @timeout_limit 4000
 
-  @site_id "coderplanets.com"
-  # @token get_config(:plausible, :token)
-
-  @cache_pool :online_status
-
-  plug(Tesla.Middleware.BaseUrl, @endpoint)
-  # plug(Tesla.Middleware.Headers, [{"Authorization", "Bearer #{@token}"}])
+  plug(Tesla.Middleware.JSON)
   plug(Tesla.Middleware.Retry, delay: 200, max_retries: 2)
   plug(Tesla.Middleware.Timeout, timeout: @timeout_limit)
-  plug(Tesla.Middleware.JSON)
+  plug(Tesla.Middleware.PathParams)
+  # plug(Tesla.Middleware.Logger, debug: false)
 
-  defp get_token(), do: get_config(:plausible, :token)
+  # defp get_token(), do: get_config(:plausible, :token)
+  def get_sts_token() do
+    params = %{
+      "Action" => "AssumeRole",
+      "RoleArn" => @role_arn,
+      "RoleSessionName" => @role_session_name,
+      "DurationSeconds" => 1000
+    }
 
-  def realtime_visitors() do
-    query = [site_id: @site_id]
-    path = "#{@realtime_visitors_query}"
-    # NOTICE: DO NOT use Tesla.get, otherwise the middleware will not woking
-    # see https://github.com/teamon/tesla/issues/88
-    # with true <- config_env() !== :test do
-    with {:ok, %{body: body}} <-
-           get(path, query: query, headers: [{"Authorization", "Bearer #{get_token()}"}]) do
-      case is_number(body) do
-        true ->
-          Cache.put(@cache_pool, :realtime_visitors, body)
-          {:ok, Enum.max([body, 1])}
-
-        false ->
-          {:ok, 1}
-      end
+    with {:ok, %{status: 200, body: body}} <- ExAliyun.OpenAPI.call_sts(params) do
+      {:ok, body}
     else
+      {:ok, %{status: 404, body: body}} ->
+        {:error, body["Code"]}
+        {:error, [message: "oss sts token error", code: ecode(:oss_sts_token)]}
+
       _ ->
-        Cache.put(@cache_pool, :realtime_visitors, 1)
-        {:ok, 1}
+        {:error, [message: "oss sts token error", code: ecode(:oss_sts_token)]}
     end
   end
 end

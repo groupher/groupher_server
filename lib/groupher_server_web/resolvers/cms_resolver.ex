@@ -524,4 +524,9 @@ defmodule GroupherServerWeb.Resolvers.CMS do
   def article_tags_count(root, _, _) do
     CMS.count(%Community{id: root.id}, :article_tags)
   end
+
+  # OSS token
+  def upload_tokens(_root, _, _) do
+    CMS.upload_tokens()
+  end
 end
