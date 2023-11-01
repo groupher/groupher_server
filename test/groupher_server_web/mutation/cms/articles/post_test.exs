@@ -262,7 +262,6 @@ defmodule GroupherServer.Test.Mutation.Articles.Post do
       }
     }
     """
-
     test "update a post without login user fails", ~m(guest_conn post)a do
       unique_num = System.unique_integer([:positive, :monotonic])
 
@@ -275,25 +274,66 @@ defmodule GroupherServer.Test.Mutation.Articles.Post do
       assert guest_conn |> mutation_get_error?(@query, variables, ecode(:account_login))
     end
 
-    test "post can be update by owner", ~m(owner_conn post)a do
+    @tag :wip
+    test "post can be update by owner", ~m(owner_conn community post user)a do
       unique_num = System.unique_integer([:positive, :monotonic])
+
+      article_tag_attrs = mock_attrs(:article_tag)
+      {:ok, article_tag} = CMS.create_article_tag(community, :post, article_tag_attrs, user)
 
       variables = %{
         id: post.id,
         title: "updated title #{unique_num}",
         # body: mock_rich_text("updated body #{unique_num}"),,
         body: mock_rich_text("updated body #{unique_num}"),
-        copyRight: "translate"
+        copyRight: "translate",
+        articleTags: [article_tag.id]
       }
 
       result = owner_conn |> mutation_result(@query, variables, "updatePost")
       assert result["title"] == variables.title
+
+      assert result["articleTags"] |> List.first() |> get_in(["id"]) == to_string(article_tag.id)
 
       assert result
              |> get_in(["document", "bodyHtml"])
              |> String.contains?(~s(updated body #{unique_num}))
 
       assert result["copyRight"] == variables.copyRight
+    end
+
+    @tag :wip
+    test "update post article tags should be overwrite old ones",
+         ~m(owner_conn community post user)a do
+      article_tag_attrs = mock_attrs(:article_tag)
+      article_tag_attrs2 = mock_attrs(:article_tag)
+      article_tag_attrs3 = mock_attrs(:article_tag)
+
+      {:ok, article_tag} = CMS.create_article_tag(community, :post, article_tag_attrs, user)
+      {:ok, article_tag2} = CMS.create_article_tag(community, :post, article_tag_attrs2, user)
+      {:ok, article_tag3} = CMS.create_article_tag(community, :post, article_tag_attrs3, user)
+
+      variables = %{
+        id: post.id,
+        articleTags: [article_tag.id, article_tag2.id]
+      }
+
+      result = owner_conn |> mutation_result(@query, variables, "updatePost")
+
+      assert result["articleTags"] |> length == 2
+      assert result["articleTags"] |> List.first() |> get_in(["id"]) == to_string(article_tag.id)
+      assert result["articleTags"] |> List.last() |> get_in(["id"]) == to_string(article_tag2.id)
+
+      variables = %{
+        id: post.id,
+        articleTags: [article_tag2.id, article_tag3.id]
+      }
+
+      result = owner_conn |> mutation_result(@query, variables, "updatePost")
+
+      assert result["articleTags"] |> length == 2
+      assert result["articleTags"] |> List.first() |> get_in(["id"]) == to_string(article_tag2.id)
+      assert result["articleTags"] |> List.last() |> get_in(["id"]) == to_string(article_tag3.id)
     end
 
     test "update post with valid attrs should have is_edited meta info update",

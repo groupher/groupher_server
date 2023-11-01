@@ -65,6 +65,38 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert community.slug == "new slug"
     end
 
+    @tag :wip
+    test "update baseinfo logo should remove _tmp prefix", ~m(community_attrs)a do
+      {:ok, community} = CMS.create_community(community_attrs)
+
+      {:ok, _} =
+        CMS.update_dashboard(community.slug, :base_info, %{
+          logo: "ugc/_tmp/2023-10-14/73l5_groupher.png",
+          favicon: "ugc/_tmp/2023-10-14/73l5_groupher.png"
+        })
+
+      {:ok, community} = ORM.find(Community, community.id)
+
+      assert community.logo == "ugc/2023-10-14/73l5_groupher.png"
+      assert community.favicon == "ugc/2023-10-14/73l5_groupher.png"
+    end
+
+    # test "update baseinfo logo should skip persist when not in ugc/_tmp prefix",
+    #      ~m(community_attrs)a do
+    #   {:ok, community} = CMS.create_community(community_attrs)
+
+    #   {:ok, _} =
+    #     CMS.update_dashboard(community.slug, :base_info, %{
+    #       logo: "ugc/2023-10-14/73l5_groupher.png",
+    #       favicon: "ugc/2023-10-14/73l5_groupher.png"
+    #     })
+
+    #   {:ok, community} = ORM.find(Community, community.id, preload: :dashboard)
+
+    #   assert community.logo == "ugc/2023-10-14/73l5_groupher.png"
+    #   assert community.dashboard.base_info.favicon == "ugc/2023-10-14/73l5_groupher.png"
+    # end
+
     test "can update seo in community dashboard", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 

@@ -181,6 +181,7 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
     field(:title, :string)
     field(:desc, :string)
     field(:slug, :string)
+    field(:favicon, :string)
     field(:index, :integer)
     field(:logo, :string)
     field(:author, :user, resolve: dataloader(CMS, :author))

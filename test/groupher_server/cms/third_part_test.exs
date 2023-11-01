@@ -4,9 +4,8 @@ defmodule GroupherServer.Test.ThirdPart do
   alias GroupherServer.CMS
 
   describe "[OSS test]" do
-    test "can get sts token" do
+    test "can get sts token." do
       # {:ok, tokens} = CMS.upload_tokens()
-
       # assert tokens |> Map.keys() |> length == 4
       # assert not is_nil(tokens.access_key_id)
       # assert not is_nil(tokens.access_key_secret)

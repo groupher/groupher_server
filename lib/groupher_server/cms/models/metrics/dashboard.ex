@@ -51,6 +51,7 @@ defmodule GroupherServer.CMS.Model.Metrics.Dashboard do
       [:kanban_layout, :string, ""],
       [:doc_layout, :string, ""],
       [:doc_faq_layout, :string, ""],
+      [:tag_layout, :string, ""],
       [:avatar_layout, :string, ""],
       [:brand_layout, :string, ""],
       [:banner_layout, :string, ""],

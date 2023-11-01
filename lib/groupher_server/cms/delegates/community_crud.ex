@@ -11,8 +11,7 @@ defmodule GroupherServer.CMS.Delegate.CommunityCRUD do
   import GroupherServer.CMS.Helper.Matcher
   import ShortMaps
 
-  alias Helper.ORM
-  alias Helper.QueryBuilder
+  alias Helper.{ORM, QueryBuilder, OSS}
   alias GroupherServer.{Accounts, CMS, Repo}
 
   alias Accounts.Model.User
@@ -136,11 +135,14 @@ defmodule GroupherServer.CMS.Delegate.CommunityCRUD do
   update dashboard settings of a community
   """
   def update_dashboard(community_slug, :base_info, args) do
-    main_fields = Map.take(args, [:title, :desc, :logo, :slug])
+    main_fields =
+      Map.take(args, [:title, :desc, :logo, :favicon, :slug])
+      |> OSS.persist_file(:logo)
+      |> OSS.persist_file(:favicon)
 
     with {:ok, community} <- ORM.find_by(Community, slug: community_slug),
          {:ok, community} <- update_community_if_need(community, main_fields) do
-      do_update_dashboard(community, :base_info, args)
+      do_update_dashboard(community, :base_info, Map.merge(args, main_fields))
     end
   end
 
