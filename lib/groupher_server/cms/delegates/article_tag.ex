@@ -6,7 +6,10 @@ defmodule GroupherServer.CMS.Delegate.ArticleTag do
   import GroupherServer.CMS.Helper.Matcher
   import Helper.Validator.Guards, only: [g_is_id: 1]
   import Helper.Utils, only: [done: 1, atom_values_to_upcase: 1]
-  import GroupherServer.CMS.Delegate.ArticleCRUD, only: [ensure_author_exists: 1]
+
+  import GroupherServer.CMS.Delegate.ArticleCRUD,
+    only: [ensure_author_exists: 1]
+
   import ShortMaps
   import Helper.ErrorCode
 
@@ -25,18 +28,28 @@ defmodule GroupherServer.CMS.Delegate.ArticleTag do
   @doc """
   create a article tag
   """
-  def create_article_tag(%Community{} = community, thread, attrs, %User{id: user_id}) do
+  def create_article_tag(%Community{} = community, thread, attrs, %User{
+        id: user_id
+      }) do
     with {:ok, author} <- ensure_author_exists(%User{id: user_id}),
          {:ok, community} <- ORM.find_by(Community, slug: community.slug) do
       Multi.new()
       |> Multi.run(:create_article_tag, fn _, _ ->
-        update_attrs = %{author_id: author.id, community_id: community.id, thread: thread}
+        update_attrs = %{
+          author_id: author.id,
+          community_id: community.id,
+          thread: thread
+        }
+
         attrs = attrs |> Map.merge(update_attrs) |> atom_values_to_upcase
 
         ORM.create(ArticleTag, attrs)
       end)
       |> Multi.run(:update_community_count, fn _, _ ->
-        CommunityCRUD.update_community_count_field(community, :article_tags_count)
+        CommunityCRUD.update_community_count_field(
+          community,
+          :article_tags_count
+        )
       end)
       |> Repo.transaction()
       |> result()
@@ -64,7 +77,10 @@ defmodule GroupherServer.CMS.Delegate.ArticleTag do
         ORM.delete(article_tag)
       end)
       |> Multi.run(:update_community_count, fn _, _ ->
-        CommunityCRUD.update_community_count_field(community, :article_tags_count)
+        CommunityCRUD.update_community_count_field(
+          community,
+          :article_tags_count
+        )
       end)
       |> Repo.transaction()
       |> result()
@@ -83,21 +99,55 @@ defmodule GroupherServer.CMS.Delegate.ArticleTag do
     end
   end
 
+  defp do_overwrite_article_tags(article, tags) do
+    article
+    |> Repo.preload(:article_tags)
+    |> Ecto.Changeset.change()
+    |> Ecto.Changeset.put_assoc(:article_tags, tags)
+    |> Repo.update()
+  end
+
+  defp find_article_related_tags(article_tag_ids) do
+    from(t in ArticleTag)
+    |> where([t], t.id in ^article_tag_ids)
+    |> Repo.all()
+    |> done()
+  end
+
   @doc """
   set article tag by list of article_tag_ids
 
   used for create article with article_tags in args
   """
-  def set_article_tags(_, _, article, %{article_tags: []}), do: {:ok, article}
-
-  def set_article_tags(%Community{id: cid}, thread, article, %{article_tags: article_tag_ids}) do
+  def overwrite_article_tags(%Community{id: cid}, thread, article, %{
+        article_tags: article_tag_ids
+      }) do
     check_filter = %{page: 1, size: 100, community_id: cid, thread: thread}
 
     with true <- is_article_tag_in_some_thread?(article_tag_ids, check_filter),
-         Enum.each(article_tag_ids, &set_article_tag(thread, article, &1)) |> done do
+         {:ok, article} <- do_overwrite_article_tags(article, []),
+         {:ok, related_tags} = find_article_related_tags(article_tag_ids) do
+      do_overwrite_article_tags(article, related_tags)
+    else
+      false ->
+        raise_error(:invalid_domain_tag, "tag not in same community & thread")
+    end
+  end
+
+  def set_article_tags(_, _, article, %{article_tags: []}), do: {:ok, article}
+
+  def set_article_tags(%Community{id: cid}, thread, article, %{
+        article_tags: article_tag_ids
+      }) do
+    check_filter = %{page: 1, size: 100, community_id: cid, thread: thread}
+
+    with true <- is_article_tag_in_some_thread?(article_tag_ids, check_filter),
+         Enum.each(article_tag_ids, &set_article_tag(thread, article, &1))
+         |> done do
       {:ok, article}
     else
-      false -> raise_error(:invalid_domain_tag, "tag not in same community & thread")
+      false ->
+        raise_error(:invalid_domain_tag, "tag not in same community & thread")
     end
   end
 
@@ -108,7 +158,8 @@ defmodule GroupherServer.CMS.Delegate.ArticleTag do
   """
   def set_article_tag(thread, article_id, tag_id) when g_is_id(article_id) do
     with {:ok, info} <- match(thread),
-         {:ok, article} <- ORM.find(info.model, article_id, preload: :article_tags),
+         {:ok, article} <-
+           ORM.find(info.model, article_id, preload: :article_tags),
          {:ok, article_tag} <- ORM.find(ArticleTag, tag_id) do
       do_update_article_tags_assoc(article, article_tag, :add)
     end
@@ -127,7 +178,8 @@ defmodule GroupherServer.CMS.Delegate.ArticleTag do
   """
   def unset_article_tag(thread, article_id, tag_id) do
     with {:ok, info} <- match(thread),
-         {:ok, article} <- ORM.find(info.model, article_id, preload: :article_tags),
+         {:ok, article} <-
+           ORM.find(info.model, article_id, preload: :article_tags),
          {:ok, article_tag} <- ORM.find(ArticleTag, tag_id) do
       do_update_article_tags_assoc(article, article_tag, :remove)
     end
@@ -171,7 +223,10 @@ defmodule GroupherServer.CMS.Delegate.ArticleTag do
     with {:ok, group_tags} <- _find_group_tags(community, thread, group) do
       group_tags
       |> Enum.each(fn tag ->
-        target = Enum.find(indexed_tags, fn t -> to_string(t.id) === to_string(tag.id) end)
+        target =
+          Enum.find(indexed_tags, fn t ->
+            to_string(t.id) === to_string(tag.id)
+          end)
 
         tag
         |> Ecto.Changeset.change(%{index: target.index})

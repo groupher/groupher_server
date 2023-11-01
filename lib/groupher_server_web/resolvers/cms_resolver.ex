@@ -97,14 +97,6 @@ defmodule GroupherServerWeb.Resolvers.CMS do
     CMS.read_article(community, thread, id)
   end
 
-  # def read_article(_root, %{thread: thread, id: id}, %{context: %{cur_user: user}}) do
-  #   CMS.read_article(thread, id, user)
-  # end
-
-  # def read_article(_root, %{thread: thread, id: id}, _info) do
-  #   CMS.read_article(thread, id)
-  # end
-
   def set_post_cat(_root, %{passport_source: post, cat: cat}, _info) do
     CMS.set_post_cat(post, Map.get(@article_cat, cat))
   end
@@ -523,5 +515,10 @@ defmodule GroupherServerWeb.Resolvers.CMS do
 
   def article_tags_count(root, _, _) do
     CMS.count(%Community{id: root.id}, :article_tags)
+  end
+
+  # OSS token
+  def upload_tokens(_root, _, _) do
+    CMS.upload_tokens()
   end
 end

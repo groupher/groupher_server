@@ -9,7 +9,8 @@ defmodule GroupherServer.Mixfile do
       version: "2.1.2",
       elixir: "~> 1.9",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: [:phoenix, :gettext] ++ Mix.compilers(),
+      # compilers: [:phoenix, :gettext] ++ Mix.compilers(),
+      compilers: [:phoenix] ++ Mix.compilers(),
       dialyzer: [plt_add_deps: :transitive, ignore_warnings: ".dialyzer_ignore.exs"],
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [
@@ -116,7 +117,9 @@ defmodule GroupherServer.Mixfile do
       {:httpoison, "~> 1.8"},
       # rss feed parser
       {:fiet, "~> 0.3"},
-      {:ogp, "~> 1.0.0"}
+      {:ogp, "~> 1.0.0"},
+      {:ex_aliyun_openapi, "0.8.4"},
+      {:aliyun_oss, "~> 2.0"}
     ]
   end
 

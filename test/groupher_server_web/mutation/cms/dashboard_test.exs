@@ -188,13 +188,14 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
     end
 
     @update_layout_query """
-    mutation($community: String!, $primaryColor: String $postLayout: String, $kanbanLayout: String, $footerLayout: String, $broadcastEnable: Boolean, $kanbanBgColors: [String], $glowType: String, $glowFixed: Boolean, $glowOpacity: String) {
-      updateDashboardLayout(community: $community, primaryColor: $primaryColor, postLayout: $postLayout, kanbanLayout: $kanbanLayout, footerLayout: $footerLayout, broadcastEnable: $broadcastEnable, kanbanBgColors: $kanbanBgColors, glowType: $glowType, glowFixed: $glowFixed, glowOpacity: $glowOpacity) {
+    mutation($community: String!, $primaryColor: String $postLayout: String, $kanbanLayout: String, $footerLayout: String, $broadcastEnable: Boolean, $kanbanBgColors: [String], $glowType: String, $glowFixed: Boolean, $glowOpacity: String, $tagLayout: String) {
+      updateDashboardLayout(community: $community, primaryColor: $primaryColor, postLayout: $postLayout, kanbanLayout: $kanbanLayout, footerLayout: $footerLayout, broadcastEnable: $broadcastEnable, kanbanBgColors: $kanbanBgColors, glowType: $glowType, glowFixed: $glowFixed, glowOpacity: $glowOpacity, tagLayout: $tagLayout) {
         id
         title
         dashboard {
           layout {
             footerLayout
+            tagLayout
             glowType
             glowFixed
             glowOpacity
@@ -216,7 +217,8 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
         kanbanBgColors: ["#111", "#222"],
         glowType: "PINK",
         glowFixed: true,
-        glowOpacity: "30"
+        glowOpacity: "30",
+        tagLayout: "dot"
       }
 
       updated =
@@ -235,6 +237,7 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       assert found.dashboard.layout.glow_type == "PINK"
       assert found.dashboard.layout.glow_fixed == true
       assert found.dashboard.layout.glow_opacity == "30"
+      assert found.dashboard.layout.tag_layout == "dot"
     end
 
     test "update community dashboard layout should not overwrite existing settings",

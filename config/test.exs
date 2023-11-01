@@ -39,3 +39,7 @@ config :groupher_server, :audit,
 
 config :groupher_server, :plausible,
   token: "tDsEjaIBqmfVpkKByebYgrCs1Kl1V3N3prFACyFJq33eeEumg8hAFgm-3ZQamwAq"
+
+config :ex_aliyun_openapi, :sts,
+  access_key_id: "LTAI5tBVR8DcAWAjLmqBE1M3",
+  access_key_secret: "ND45kwF8bswHzvgJ7chvOtVsqneuh2"

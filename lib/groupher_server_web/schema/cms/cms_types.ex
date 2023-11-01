@@ -163,6 +163,13 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
     field(:user, :common_user)
   end
 
+  object :upload_tokens do
+    field(:access_key_id, :string)
+    field(:access_key_secret, :string)
+    field(:expiration, :string)
+    field(:security_token, :string)
+  end
+
   object :all_rules do
     field(:root, :string)
     field(:moderator, :string)
@@ -174,6 +181,7 @@ defmodule GroupherServerWeb.Schema.CMS.Types do
     field(:title, :string)
     field(:desc, :string)
     field(:slug, :string)
+    field(:favicon, :string)
     field(:index, :integer)
     field(:logo, :string)
     field(:author, :user, resolve: dataloader(CMS, :author))

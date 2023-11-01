@@ -191,7 +191,6 @@ defmodule GroupherServer.Test.Mutation.Flags.PostFlag do
       }
     }
     """
-
     test "auth user can pin post", ~m(community post)a do
       variables = %{id: post.id, communityId: community.id}
 
@@ -210,6 +209,38 @@ defmodule GroupherServer.Test.Mutation.Flags.PostFlag do
       assert user_conn |> mutation_get_error?(@query, variables, ecode(:passport))
       assert guest_conn |> mutation_get_error?(@query, variables, ecode(:account_login))
       assert rule_conn |> mutation_get_error?(@query, variables, ecode(:passport))
+    end
+
+    @query """
+    query($community: String!, $id: ID!) {
+      post(community: $community, id: $id) {
+        id
+        isPinned
+      }
+    }
+    """
+    test "can get pin state for article query", ~m(community user guest_conn)a do
+      post_attrs = mock_attrs(:post, %{community_id: community.id})
+      {:ok, post} = CMS.create_article(community, :post, post_attrs, user)
+      {:ok, _} = CMS.pin_article(:post, post.id, community.id)
+
+      variables = %{id: post.inner_id, community: community.slug}
+      rule_conn = simu_conn(:user)
+      ret = rule_conn |> mutation_result(@query, variables, "post")
+      assert ret["isPinned"] == true
+
+      ret = guest_conn |> mutation_result(@query, variables, "post")
+      assert ret["isPinned"] == true
+
+      {:ok, _} = CMS.undo_pin_article(:post, post.id, community.id)
+
+      variables = %{id: post.inner_id, community: community.slug}
+      rule_conn = simu_conn(:user)
+      ret = rule_conn |> mutation_result(@query, variables, "post")
+      assert ret["isPinned"] == false
+
+      ret = guest_conn |> mutation_result(@query, variables, "post")
+      assert ret["isPinned"] == false
     end
 
     @query """

@@ -23,7 +23,7 @@ defmodule GroupherServer.CMS.Model.Community do
 
   @required_fields ~w(title desc user_id logo slug)a
   # @required_fields ~w(title desc user_id)a
-  @optional_fields ~w(label geo_info index aka contributes_digest pending)a
+  @optional_fields ~w(favicon label geo_info index aka contributes_digest pending)a
 
   def max_pinned_article_count_per_thread, do: @max_pinned_article_count_per_thread
 
@@ -32,6 +32,7 @@ defmodule GroupherServer.CMS.Model.Community do
     field(:aka, :string)
     field(:desc, :string)
     field(:logo, :string)
+    field(:favicon, :string)
     # field(:category, :string)
     field(:label, :string)
     field(:slug, :string)

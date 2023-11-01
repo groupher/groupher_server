@@ -62,7 +62,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleCRUD do
   """
   def read_article(community_slug, thread, inner_id) when thread in @article_threads do
     with {:ok, article} <- if_article_legal(community_slug, thread, inner_id) do
-      do_read_article(article, thread)
+      do_read_article(article, community_slug, thread)
     end
   end
 
@@ -70,7 +70,7 @@ defmodule GroupherServer.CMS.Delegate.ArticleCRUD do
       when thread in @article_threads do
     with {:ok, article} <- if_article_legal(community_slug, thread, inner_id, user) do
       Multi.new()
-      |> Multi.run(:normal_read, fn _, _ -> do_read_article(article, thread) end)
+      |> Multi.run(:normal_read, fn _, _ -> do_read_article(article, community_slug, thread) end)
       |> Multi.run(:add_viewed_user, fn _, %{normal_read: article} ->
         update_viewed_user_list(article, user_id)
       end)
@@ -491,7 +491,15 @@ defmodule GroupherServer.CMS.Delegate.ArticleCRUD do
     |> Multi.run(:update_document, fn _, %{update_article: update_article} ->
       Document.update(update_article, attrs)
     end)
-    |> Multi.run(:update_edit_status, fn _, %{update_article: update_article} ->
+    |> Multi.run(:set_article_tags, fn _, %{update_article: article} ->
+      ArticleTag.overwrite_article_tags(
+        %Community{id: article.original_community_id},
+        article.meta.thread,
+        article,
+        %{article_tags: Map.get(attrs, :article_tags, [])}
+      )
+    end)
+    |> Multi.run(:update_edit_status, fn _, %{set_article_tags: update_article} ->
       ArticleCommunity.update_edit_status(update_article)
     end)
     |> Multi.run(:after_hooks, fn _, %{update_article: update_article} ->
@@ -694,13 +702,25 @@ defmodule GroupherServer.CMS.Delegate.ArticleCRUD do
   #   ORM.find_by(Author, user_id: changeset.data.user_id)
   # end
 
-  defp do_read_article(article, thread) do
+  defp do_read_article(article, community_slug, thread) do
     Multi.new()
-    |> Multi.run(:inc_views, fn _, _ -> ORM.read(article, inc: :views) end)
+    |> Multi.run(:inc_views, fn _, _ ->
+      ORM.read(article, inc: :views)
+    end)
     |> Multi.run(:load_html, fn _, %{inc_views: article} ->
       article |> Repo.preload(:document) |> done
     end)
-    |> Multi.run(:update_article_meta, fn _, %{load_html: article} ->
+    |> Multi.run(:add_pinned_flag, fn _, %{load_html: article} ->
+      with {:ok, community} <- ORM.find_by(Community, %{slug: community_slug}) do
+        pin_query = Map.merge(%{community_id: community.id}, %{"#{thread}_id": article.id})
+
+        case ORM.find_by(PinnedArticle, pin_query) do
+          {:ok, _} -> {:ok, Map.merge(article, %{is_pinned: true})}
+          {:error, _} -> {:ok, article}
+        end
+      end
+    end)
+    |> Multi.run(:update_article_meta, fn _, %{add_pinned_flag: article} ->
       article_meta = ensure(article.meta, @default_article_meta)
       meta = Map.merge(article_meta, %{can_undo_sink: in_active_period?(thread, article)})
 

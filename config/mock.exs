@@ -27,3 +27,12 @@ config :groupher_server, GroupherServer.Repo,
 
 #  config email services
 config :groupher_server, GroupherServer.Mailer, adapter: Bamboo.LocalAdapter
+
+config :ex_aliyun_openapi, :sts,
+  access_key_id: System.get_env("ALI_OSS_STS_AK"),
+  access_key_secret: System.get_env("_ALIOSS_STS_AS")
+
+config :groupher_server, Helper.OSS,
+  endpoint: "oss-cn-shanghai.aliyuncs.com",
+  access_key_id: System.get_env("ALI_OSS_STS_AK"),
+  access_key_secret: System.get_env("_ALIOSS_STS_AS")
