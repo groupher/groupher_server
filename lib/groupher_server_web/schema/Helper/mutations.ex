@@ -86,9 +86,9 @@ defmodule GroupherServerWeb.Schema.Helper.Mutations do
         arg(:community_id, non_null(:id))
         arg(:thread, unquote(:"#{thread}_thread"), default_value: unquote(thread))
 
-        # middleware(M.Authorize, :login)
-        # middleware(M.PassportLoader, source: :community)
-        # middleware(M.Passport, claim: unquote("cms->c?->#{to_string(thread)}.pin"))
+        middleware(M.Authorize, :login)
+        middleware(M.PassportLoader, source: :community)
+        middleware(M.Passport, claim: unquote("cms->c?->#{to_string(thread)}.pin"))
         resolve(&R.CMS.pin_article/3)
       end
 
@@ -99,8 +99,8 @@ defmodule GroupherServerWeb.Schema.Helper.Mutations do
         arg(:thread, unquote(:"#{thread}_thread"), default_value: unquote(thread))
 
         middleware(M.Authorize, :login)
-        # middleware(M.PassportLoader, source: :community)
-        # middleware(M.Passport, claim: unquote("cms->c?->#{to_string(thread)}.undo_pin"))
+        middleware(M.PassportLoader, source: :community)
+        middleware(M.Passport, claim: unquote("cms->c?->#{to_string(thread)}.undo_pin"))
         resolve(&R.CMS.undo_pin_article/3)
       end
     end
