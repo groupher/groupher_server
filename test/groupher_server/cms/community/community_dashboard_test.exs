@@ -50,6 +50,7 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert find_community.dashboard.base_info.slug == "groupher"
     end
 
+    @tag :wip
     test "update baseinfo should update community's related fields", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 
@@ -65,7 +66,6 @@ defmodule GroupherServer.Test.Community.CommunityDashboard do
       assert community.slug == "new slug"
     end
 
-    @tag :wip
     test "update baseinfo logo should remove _tmp prefix", ~m(community_attrs)a do
       {:ok, community} = CMS.create_community(community_attrs)
 

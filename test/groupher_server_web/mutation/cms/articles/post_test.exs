@@ -274,7 +274,6 @@ defmodule GroupherServer.Test.Mutation.Articles.Post do
       assert guest_conn |> mutation_get_error?(@query, variables, ecode(:account_login))
     end
 
-    @tag :wip
     test "post can be update by owner", ~m(owner_conn community post user)a do
       unique_num = System.unique_integer([:positive, :monotonic])
 
@@ -302,7 +301,6 @@ defmodule GroupherServer.Test.Mutation.Articles.Post do
       assert result["copyRight"] == variables.copyRight
     end
 
-    @tag :wip
     test "update post article tags should be overwrite old ones",
          ~m(owner_conn community post user)a do
       article_tag_attrs = mock_attrs(:article_tag)

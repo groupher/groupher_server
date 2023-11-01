@@ -191,7 +191,6 @@ defmodule GroupherServer.Test.Mutation.Flags.PostFlag do
       }
     }
     """
-    # @tag :wip
     test "auth user can pin post", ~m(community post)a do
       variables = %{id: post.id, communityId: community.id}
 
@@ -220,7 +219,6 @@ defmodule GroupherServer.Test.Mutation.Flags.PostFlag do
       }
     }
     """
-    @tag :wip
     test "can get pin state for article query", ~m(community user guest_conn)a do
       post_attrs = mock_attrs(:post, %{community_id: community.id})
       {:ok, post} = CMS.create_article(community, :post, post_attrs, user)

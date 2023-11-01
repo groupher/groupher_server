@@ -85,7 +85,7 @@ defmodule Helper.OSS do
 
   defp get_file_path(args, field) when map_size(args) > 0 do
     case get_in(args, [field]) do
-      nil -> {:error, nil}
+      nil -> args
       file -> {:ok, file}
     end
   end
