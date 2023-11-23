@@ -30,9 +30,9 @@ defmodule GroupherServer.CMS.Constant do
     done: 4,
     # for question cat
     resolved: 5,
-    reject_dup: 6,
-    reject_no_plan: 7,
-    reject_no_fix: 8,
+    reject: 6,
+    reject_dup: 7,
+    reject_no_plan: 8,
     reject_repro: 9,
     reject_stale: 10
   }

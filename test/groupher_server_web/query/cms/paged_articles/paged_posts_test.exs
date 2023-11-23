@@ -32,6 +32,10 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedPosts do
 
   setup do
     {:ok, user} = db_insert(:user)
+    {:ok, user2} = db_insert(:user)
+    {:ok, user3} = db_insert(:user)
+
+    {:ok, community} = db_insert(:community)
 
     {:ok, post_last_month} = db_insert(:post, %{title: "last month", inserted_at: @last_month})
 
@@ -45,7 +49,8 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedPosts do
 
     guest_conn = simu_conn(:guest)
 
-    {:ok, ~m(guest_conn user post_last_week post_last_month post_last_year)a}
+    {:ok,
+     ~m(guest_conn user user2 user3 post_last_week post_last_month post_last_year community)a}
   end
 
   describe "[query paged_posts filter pagination]" do
@@ -56,6 +61,9 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedPosts do
           id
           cat
           state
+          views
+          upvotesCount
+          commentsCount
           document {
             bodyHtml
           }
@@ -84,6 +92,61 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedPosts do
       assert results["entries"] |> List.first() |> Map.get("articleTags") |> is_list
     end
 
+    @tag :wip
+    test "publish order should work", ~m(guest_conn community user)a do
+      variables = %{filter: %{page: 1, size: 20, order: "publish"}}
+
+      post_attrs = mock_attrs(:post, %{community_id: community.id})
+      {:ok, post} = CMS.create_article(community, :post, post_attrs, user)
+
+      results = guest_conn |> query_result(@query, variables, "pagedPosts")
+      first_post = results["entries"] |> List.first()
+      assert first_post["id"] > post.id
+    end
+
+    @tag :wip
+    test "upvotes_count order should work", ~m(guest_conn post_last_week user user2 user3)a do
+      variables = %{filter: %{page: 1, size: 20, order: "upvotes"}}
+
+      {:ok, _} = CMS.upvote_article(:post, post_last_week.id, user)
+      {:ok, _} = CMS.upvote_article(:post, post_last_week.id, user2)
+      {:ok, _} = CMS.upvote_article(:post, post_last_week.id, user3)
+
+      results = guest_conn |> query_result(@query, variables, "pagedPosts")
+      first_post = results["entries"] |> List.first()
+      assert first_post["upvotesCount"] === 3
+    end
+
+    @tag :wip
+    test "comments_count order should work", ~m(guest_conn post_last_week user user2 user3)a do
+      variables = %{filter: %{page: 1, size: 20, order: "comments"}}
+
+      {:ok, _comment} = CMS.create_comment(:post, post_last_week.id, mock_comment(), user)
+      {:ok, _comment} = CMS.create_comment(:post, post_last_week.id, mock_comment(), user2)
+      {:ok, _comment} = CMS.create_comment(:post, post_last_week.id, mock_comment(), user3)
+
+      results = guest_conn |> query_result(@query, variables, "pagedPosts")
+      first_post = results["entries"] |> List.first()
+      assert first_post["commentsCount"] === 3
+    end
+
+    @tag :wip
+    test "views order should work", ~m(guest_conn community user user2 user3)a do
+      variables = %{filter: %{page: 1, size: 20, order: "views"}}
+
+      post_attrs = mock_attrs(:post, %{community_id: community.id})
+      {:ok, post} = CMS.create_article(community, :post, post_attrs, user)
+
+      {:ok, _} = CMS.read_article(post.original_community_slug, :post, post.inner_id, user)
+      {:ok, _} = CMS.read_article(post.original_community_slug, :post, post.inner_id, user2)
+      {:ok, post} = CMS.read_article(post.original_community_slug, :post, post.inner_id, user3)
+
+      results = guest_conn |> query_result(@query, variables, "pagedPosts")
+      first_post = results["entries"] |> List.first()
+      last_post = results["entries"] |> List.last()
+      assert first_post["views"] > last_post["views"]
+    end
+
     test "should get valid cat & state", ~m(guest_conn post_last_week)a do
       variables = %{filter: %{page: 1, size: 20}}
 
@@ -94,6 +157,32 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedPosts do
 
       assert results["entries"] |> Enum.any?(&(&1["cat"] == "FEATURE"))
       assert results["entries"] |> Enum.any?(&(&1["state"] == "WIP"))
+    end
+
+    @tag :wip
+    test "should get valid cat & state by filter", ~m(guest_conn post_last_week)a do
+      {:ok, _post} = CMS.set_post_cat(post_last_week, @article_cat.feature)
+      {:ok, _post} = CMS.set_post_state(post_last_week, @article_state.wip)
+
+      variables = %{filter: %{page: 1, size: 20, cat: "feature"}}
+      results = guest_conn |> query_result(@query, variables, "pagedPosts")
+      assert results["totalCount"] == 1
+
+      variables = %{filter: %{page: 1, size: 20, cat: "not exist"}}
+      results = guest_conn |> query_result(@query, variables, "pagedPosts")
+      assert results["totalCount"] == 0
+
+      variables = %{filter: %{page: 1, size: 20, state: "wip"}}
+      results = guest_conn |> query_result(@query, variables, "pagedPosts")
+      assert results["totalCount"] == 1
+
+      variables = %{filter: %{page: 1, size: 20, state: "not exist"}}
+      results = guest_conn |> query_result(@query, variables, "pagedPosts")
+      assert results["totalCount"] == 0
+
+      variables = %{filter: %{page: 1, size: 20, cat: "feature", state: "wip"}}
+      results = guest_conn |> query_result(@query, variables, "pagedPosts")
+      assert results["totalCount"] == 1
     end
 
     test "should get valid thread document", ~m(guest_conn)a do

@@ -8,6 +8,9 @@ defmodule Helper.QueryBuilder do
 
   alias CMS.Constant
 
+  @article_cat Constant.article_cat()
+  @article_state Constant.article_state()
+
   @audit_illegal Constant.pending(:illegal)
   @audit_failed Constant.pending(:audit_failed)
 
@@ -59,8 +62,52 @@ defmodule Helper.QueryBuilder do
     |> order_by([_, s], {^direction, fragment("count(?)", s.id)})
   end
 
+  defp trans_article_cat(queryable, cat) when is_binary(cat) do
+    cat_key = cat |> String.downcase() |> String.to_atom()
+    cat_value = @article_cat |> Map.get(cat_key)
+
+    case cat_value do
+      ## -1 means not exist
+      nil -> queryable |> where([p], p.cat == -1)
+      _ -> queryable |> where([p], p.cat == ^cat_value)
+    end
+  end
+
+  defp trans_article_state(queryable, state) when is_binary(state) do
+    state_key = state |> String.downcase() |> String.to_atom()
+    state_value = @article_state |> Map.get(state_key)
+
+    case state_value do
+      ## -1 means not exist
+      nil -> queryable |> where([p], p.state == -1)
+      _ -> queryable |> where([p], p.state == ^state_value)
+    end
+  end
+
+  defp trans_articles_order(queryable, "upvotes")  do
+    queryable |> order_by(desc: :upvotes_count)
+  end
+
+  defp trans_articles_order(queryable, "comments")  do
+    queryable |> order_by(desc: :comments_count)
+  end
+
+  defp trans_articles_order(queryable, "views")  do
+      queryable |> order_by(desc: :views, desc: :inserted_at)
+  end
+
+  defp trans_articles_order(queryable, "publish")  do
+    queryable |> order_by(desc: :inserted_at)
+  end
+
+  defp trans_articles_order(queryable, _), do: queryable
+
   def filter_pack(queryable, filter) when is_map(filter) do
     Enum.reduce(filter, queryable, fn
+      {:order, key}, queryable ->
+        queryable |> trans_articles_order(key)
+
+      # old
       {:sort, :desc_active}, queryable ->
         queryable |> order_by(desc: :active_at)
 
@@ -174,10 +221,10 @@ defmodule Helper.QueryBuilder do
         queryable
 
       {:cat, cat}, queryable ->
-        queryable |> where([p], p.cat == ^cat)
+        queryable |> trans_article_cat(cat)
 
       {:state, state}, queryable ->
-        queryable |> where([p], p.state == ^state)
+        queryable |> trans_article_state(state)
 
       {:community_slug, community_slug}, queryable ->
         from(
