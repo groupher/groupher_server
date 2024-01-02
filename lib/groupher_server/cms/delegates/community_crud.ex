@@ -286,7 +286,6 @@ defmodule GroupherServer.CMS.Delegate.CommunityCRUD do
         thread,
         %{inner_id: inner_id}
       ) do
-    IO.inspect(inner_id, label: "## inner_id")
     thread_inner_id_key = :"#{plural(thread)}_inner_id_index"
     meta = community_meta |> Map.put(thread_inner_id_key, inner_id) |> strip_struct
 

@@ -109,9 +109,6 @@ defmodule GroupherServer.Mixfile do
       {:html_sanitize_ex, "~> 1.3"},
       {:open_graph, "~> 0.0.3"},
       {:earmark, "~> 1.4.13"},
-      # 遵循中文排版指南
-      # https://github.com/cataska/pangu.ex
-      {:pangu, "~> 0.1.0"},
       {:accessible, "~> 0.3.0"},
       {:floki, "~> 0.30.1"},
       {:httpoison, "~> 1.8"},

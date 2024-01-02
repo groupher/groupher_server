@@ -49,6 +49,7 @@ defmodule GroupherServer.CMS.Model.Metrics.Dashboard do
       [:primary_color, :string, ""],
       [:post_layout, :string, ""],
       [:kanban_layout, :string, ""],
+      [:kanban_card_layout, :string, ""],
       [:doc_layout, :string, ""],
       [:doc_faq_layout, :string, ""],
       [:tag_layout, :string, ""],
@@ -69,7 +70,10 @@ defmodule GroupherServer.CMS.Model.Metrics.Dashboard do
       ## glow
       [:glow_type, :string, ""],
       [:glow_fixed, :boolean, false],
-      [:glow_opacity, :string, ""]
+      [:glow_opacity, :string, ""],
+
+      ## blur
+      [:goss_blur, :integer, 100]
     ]
   end
 

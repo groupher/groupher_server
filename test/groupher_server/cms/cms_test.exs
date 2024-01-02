@@ -116,6 +116,40 @@ defmodule GroupherServer.Test.CMS do
   end
 
   describe "[cms community moderators]" do
+    test "should have infinite passport count of root", ~m(user user2 community)a do
+      role = "root"
+      cur_user = user
+      {:ok, _} = CMS.add_moderator(community.slug, role, user2, cur_user)
+
+      {:ok, moderator} =
+        CommunityModerator |> ORM.find_by(%{community_id: community.id, user_id: user2.id})
+
+      assert moderator.passport_item_count == Certification.root_passport_item_count()
+
+      default_passport_item_count =
+        Certification.passport_rules(cms: "moderator") |> Map.keys() |> length
+
+      new_community_rules =
+        Certification.passport_rules(cms: "moderator")
+        |> Map.merge(%{
+          "post.tag.edit2" => true,
+          "post.tag.edit3" => true,
+          "post.tag.edit4" => true
+        })
+
+      new_passport_rules = %{
+        "#{community.slug}" => new_community_rules
+      }
+
+      {:ok, _} =
+        CMS.update_moderator_passport(community.slug, new_passport_rules, user2, cur_user)
+
+      {:ok, moderator} =
+        CommunityModerator |> ORM.find_by(%{community_id: community.id, user_id: user2.id})
+
+      assert moderator.passport_item_count == Certification.root_passport_item_count()
+    end
+
     test "should have passport count of community after add moderator",
          ~m(user user2 community)a do
       role = "moderator"

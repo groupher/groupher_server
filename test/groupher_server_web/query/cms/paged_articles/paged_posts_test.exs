@@ -92,7 +92,6 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedPosts do
       assert results["entries"] |> List.first() |> Map.get("articleTags") |> is_list
     end
 
-    @tag :wip
     test "publish order should work", ~m(guest_conn community user)a do
       variables = %{filter: %{page: 1, size: 20, order: "publish"}}
 
@@ -104,7 +103,6 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedPosts do
       assert first_post["id"] > post.id
     end
 
-    @tag :wip
     test "upvotes_count order should work", ~m(guest_conn post_last_week user user2 user3)a do
       variables = %{filter: %{page: 1, size: 20, order: "upvotes"}}
 
@@ -117,7 +115,6 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedPosts do
       assert first_post["upvotesCount"] === 3
     end
 
-    @tag :wip
     test "comments_count order should work", ~m(guest_conn post_last_week user user2 user3)a do
       variables = %{filter: %{page: 1, size: 20, order: "comments"}}
 
@@ -130,7 +127,6 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedPosts do
       assert first_post["commentsCount"] === 3
     end
 
-    @tag :wip
     test "views order should work", ~m(guest_conn community user user2 user3)a do
       variables = %{filter: %{page: 1, size: 20, order: "views"}}
 
@@ -159,7 +155,6 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedPosts do
       assert results["entries"] |> Enum.any?(&(&1["state"] == "WIP"))
     end
 
-    @tag :wip
     test "should get valid cat & state by filter", ~m(guest_conn post_last_week)a do
       {:ok, _post} = CMS.set_post_cat(post_last_week, @article_cat.feature)
       {:ok, _post} = CMS.set_post_state(post_last_week, @article_state.wip)

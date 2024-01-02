@@ -62,6 +62,10 @@ defmodule Helper.QueryBuilder do
     |> order_by([_, s], {^direction, fragment("count(?)", s.id)})
   end
 
+  defp trans_article_cat(queryable, cat) when is_integer(cat) do
+    queryable |> where([p], p.cat == ^cat)
+  end
+
   defp trans_article_cat(queryable, cat) when is_binary(cat) do
     cat_key = cat |> String.downcase() |> String.to_atom()
     cat_value = @article_cat |> Map.get(cat_key)
@@ -71,6 +75,10 @@ defmodule Helper.QueryBuilder do
       nil -> queryable |> where([p], p.cat == -1)
       _ -> queryable |> where([p], p.cat == ^cat_value)
     end
+  end
+
+  defp trans_article_state(queryable, state) when is_integer(state) do
+    queryable |> where([p], p.state == ^state)
   end
 
   defp trans_article_state(queryable, state) when is_binary(state) do
@@ -104,8 +112,11 @@ defmodule Helper.QueryBuilder do
 
   def filter_pack(queryable, filter) when is_map(filter) do
     Enum.reduce(filter, queryable, fn
+      {:order, nil}, queryable ->
+        queryable
+
       {:order, key}, queryable ->
-        queryable |> trans_articles_order(key)
+        queryable |> trans_articles_order(String.downcase(key))
 
       # old
       {:sort, :desc_active}, queryable ->

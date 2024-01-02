@@ -72,6 +72,15 @@ defmodule GroupherServer.CMS.Delegate.CommunityOperation do
   end
 
   defp update_passport_item_count(
+         %CommunityModerator{role: "root"} = moderator,
+         _community_slug,
+         _user_id,
+         _rules
+       ) do
+    moderator |> ORM.update(%{passport_item_count: Certification.root_passport_item_count()})
+  end
+
+  defp update_passport_item_count(
          %CommunityModerator{} = moderator,
          community_slug,
          user_id,

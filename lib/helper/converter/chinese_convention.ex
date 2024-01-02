@@ -10,7 +10,7 @@ defmodule Helper.Converter.ChineseConvention do
   https://cn.wordpress.org/plugins/corner-bracket-lover/
   """
 
-  require Pangu
+  # require Pangu
 
   @doc """
   format chinese stirng follows github: sparanoid/chinese-copywriting-guidelines.
@@ -21,7 +21,7 @@ defmodule Helper.Converter.ChineseConvention do
   @spec format(binary) :: binary
   def format(text) do
     text
-    |> Pangu.spacing()
+    # |> Pangu.spacing()
     |> cover_brackets
   end
 
