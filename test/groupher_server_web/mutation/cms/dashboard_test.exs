@@ -188,8 +188,8 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
     end
 
     @update_layout_query """
-    mutation($community: String!, $primaryColor: String $postLayout: String, $kanbanLayout: String, $kanbanCardLayout: String, $footerLayout: String, $broadcastEnable: Boolean, $kanbanBgColors: [String], $glowType: String, $glowFixed: Boolean, $glowOpacity: String, $tagLayout: String, $gossBlur: Int) {
-      updateDashboardLayout(community: $community, primaryColor: $primaryColor, postLayout: $postLayout, kanbanLayout: $kanbanLayout, kanbanCardLayout: $kanbanCardLayout, footerLayout: $footerLayout, broadcastEnable: $broadcastEnable, kanbanBgColors: $kanbanBgColors, glowType: $glowType, glowFixed: $glowFixed, glowOpacity: $glowOpacity, tagLayout: $tagLayout, gossBlur: $gossBlur) {
+    mutation($community: String!, $primaryColor: String $postLayout: String, $kanbanLayout: String, $kanbanCardLayout: String, $footerLayout: String, $broadcastEnable: Boolean, $kanbanBgColors: [String], $glowType: String, $glowFixed: Boolean, $glowOpacity: String, $tagLayout: String, $gossBlur: Int, $gossBlurDark: Int, $brandLayout: String) {
+      updateDashboardLayout(community: $community, primaryColor: $primaryColor, postLayout: $postLayout, kanbanLayout: $kanbanLayout, kanbanCardLayout: $kanbanCardLayout, footerLayout: $footerLayout, broadcastEnable: $broadcastEnable, kanbanBgColors: $kanbanBgColors, glowType: $glowType, glowFixed: $glowFixed, glowOpacity: $glowOpacity, tagLayout: $tagLayout, gossBlur: $gossBlur, gossBlurDark: $gossBlurDark, brandLayout: $brandLayout) {
         id
         title
         dashboard {
@@ -200,6 +200,8 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
             glowFixed
             glowOpacity
             gossBlur
+            gossBlurDark
+            brandLayout
           }
         }
       }
@@ -222,7 +224,9 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
         glowFixed: true,
         glowOpacity: "30",
         tagLayout: "dot",
-        gossBlur: 80
+        gossBlur: 80,
+        gossBlurDark: 60,
+        brandLayout: "LOGO"
       }
 
       updated =
@@ -244,6 +248,8 @@ defmodule GroupherServer.Test.Mutation.CMS.Dashboard do
       assert found.dashboard.layout.glow_opacity == "30"
       assert found.dashboard.layout.tag_layout == "dot"
       assert found.dashboard.layout.goss_blur == 80
+      assert found.dashboard.layout.goss_blur_dark == 60
+      assert found.dashboard.layout.brand_layout == "LOGO"
     end
 
     test "update community dashboard layout should not overwrite existing settings",

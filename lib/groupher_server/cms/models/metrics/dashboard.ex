@@ -73,7 +73,8 @@ defmodule GroupherServer.CMS.Model.Metrics.Dashboard do
       [:glow_opacity, :string, ""],
 
       ## blur
-      [:goss_blur, :integer, 100]
+      [:goss_blur, :integer, 100],
+      [:goss_blur_dark, :integer, 100]
     ]
   end
 
