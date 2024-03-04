@@ -1,10 +1,10 @@
-# fly.toml app configuration file generated for groupher-server-withered-violet-5488 on 2024-03-03T12:33:37+08:00
+# fly.toml app configuration file generated for groupher-server-withered-violet-5488-quiet-fog-9123 on 2024-03-03T20:11:00+08:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'groupher-server-withered-violet-5488'
-primary_region = 'sin'
+app = 'groupher-server-withered-violet-5488-quiet-fog-9123'
+primary_region = 'hkg'
 kill_signal = 'SIGTERM'
 
 [build]
@@ -13,7 +13,7 @@ kill_signal = 'SIGTERM'
   release_command = '/app/bin/migrate'
 
 [env]
-  PHX_HOST = 'groupher-server-withered-violet-5488.fly.dev'
+  PHX_HOST = 'groupher-server-withered-violet-5488-quiet-fog-9123.fly.dev'
   PORT = '8080'
 
 [http_service]

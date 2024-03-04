@@ -72,18 +72,6 @@ config :groupher_server, Helper.Guardian,
   issuer: "groupher_server",
   secret_key: System.get_env("GUARDIAN_KEY")
 
-# You can generate a new secret by running:
-# mix phx.gen.secret
-# should use RDS 内网地址
-config :groupher_server, GroupherServer.Repo,
-  adapter: Ecto.Adapters.Postgres,
-  username: System.get_env("DB_USERNAME"),
-  password: System.get_env("DB_PASSWORD"),
-  database: System.get_env("DB_NAME" || "cps_server_prod"),
-  hostname: System.get_env("DB_HOST"),
-  port: String.to_integer(System.get_env("DB_PORT") || "3433"),
-  pool_size: String.to_integer(System.get_env("DB_POOL_SIZE") || "20")
-
 config :groupher_server, :github_oauth,
   client_id: System.get_env("OAUTH_GITHUB_CLIENT_ID"),
   client_secret: System.get_env("OAUTH_GITHUB_CLIENT_SECRET"),

@@ -32,7 +32,6 @@ defmodule GroupherServer.Mixfile do
     [
       mod: {GroupherServer.Application, []},
       extra_applications: [
-        :open_graph,
         :corsica,
         :ex_unit,
         :logger,
@@ -107,7 +106,6 @@ defmodule GroupherServer.Mixfile do
       # cron-like scheduler job
       {:quantum, "~> 2.3"},
       {:html_sanitize_ex, "~> 1.3"},
-      {:open_graph, "~> 0.0.3"},
       {:earmark, "~> 1.4.13"},
       {:accessible, "~> 0.3.0"},
       {:floki, "~> 0.30.1"},
