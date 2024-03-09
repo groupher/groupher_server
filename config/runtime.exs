@@ -101,6 +101,7 @@ if config_env() == :prod do
   # which you typically run after static files are built.
   config :groupher_server, GroupherServerWeb.Endpoint, load_from_system_env: true
   # url: [host: "groupher.com", port: 80]
+  config :groupher_server, GroupherServerWeb.Endpoint, server: true
 
   # cache_static_manifest: "priv/static/cache_manifest.json"
 
