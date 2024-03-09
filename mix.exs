@@ -9,8 +9,6 @@ defmodule GroupherServer.Mixfile do
       version: "2.1.2",
       elixir: "~> 1.9",
       elixirc_paths: elixirc_paths(Mix.env()),
-      # compilers: [:phoenix, :gettext] ++ Mix.compilers(),
-      compilers: [:phoenix] ++ Mix.compilers(),
       dialyzer: [plt_add_deps: :transitive, ignore_warnings: ".dialyzer_ignore.exs"],
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [
@@ -54,7 +52,7 @@ defmodule GroupherServer.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.6.16"},
+      {:phoenix, "~> 1.7.0"},
       {:phoenix_pubsub, "~> 2.0"},
       {:phoenix_html, "~> 2.14.3"},
       {:ecto_sql, "~> 3.10.1"},
