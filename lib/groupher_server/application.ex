@@ -16,6 +16,7 @@ defmodule GroupherServer.Application do
     # Define workers and child supervisors to be supervised
     children =
       [
+        {DNSCluster, query: Application.get_env(:groupher_server, :dns_cluster_query) || :ignore},
         # Start the PubSub system
         {Phoenix.PubSub, name: MyApp.PubSub},
         # Start the Ecto repository

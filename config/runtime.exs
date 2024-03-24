@@ -1,91 +1,51 @@
 import Config
 
-if config_env() == :mock do
-  config :groupher_server, GroupherServerWeb.Endpoint,
-    http: [port: 4001],
-    debug_errors: true,
-    code_reloader: true,
-    check_origin: false,
-    watchers: []
-
-  config :groupher_server, Helper.Guardian,
-    issuer: "groupher_server",
-    secret_key: "hello"
-
-  config :logger, :console, format: "[$level] $message\n"
-
-  config :phoenix, :stacktrace_depth, 20
-
-  # Configure your database
-  config :groupher_server, GroupherServer.Repo,
-    adapter: Ecto.Adapters.Postgres,
-    username: "postgres",
-    password: "postgres",
-    database: "groupher_server_mock",
-    hostname: "localhost",
-    pool_size: 50,
-    queue_target: 5000
-
-  #  config email services
-  config :groupher_server, GroupherServer.Mailer, adapter: Bamboo.LocalAdapter
-
-  config :ex_aliyun_openapi, :sts,
-    access_key_id: System.get_env("ALI_OSS_STS_AK"),
-    access_key_secret: System.get_env("_ALIOSS_STS_AS")
-
-  config :groupher_server, Helper.OSS,
-    endpoint: "oss-cn-shanghai.aliyuncs.com",
-    access_key_id: System.get_env("ALI_OSS_STS_AK"),
-    access_key_secret: System.get_env("_ALIOSS_STS_AS")
-end
-
-if config_env() == :test do
-  # We don't run a server during test. If one is required,
-  # you can enable the server option below.
-  config :groupher_server, GroupherServerWeb.Endpoint,
-    http: [port: 4001],
-    server: false
-
-  # Print only warnings and errors during test
-  config :logger, level: :warn
-
-  config :groupher_server, Helper.Guardian,
-    issuer: "groupher_server",
-    secret_key: "kSTPDbCUSRhiEmv86eYMUplL7xI5fDa/+6MWKzK2VYGxjwL0XGHHVJiSPNPe9hJe"
-
-  config :groupher_server, :test,
-    # 成都电信 ip, for test use
-    remote_ip: "171.223.96.88"
-
-  # Configure your database
-  config :groupher_server, GroupherServer.Repo,
-    adapter: Ecto.Adapters.Postgres,
-    username: "postgres",
-    password: "postgres",
-    database: "groupher_server_test",
-    hostname: "localhost",
-    pool_size: 50,
-    pool: Ecto.Adapters.SQL.Sandbox
-
-  config :groupher_server, :github_oauth,
-    client_id: "3b4281c5e54ffd801f85",
-    client_secret: "51f04dd8239b27f00a39a647ef3704de4c5ddc26"
-
-  #  config email services
-  config :groupher_server, GroupherServer.Mailer, adapter: Bamboo.TestAdapter
-
-  config :groupher_server, :audit,
-    token: "24.aa6fb4e4018c371e9ed228db5bea3ec0.2592000.1641816180.282335-25148796"
-
-  config :groupher_server, :plausible,
-    token: "tDsEjaIBqmfVpkKByebYgrCs1Kl1V3N3prFACyFJq33eeEumg8hAFgm-3ZQamwAq"
-
-  config :ex_aliyun_openapi, :sts,
-    access_key_id: "LTAI5tBVR8DcAWAjLmqBE1M3",
-    access_key_secret: "ND45kwF8bswHzvgJ7chvOtVsqneuh2"
+# ## Using releases
+#
+# If you use `mix release`, you need to explicitly enable the server
+# by passing the PHX_SERVER=true when you start it:
+#
+#     PHX_SERVER=true bin/groupher_hello start
+#
+# Alternatively, you can use `mix phx.gen.release` to generate a `bin/server`
+# script that automatically sets the env var above.
+if System.get_env("PHX_SERVER") do
+  config :groupher_server, GroupherServerWeb.Endpoint, server: true
 end
 
 if config_env() == :prod do
+  # The secret key base is used to sign/encrypt cookies and other secrets.
+  # A default value is used in config/dev.exs and config/test.exs but you
+  # want to use a different value for prod and you most likely don't want
+  # to check this value into version control, so we use an environment
+  # variable instead.
+
+  secret_key_base =
+    System.get_env("SECRET_KEY_BASE") ||
+      raise """
+      environment variable SECRET_KEY_BASE is missing.
+      You can generate one by calling: mix phx.gen.secret
+      """
+
+  host =
+    System.get_env("PHX_HOST") || "groupher-server-withered-violet-5488-quiet-fog-9123.fly.dev"
+
+  port = String.to_integer(System.get_env("PORT") || "4000")
+
+  config :groupher_server, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
+
+  config :groupher_server, GroupherServerWeb.Endpoint,
+    url: [host: host, port: 443, scheme: "https"],
+    http: [
+      # Enable IPv6 and bind on all interfaces.
+      # Set it to  {0, 0, 0, 0, 0, 0, 0, 1} for local network only access.
+      # See the documentation on https://hexdocs.pm/bandit/Bandit.html#t:options/0
+      # for details about using IPv6 vs IPv4 and loopback vs public addresses.
+      ip: {0, 0, 0, 0, 0, 0, 0, 0},
+      port: port
+    ],
+    secret_key_base: secret_key_base
+
   # For production, we often load configuration from external
   # sources, such as your system environment. For this reason,
   # you won't find the :http configuration below, but set inside
@@ -151,8 +111,7 @@ if config_env() == :prod do
   # which should be versioned separately.
   # import_config "prod.secret.exs"
 
-  config :groupher_server, GroupherServerWeb.Endpoint,
-    secret_key_base: System.get_env("SECRET_KEY_BASE")
+  config :groupher_server, GroupherServerWeb.Endpoint, secret_key_base: secret_key_base
 
   config :groupher_server, Helper.Guardian,
     issuer: "groupher_server",
