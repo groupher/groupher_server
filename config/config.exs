@@ -11,7 +11,7 @@ config :groupher_server, ecto_repos: [GroupherServer.Repo]
 # Configures the endpoint
 config :groupher_server, GroupherServerWeb.Endpoint,
   url: [host: "localhost"],
-  secret_key_base: "Ru3N3sehqeuFjBV2Z6k7FuyA59fH8bWm8D4aZWu2RifP3xKMBYo3YRILrnXAGezM",
+  adapter: Bandit.PhoenixAdapter,
   render_errors: [view: GroupherServerWeb.ErrorView, accepts: ~w(json)],
   pubsub_server: GroupherServer.PubSub
 

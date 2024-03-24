@@ -112,6 +112,8 @@ defmodule GroupherServer.Mixfile do
       {:fiet, "~> 0.3"},
       {:ogp, "~> 1.0.0"},
       {:ex_aliyun_openapi, "0.8.4"},
+      {:dns_cluster, "~> 0.1.1"},
+      {:bandit, "~> 1.2"},
       {:aliyun_oss, "~> 2.0"}
     ]
   end
