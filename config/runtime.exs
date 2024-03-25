@@ -28,7 +28,7 @@ if config_env() == :prod do
       """
 
   host =
-    System.get_env("PHX_HOST") || "groupher-server-withered-violet-5488-quiet-fog-9123.fly.dev"
+    System.get_env("PHX_HOST") || "groupher-server.fly.dev"
 
   port = String.to_integer(System.get_env("PORT") || "4000")
 
