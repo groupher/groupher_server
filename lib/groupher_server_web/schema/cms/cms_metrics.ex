@@ -124,10 +124,10 @@ defmodule GroupherServerWeb.Schema.CMS.Metrics do
     value(:todo)
     value(:wip)
     value(:done)
-    value(:resolve)
+    value(:resolved)
+    value(:reject)
     value(:reject_dup)
     value(:reject_no_plan)
-    value(:reject_no_fix)
     value(:reject_repro)
     value(:reject_stale)
   end

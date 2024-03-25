@@ -1,5 +1,5 @@
 defmodule GroupherServerWeb.Endpoint do
-  use Sentry.PlugCapture
+  # use Sentry.PlugCapture
   use Phoenix.Endpoint, otp_app: :groupher_server
 
   socket("/socket", GroupherServerWeb.UserSocket)
@@ -14,7 +14,7 @@ defmodule GroupherServerWeb.Endpoint do
     json_decoder: Jason
   )
 
-  plug(Sentry.PlugContext)
+  # plug(Sentry.PlugContext)
   plug(Plug.MethodOverride)
   plug(Plug.Head)
 
@@ -50,14 +50,12 @@ defmodule GroupherServerWeb.Endpoint do
   It receives the endpoint configuration and checks if
   configuration should be loaded from the system environment.
   """
-  def init(_key, config) do
-    if config[:load_from_system_env] do
-      port =
-        System.get_env("SERVE_PORT") || raise "expected the PORT environment variable to be set"
-
-      {:ok, Keyword.put(config, :http, [:inet6, port: port])}
-    else
-      {:ok, config}
-    end
-  end
+  # def init(_key, config) do
+  #   if config[:load_from_system_env] do
+  #     {:ok,
+  #      Keyword.put(config, :http, [:inet6, ip: {0, 0, 0, 0}, port: System.get_env("PORT") || 8080])}
+  #   else
+  #     {:ok, config}
+  #   end
+  # end
 end

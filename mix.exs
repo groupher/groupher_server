@@ -6,11 +6,9 @@ defmodule GroupherServer.Mixfile do
   def project do
     [
       app: :groupher_server,
-      version: "2.1.2",
+      version: "2.1.4",
       elixir: "~> 1.9",
       elixirc_paths: elixirc_paths(Mix.env()),
-      # compilers: [:phoenix, :gettext] ++ Mix.compilers(),
-      compilers: [:phoenix] ++ Mix.compilers(),
       dialyzer: [plt_add_deps: :transitive, ignore_warnings: ".dialyzer_ignore.exs"],
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [
@@ -32,7 +30,6 @@ defmodule GroupherServer.Mixfile do
     [
       mod: {GroupherServer.Application, []},
       extra_applications: [
-        :open_graph,
         :corsica,
         :ex_unit,
         :logger,
@@ -55,7 +52,7 @@ defmodule GroupherServer.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.6.16"},
+      {:phoenix, "~> 1.7.0"},
       {:phoenix_pubsub, "~> 2.0"},
       {:phoenix_html, "~> 2.14.3"},
       {:ecto_sql, "~> 3.10.1"},
@@ -107,11 +104,7 @@ defmodule GroupherServer.Mixfile do
       # cron-like scheduler job
       {:quantum, "~> 2.3"},
       {:html_sanitize_ex, "~> 1.3"},
-      {:open_graph, "~> 0.0.3"},
       {:earmark, "~> 1.4.13"},
-      # 遵循中文排版指南
-      # https://github.com/cataska/pangu.ex
-      {:pangu, "~> 0.1.0"},
       {:accessible, "~> 0.3.0"},
       {:floki, "~> 0.30.1"},
       {:httpoison, "~> 1.8"},
@@ -119,6 +112,8 @@ defmodule GroupherServer.Mixfile do
       {:fiet, "~> 0.3"},
       {:ogp, "~> 1.0.0"},
       {:ex_aliyun_openapi, "0.8.4"},
+      {:dns_cluster, "~> 0.1.1"},
+      {:bandit, "~> 1.2"},
       {:aliyun_oss, "~> 2.0"}
     ]
   end

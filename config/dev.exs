@@ -7,7 +7,7 @@ import Config
 # watchers to your application. For example, we use it
 # with brunch.io to recompile .js and .css sources.
 config :groupher_server, GroupherServerWeb.Endpoint,
-  http: [port: String.to_integer(System.get_env("SERVE_PORT") || "7001")],
+  http: [port: String.to_integer(System.get_env("PORT") || "7001")],
   debug_errors: true,
   code_reloader: true,
   check_origin: false,

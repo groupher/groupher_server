@@ -26,16 +26,14 @@ defmodule Helper.Certification do
     "article_tag.unset"
   ]
 
-  def moderator_titles(:cms) do
-    ["root", "moderator"]
-  end
+  def root_passport_item_count(), do: 10000
 
   def passport_rules(cms: "root") do
     %{
+      "root.spec" => true,
       "post.article_tag.create" => true,
       "post.article_tag.edit" => true,
       "post.mark_delete" => true,
-      "root.spec" => true,
       "community.add_moderator" => true
       # todo ...
     }
@@ -48,6 +46,10 @@ defmodule Helper.Certification do
       "post.article_tag.edit" => true,
       "post.mark_delete" => true
     }
+  end
+
+  def moderator_titles(:cms) do
+    ["root", "moderator"]
   end
 
   # a |> Enum.map(fn(x) -> {x, false} end) |> Map.new

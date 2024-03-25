@@ -9,7 +9,7 @@ defmodule GroupherServer.Email.Templates.MentionAuthor do
   just copy and paste raw string to: https://mjml.io/try-it-live
   """
 
-  def html(record) do
+  def html(_record) do
     """
     TODO
     """

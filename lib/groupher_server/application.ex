@@ -16,12 +16,13 @@ defmodule GroupherServer.Application do
     # Define workers and child supervisors to be supervised
     children =
       [
+        {DNSCluster, query: Application.get_env(:groupher_server, :dns_cluster_query) || :ignore},
         # Start the PubSub system
         {Phoenix.PubSub, name: MyApp.PubSub},
         # Start the Ecto repository
-        supervisor(GroupherServer.Repo, []),
+        GroupherServer.Repo,
         # Start the endpoint when the application starts
-        supervisor(GroupherServerWeb.Endpoint, []),
+        GroupherServerWeb.Endpoint,
         # Start your own worker by calling: GroupherServer.Worker.start_link(arg1, arg2, arg3)
         # worker(Helper.Scheduler, []),
         {Rihanna.Supervisor, [postgrex: GroupherServer.Repo.config()]}
@@ -42,7 +43,6 @@ defmodule GroupherServer.Application do
 
   defp cache_workers() do
     import Supervisor.Spec
-
     # worker(GroupherServer.Worker, [arg1, arg2, arg3]),
     # worker(Cachex, [:common, Cache.config(:common)], id: :common),
     # worker(Cachex, [:user_login, Cache.config(:user_login)], id: :user_login),

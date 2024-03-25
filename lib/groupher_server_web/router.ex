@@ -24,10 +24,10 @@ defmodule GroupherServerWeb.Router do
     forward(
       "/",
       Absinthe.Plug.GraphiQL,
-      schema: GroupherServerWeb.Schema,
-      json_codec: Jason,
-      interface: :playground,
-      context: %{pubsub: GroupherServerWeb.Endpoint}
+      schema: GroupherServerWeb.Schema
+      # json_codec: Jason,
+      # interface: :playground,
+      # context: %{pubsub: GroupherServerWeb.Endpoint}
     )
   end
 end

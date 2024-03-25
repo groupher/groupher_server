@@ -70,9 +70,10 @@ defmodule GroupherServer.Test.Query.PagedArticles.PagedKanbanPosts do
       }
     }
     """
-
+    @tag :wip
     test "should get grouped paged posts", ~m(guest_conn user community post_attrs)a do
       {:ok, post} = CMS.create_article(community, :post, post_attrs, user)
+
       {:ok, _post} = CMS.set_post_cat(post, @article_cat.feature)
       {:ok, _post} = CMS.set_post_state(post, @article_state.todo)
 

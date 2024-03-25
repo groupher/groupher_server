@@ -205,6 +205,9 @@ defmodule GroupherServerWeb.Schema.Helper.Fields do
     quote do
       field(:when, :when_enum)
       field(:article_tag, :string)
+      field(:cat, :string)
+      field(:state, :string)
+      field(:order, :string)
       field(:article_tags, list_of(:string))
       field(:community, :string)
     end
