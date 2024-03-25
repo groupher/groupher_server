@@ -1,5 +1,7 @@
 import Config
 
+import Helper.Utils, only: [get_host_from_url: 1]
+
 # ## Using releases
 #
 # If you use `mix release`, you need to explicitly enable the server
@@ -123,16 +125,13 @@ if config_env() == :prod do
   # see https://neon.tech/docs/guides/elixir-ecto for Neon DB on vercel
   config :groupher_server, GroupherServer.Repo,
     adapter: Ecto.Adapters.Postgres,
-    username: System.get_env("DB_USERNAME"),
-    password: System.get_env("DB_PASSWORD"),
-    database: System.get_env("DB_NAME" || "cps_server_prod"),
-    hostname: System.get_env("DB_HOST"),
-    port: String.to_integer(System.get_env("DB_PORT") || "5432"),
+    url: System.get_env("DATABASE_URL"),
     pool_size: String.to_integer(System.get_env("DB_POOL_SIZE") || "20"),
     ssl: true,
     ssl_opts: [
-      # server_name_indication: String.to_charlist("debug here if need"),
-      server_name_indication: System.get_env("DB_HOST") |> String.to_charlist(),
+      # server_name_indication: System.get_env("DB_HOST") |> String.to_charlist(),
+      server_name_indication:
+        get_host_from_url(System.get_env("DATABASE_URL")) |> String.to_charlist(),
       verify: :verify_none
     ]
 

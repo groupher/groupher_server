@@ -235,4 +235,13 @@ defmodule Helper.Utils do
     # number is invalid for html id(if first letter)
     Nanoid.generate(5, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
   end
+
+  @doc """
+  get host from url for config, like
+  postgres://default:blajdife@example-db-host.aws.neon.tech:5432/verceldb?sslmode=require
+  => example-db-host
+  """
+  def get_host_from_url(url) do
+    URI.parse(url).host
+  end
 end
