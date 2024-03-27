@@ -65,7 +65,8 @@ config :logger, :console, format: "[$level] $message\n"
 # import_config "prod.secret.exs"
 
 config :groupher_server, GroupherServerWeb.Endpoint,
-  secret_key_base: System.get_env("SECRET_KEY_BASE")
+  secret_key_base: System.get_env("SECRET_KEY_BASE"),
+  cache_static_manifest: "priv/static/cache_manifest.json"
 
 config :groupher_server, Helper.Guardian,
   issuer: "groupher_server",

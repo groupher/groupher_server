@@ -4,6 +4,7 @@ config :groupher_server, GroupherServerWeb.Endpoint,
   http: [port: 4001],
   debug_errors: true,
   code_reloader: true,
+  server: true,
   check_origin: false,
   # for local dev usage, for session/cookie
   secret_key_base: "0iBUiKYT+sUJxPPD3+aUyOPlsvl/Uk9K9VFBTzoC+zc8PEKQfW4Ay4SH7piuXpVA",

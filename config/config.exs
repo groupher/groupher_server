@@ -12,7 +12,10 @@ config :groupher_server, ecto_repos: [GroupherServer.Repo]
 config :groupher_server, GroupherServerWeb.Endpoint,
   url: [host: "localhost"],
   adapter: Bandit.PhoenixAdapter,
-  render_errors: [view: GroupherServerWeb.ErrorView, accepts: ~w(json)],
+  render_errors: [
+    formats: [html: GroupherServerWeb.ErrorHTML, json: GroupherServerWeb.ErrorJSON],
+    layout: false
+  ],
   pubsub_server: GroupherServer.PubSub
 
 # Configures Elixir's Logger
