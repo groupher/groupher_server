@@ -64,6 +64,8 @@ COPY config/runtime.exs config/
 COPY rel rel
 RUN mix release
 
+CMD chmod +x /app/bin/*
+
 # start a new build stage so that the final image will only contain
 # the compiled release and other runtime necessities
 FROM ${RUNNER_IMAGE}
