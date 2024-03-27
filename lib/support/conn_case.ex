@@ -17,10 +17,13 @@ defmodule GroupherServerWeb.ConnCase do
 
   using do
     quote do
+      use GroupherServerWeb, :verified_routes
+
       # Import conveniences for testing with connections
       import Plug.Conn
       import Phoenix.ConnTest
-      import GroupherServerWeb.Router.Helpers
+      # import GroupherServerWeb.Router.Helpers
+      import GroupherServerWeb.ConnCase
 
       # The default endpoint for testing
       @endpoint GroupherServerWeb.Endpoint

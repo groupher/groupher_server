@@ -4,8 +4,14 @@ config :groupher_server, GroupherServerWeb.Endpoint,
   http: [port: 4001],
   debug_errors: true,
   code_reloader: true,
+  server: true,
   check_origin: false,
-  watchers: []
+  # for local dev usage, for session/cookie
+  secret_key_base: "0iBUiKYT+sUJxPPD3+aUyOPlsvl/Uk9K9VFBTzoC+zc8PEKQfW4Ay4SH7piuXpVA",
+  watchers: [
+    esbuild: {Esbuild, :install_and_run, [:groupher_server, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:groupher_server, ~w(--watch)]}
+  ]
 
 config :groupher_server, Helper.Guardian,
   issuer: "groupher_server",
