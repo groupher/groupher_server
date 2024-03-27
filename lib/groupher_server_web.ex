@@ -17,42 +17,87 @@ defmodule GroupherServerWeb do
   and import those modules here.
   """
 
+  def static_paths, do: ~w(assets fonts images favicon.ico robots.txt)
+
   def controller do
     quote do
-      use Phoenix.Controller, namespace: GroupherServerWeb
+      use Phoenix.Controller,
+        formats: [:html, :json],
+        layouts: [html: GroupherServerWeb.Layouts]
+
+      # use Phoenix.Controller, namespace: GroupherServerWeb
       import Plug.Conn
-      import GroupherServerWeb.Router.Helpers
+      # import GroupherServerWeb.Router.Helpers
       import GroupherServerWeb.Gettext
+
+      unquote(verified_routes())
     end
   end
 
-  def view do
-    quote do
-      use Phoenix.View,
-        root: "lib/groupher_server_web/templates",
-        namespace: GroupherServerWeb
+  # def view do
+  #   quote do
+  #     use Phoenix.View,
+  #       root: "lib/groupher_server_web/templates",
+  #       namespace: GroupherServerWeb
 
-      # Import convenience functions from controllers
-      import Phoenix.Controller, only: [get_flash: 2, view_module: 1]
+  #     # Import convenience functions from controllers
+  #     import Phoenix.Controller, only: [get_flash: 2, view_module: 1]
 
-      import GroupherServerWeb.Router.Helpers
-      import GroupherServerWeb.ErrorHelpers
-      import GroupherServerWeb.Gettext
-    end
-  end
+  #     import GroupherServerWeb.Router.Helpers
+  #     import GroupherServerWeb.ErrorHelpers
+  #     import GroupherServerWeb.Gettext
+  #   end
+  # end
 
   def router do
     quote do
-      use Phoenix.Router
+      use Phoenix.Router, helpers: false
+
+      # Import common connection and controller functions to use in pipelines
       import Plug.Conn
       import Phoenix.Controller
+      import Phoenix.LiveView.Router
     end
   end
 
   def channel do
     quote do
       use Phoenix.Channel
+    end
+  end
+
+  def html do
+    quote do
+      use Phoenix.Component
+
+      # Import convenience functions from controllers
+      import Phoenix.Controller,
+        only: [get_csrf_token: 0, view_module: 1, view_template: 1]
+
+      # Include general helpers for rendering HTML
+      unquote(html_helpers())
+    end
+  end
+
+  defp html_helpers do
+    quote do
+      # HTML escaping functionality
+      import Phoenix.HTML
+      # Core UI components and translation
+      import GroupherServerWeb.CoreComponents
       import GroupherServerWeb.Gettext
+
+      # Routes generation with the ~p sigil
+      unquote(verified_routes())
+    end
+  end
+
+  def verified_routes do
+    quote do
+      use Phoenix.VerifiedRoutes,
+        endpoint: GroupherServerWeb.Endpoint,
+        router: GroupherServerWeb.Router,
+        statics: GroupherServerWeb.static_paths()
     end
   end
 

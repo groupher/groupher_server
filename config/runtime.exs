@@ -7,7 +7,7 @@ import Helper.Utils, only: [get_host_from_url: 1]
 # If you use `mix release`, you need to explicitly enable the server
 # by passing the PHX_SERVER=true when you start it:
 #
-#     PHX_SERVER=true bin/groupher_hello start
+#     PHX_SERVER=true bin/groupher_server start
 #
 # Alternatively, you can use `mix phx.gen.release` to generate a `bin/server`
 # script that automatically sets the env var above.

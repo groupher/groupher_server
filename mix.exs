@@ -52,16 +52,19 @@ defmodule GroupherServer.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.7.0"},
+      {:phoenix, "~> 1.7.11"},
       {:phoenix_pubsub, "~> 2.0"},
-      {:phoenix_html, "~> 2.14.3"},
+      {:phoenix_html, "~> 4.0"},
+      {:phoenix_live_view, "~> 0.20.2"},
+      {:phoenix_live_reload, "~> 1.2", only: :mock},
+      {:phoenix_live_dashboard, "~> 0.8.3"},
       {:ecto_sql, "~> 3.10.1"},
-      {:phoenix_ecto, "~> 4.4.0"},
+      {:phoenix_ecto, "~> 4.5.1"},
       {:postgrex, "~> 0.17.3"},
       # for i18n usage
       {:gettext, "~> 0.23.1"},
-      {:plug_cowboy, "~> 2.6.1"},
-      {:plug, "~> 1.14.2"},
+      {:plug_cowboy, "~> 2.7.0"},
+      {:plug, "~> 1.15"},
       # GraphQl tool
       {:absinthe, "~> 1.7.4"},
       # Plug support for Absinthe
@@ -88,7 +91,7 @@ defmodule GroupherServer.Mixfile do
       {:pre_commit, "~> 0.3.4"},
       {:inch_ex, "~> 2.0", only: [:dev, :test]},
       {:short_maps, "~> 0.1.2"},
-      {:jason, "~> 1.1.1"},
+      {:jason, "~> 1.2"},
       {:credo, "~> 1.5.5", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.1.0", only: [:dev, :mock], runtime: false},
       {:excoveralls, "~> 0.8", only: :test},
@@ -96,7 +99,7 @@ defmodule GroupherServer.Mixfile do
       {:recase, "~> 0.7.0"},
       {:nanoid, "~> 2.0.5"},
       # mailer
-      {:bamboo, "1.3.0"},
+      {:bamboo, "2.3.0"},
       # mem cache
       {:cachex, "3.3.0"},
       # postgres-backed job queue
@@ -114,7 +117,16 @@ defmodule GroupherServer.Mixfile do
       {:ex_aliyun_openapi, "0.8.4"},
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.2"},
-      {:aliyun_oss, "~> 2.0"}
+      {:aliyun_oss, "~> 2.0"},
+      {:esbuild, "~> 0.8", runtime: Mix.env() == :mock},
+      {:tailwind, "~> 0.2", runtime: Mix.env() == :mock},
+      {:heroicons,
+       github: "tailwindlabs/heroicons",
+       tag: "v2.1.1",
+       sparse: "optimized",
+       app: false,
+       compile: false,
+       depth: 1}
     ]
   end
 
@@ -135,7 +147,14 @@ defmodule GroupherServer.Mixfile do
       lint: ["credo --strict"],
       "lint.static": ["dialyzer --format dialyxir"],
       "cps.seeds": ["run priv/mock/cps_seeds.exs"],
-      sentry_recompile: ["compile", "deps.compile sentry --force"]
+      sentry_recompile: ["compile", "deps.compile sentry --force"],
+      "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
+      "assets.build": ["tailwind groupher_server", "esbuild groupher_server"],
+      "assets.deploy": [
+        "tailwind groupher_server --minify",
+        "esbuild groupher_server --minify",
+        "phx.digest"
+      ]
     ]
   end
 end

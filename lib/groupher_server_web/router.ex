@@ -3,19 +3,32 @@ defmodule GroupherServerWeb.Router do
 
   use GroupherServerWeb, :router
 
+  pipeline :browser do
+    plug(:accepts, ["html"])
+    plug(:fetch_session)
+    plug(:fetch_live_flash)
+    plug(:put_root_layout, html: {GroupherServerWeb.Layouts, :root})
+    plug(:protect_from_forgery)
+    plug(:put_secure_browser_headers)
+  end
+
+  scope "/", GroupherServerWeb do
+    pipe_through(:browser)
+
+    get("/", PageController, :home)
+  end
+
   pipeline :api do
     plug(:accepts, ["json"])
     plug(GroupherServerWeb.Context)
   end
-
-  alias GroupherServerWeb.Controller
 
   scope "/api" do
     pipe_through(:api)
 
     # get "/og-info", TodoController, only: [:index]
     # resources("/og-info", OG, only: [:index])
-    get("/og-info", Controller.OG, :index)
+    get("/og-info", GroupherServerWeb.Controller.OG, :index)
   end
 
   scope "/graphiql" do
